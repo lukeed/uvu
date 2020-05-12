@@ -4,6 +4,9 @@
   "module": "dist/index.mjs",
   "main": "dist/index.js",
   "types": "index.d.ts",
+  "bin": {
+    "uvu": "bin.js"
+  },
   "files": [
     "*.js",
     "*.d.ts",
