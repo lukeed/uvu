@@ -1,5 +1,6 @@
 declare module 'uvu' {
 	export type Callback = () => any | Promise<any>;
+	export type Result = [Error[] | true, number, number];
 
 	export function suite(title?: string): test;
 	export function test(name: string, test: Callback): void;
@@ -9,7 +10,7 @@ declare module 'uvu' {
 		declare function skip(name?: string, test?: Callback): void;
 		declare function before(hook: Callback): void;
 		declare function after(hook: Callback): void;
-		declare function run(): Promise<boolean>;
+		declare function run(): Promise<Result>;
 	}
 }
 
