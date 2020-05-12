@@ -1,0 +1,29 @@
+{
+  "name": "uvu",
+  "version": "0.0.0",
+  "module": "dist/index.mjs",
+  "main": "dist/index.js",
+  "types": "index.d.ts",
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "assert",
+    "dist"
+  ],
+  "modes": {
+    "assert": "src/assert.js",
+    "default": "src/index.js"
+  },
+  "scripts": {
+    "build": "bundt"
+  },
+  "dependencies": {
+    "dequal": "^1.0.0",
+    "kleur": "^3.0.0",
+    "sade": "^1.7.3",
+    "totalist": "^1.0.1"
+  },
+  "devDependencies": {
+    "bundt": "1.0.0"
+  }
+}
