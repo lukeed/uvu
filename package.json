@@ -1,6 +1,6 @@
 {
   "name": "uvu",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
   "types": "index.d.ts",
