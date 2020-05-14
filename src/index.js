@@ -21,7 +21,6 @@ async function runner(ctx, name) {
 			} catch (err) {
 				errs.push(err);
 				write(kleur.red('✘ '));
-				// return [fmt(err), num, total];
 			}
 		}
 	} finally {

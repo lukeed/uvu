@@ -1,17 +1,22 @@
-declare module 'uvu' {
-	export type Callback = () => any | Promise<any>;
-	export type Result = [Error[] | true, number, number];
+declare namespace uvu {
+	type Callback = () => any | Promise<any>;
+	type Result = [Error[] | true, number, number];
 
-	export function suite(title?: string): test;
-	export function test(name: string, test: Callback): void;
-
-	export namespace test {
-		declare function only(name: string, test: Callback): void;
-		declare function skip(name?: string, test?: Callback): void;
-		declare function before(hook: Callback): void;
-		declare function after(hook: Callback): void;
-		declare function run(): Promise<Result>;
+	interface Test {
+		(name: string, test: Callback): void;
+		only(name: string, test: Callback): void;
+		skip(name?: string, test?: Callback): void;
+		before(hook: Callback): void;
+		after(hook: Callback): void;
+		run(): Promise<Result>;
 	}
+}
+
+declare module 'uvu' {
+	export const test: uvu.Test;
+	export type Result = uvu.Result;
+	export type Callback = uvu.Callback;
+	export function suite(title?: string): uvu.Test;
 }
 
 declare module 'uvu/assert' {
