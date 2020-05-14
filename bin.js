@@ -5,7 +5,7 @@ const { resolve } = require('path');
 const pkg = require('./package');
 const { QUEUE } = require('.');
 
-const FALLBACK = /((\/|^)(tests?|__tests?__)\/.*|\.(tests?|spec)|^\/?tests?)\.([mc]js|[jt]sx?)$/i;
+const toRegex = x => new RegExp(x, 'i');
 
 function exists(dep) {
 	try {
@@ -18,6 +18,7 @@ function exists(dep) {
 sade('uvu [dir] [pattern]')
 	.version(pkg.version)
 	.option('-b, --bail', 'fail fast')
+	.option('-i, --ignore', 'Any file patterns to ignore')
 	.option('-r, --require', 'Additional module(s) to preload')
 	.option('-C, --cwd', 'The current directory to resolve from', '.')
 	.action(async (dir, pattern, opts) => {
@@ -27,13 +28,19 @@ sade('uvu [dir] [pattern]')
 		else pattern = /((\/|^)(tests?|__tests?__)\/.*|\.(tests?|spec)|^\/?tests?)\.([mc]js|[jt]sx?)$/i;
 		dir = resolve(opts.cwd, dir || '.');
 
+		let ignores = [].concat(opts.ignore || []).map(toRegex);
 
 		[].concat(opts.require || []).filter(Boolean).forEach((name, tmp) => {
 			if (tmp = exists(name)) return require(tmp);
 			throw new Error(`Cannot find module '${name}'`);
 		});
 
-		await tlist(dir, (rel, abs) => pattern.test(rel) && suites.push({ name: rel, file: abs }));
+		await tlist(dir, (rel, abs) => {
+			if (pattern.test(rel) && !ignores.some(x => x.test(rel))) {
+				suites.push({ name: rel, file: abs });
+			}
+		});
+
 		suites.sort((a, b) => a.name.localeCompare(b.name));
 
 		global.UVU_DEFER = 1;
