@@ -15,15 +15,18 @@ function exists(dep) {
 	}
 }
 
-sade('uvu [files]')
+sade('uvu [dir] [pattern]')
 	.version(pkg.version)
 	.option('-b, --bail', 'fail fast')
 	.option('-r, --require', 'Additional module(s) to preload')
 	.option('-C, --cwd', 'The current directory to resolve from', '.')
-	.action(async (files, opts) => {
+	.action(async (dir, pattern, opts) => {
 		let suites = [];
-		let dir = resolve(opts.cwd);
-		let pattern = files ? new RegExp(files, 'i') : FALLBACK;
+		if (pattern) pattern = toRegex(pattern);
+		else if (dir) pattern = /(((?:[^\/]*(?:\/|$))*)[\\\/])?\w+\.([mc]js|[jt]sx?)$/;
+		else pattern = /((\/|^)(tests?|__tests?__)\/.*|\.(tests?|spec)|^\/?tests?)\.([mc]js|[jt]sx?)$/i;
+		dir = resolve(opts.cwd, dir || '.');
+
 
 		[].concat(opts.require || []).filter(Boolean).forEach((name, tmp) => {
 			if (tmp = exists(name)) return require(tmp);
