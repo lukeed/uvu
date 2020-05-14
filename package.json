@@ -7,6 +7,16 @@
   "bin": {
     "uvu": "bin.js"
   },
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
+    "./assert": {
+      "require": "./assert/index.js",
+      "import": "./assert/index.mjs"
+    }
+  },
   "files": [
     "*.js",
     "*.d.ts",
