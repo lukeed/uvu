@@ -5,6 +5,9 @@ const context = () => ({ tests:[], before:[], after:[], only:[] });
 const hook = (ctx, key) => handler => ctx[key].push(handler);
 const write = x => process.stdout.write(x);
 
+const PASS = kleur.gray('• ');
+const FAIL = kleur.red('✘ ');
+
 async function runner(ctx, name) {
 	let { only, tests, before, after } = ctx;
 	let arr = only.length ? only : tests;
@@ -16,11 +19,11 @@ async function runner(ctx, name) {
 		for (test of arr) {
 			try {
 				await test.handler();
-				write(kleur.gray('• '));
+				write(PASS);
 				num++;
 			} catch (err) {
 				errs.push(err);
-				write(kleur.red('✘ '));
+				write(FAIL);
 			}
 		}
 	} finally {
