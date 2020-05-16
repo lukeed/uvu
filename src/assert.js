@@ -1,24 +1,77 @@
+import kleur from 'kleur';
 import dequal from 'dequal';
 
-function print(str, ...args) {
-	let i=0, out=str[i];
-	while (i < args.length) {
-		out += '`' + JSON.stringify(args[i]) + '`' + str[++i];
-	}
-	return out;
+const TAB = kleur.dim(' → ');
+const SPACE = kleur.dim(' · ');
+
+const fmt = str => str.replace(/[ ]/g, SPACE).replace(/\t/g, TAB);
+const label = (arr, str, len, hint, color) => arr.push(color(fmt(str) + ' '.repeat(4 + len) + kleur.dim().italic(hint)));
+const line = (arr, str, color) => arr.push(color(fmt(str)));
+
+function maxlen(str) {
+	let arr = str.match(/\s/g) || [];
+	return str.length + (arr.length * 3 - arr.length);
 }
 
-function dedent(tmpl) {
-	let str = tmpl.trim();
+function diff(input, expects, count = 3) {
+	let arr_input = input.split(/\r?\n/g);
+	let arr_expects = expects.split(/\r?\n/g);
+	let real, tmp, rlen, tlen, mlen;
+	let i=0, j=0, output=[];
+
+	for (; i < arr_expects.length; i++) {
+		tmp = arr_input[i] || '';
+		if (arr_expects[i] === tmp) continue;
+
+		// for (j=count; j > 0; j--) {
+		// 	if (i - j < 0) continue;
+		// 	line(output, arr_input[i - j], kleur.grey);
+		// }
+
+		rlen = maxlen(real = arr_expects[i]);
+		mlen = Math.max(rlen, tlen = maxlen(tmp));
+
+		label(output, real, mlen - rlen, '(Expected)', kleur.green);
+		label(output, tmp, mlen - tlen, '(Actual)', kleur.red);
+
+		// for (j=0; j++ < count;) {
+		// 	if (i + j >= arr_input.length) continue;
+		// 	line(output, arr_input[i + j], kleur.grey);
+		// }
+
+		// break;
+	}
+
+	return output.join('\n');
+}
+
+function print(str, ...args) {
+	let i=0, msg=str[i];
+	while (i < args.length) {
+		msg += '`' + JSON.stringify(args[i]) + '`' + str[++i];
+	}
+	return new Assertion(msg, ...args);
+}
+
+function dedent(str) {
 	let arr = str.match(/^[\s\t]*(?=\S)/gm);
-	if (!arr) return str;
-	let min = Math.min(...arr.map(x => x.length));
-	return min > 0 ? str.replace(new RegExp(`^[\\s\\t]{${min}}`, 'gm'), '') : str;
+	let min = !!arr && Math.min(...arr.map(x => x.length));
+	return (!arr || !min) ? str : str.replace(new RegExp(`^[\\s\\t]{${min}}`, 'gm'), '');
 }
 
 // https://nodejs.org/api/assert.html#assert_class_assert_assertionerror
 export class Assertion extends Error {
-	//
+	constructor(message, actual, expect) {
+		let msg = message;
+		if (expect && typeof expect == 'object') {
+			actual = dedent(JSON.stringify(actual, null, 2));
+			expect = dedent(JSON.stringify(expect, null, 2));
+		}
+		if (expect && actual && /[\r\n]/.test(''+expect)) {
+			msg += ':\n    ' + diff(actual, expect).replace(/\n/g, '\n    ');
+		}
+		super(msg);
+	}
 }
 
 export function ok(val, msg) {
@@ -42,7 +95,8 @@ export function instance(val, exp, msg) {
 }
 
 export function snapshot(val, exp, msg) {
-	ok(dedent(val) === dedent(exp), msg || print`Expected input to match expected snapshot`);
+	val = dedent(val); exp = dedent(exp);
+	ok(val === exp, msg || new Assertion('Expected input to match expected snapshot:', val, exp));
 }
 
 export function throws(blk, exp, msg) {
