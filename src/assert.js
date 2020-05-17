@@ -1,102 +1,64 @@
-import kleur from 'kleur';
 import dequal from 'dequal';
-
-const TAB = kleur.dim(' → ');
-const SPACE = kleur.dim(' · ');
-
-const fmt = str => str.replace(/[ ]/g, SPACE).replace(/\t/g, TAB);
-const label = (arr, str, len, hint, color) => arr.push(color(fmt(str) + ' '.repeat(4 + len) + kleur.dim().italic(hint)));
-const line = (arr, str, color) => arr.push(color(fmt(str)));
-
-function maxlen(str) {
-	let arr = str.match(/\s/g) || [];
-	return str.length + (arr.length * 3 - arr.length);
-}
-
-function diff(input, expects, count = 3) {
-	let arr_input = input.split(/\r?\n/g);
-	let arr_expects = expects.split(/\r?\n/g);
-	let real, tmp, rlen, tlen, mlen;
-	let i=0, j=0, output=[];
-
-	for (; i < arr_expects.length; i++) {
-		tmp = arr_input[i] || '';
-		if (arr_expects[i] === tmp) continue;
-
-		// for (j=count; j > 0; j--) {
-		// 	if (i - j < 0) continue;
-		// 	line(output, arr_input[i - j], kleur.grey);
-		// }
-
-		rlen = maxlen(real = arr_expects[i]);
-		mlen = Math.max(rlen, tlen = maxlen(tmp));
-
-		label(output, real, mlen - rlen, '(Expected)', kleur.green);
-		label(output, tmp, mlen - tlen, '(Actual)', kleur.red);
-
-		// for (j=0; j++ < count;) {
-		// 	if (i + j >= arr_input.length) continue;
-		// 	line(output, arr_input[i + j], kleur.grey);
-		// }
-
-		// break;
-	}
-
-	return output.join('\n');
-}
+import { compare } from '../diff';
 
 function print(str, ...args) {
-	let i=0, msg=str[i];
+	let i=0, tmp, msg=str[i];
 	while (i < args.length) {
-		msg += '`' + JSON.stringify(args[i]) + '`' + str[++i];
+		if ((tmp = args[i]) instanceof Function) tmp = tmp.name;
+		else if (tmp instanceof RegExp) tmp = String(tmp);
+		else tmp = JSON.stringify(tmp);
+		msg += '`' + tmp + '`' + str[++i];
 	}
-	return new Assertion(msg, ...args);
+	return msg;
 }
 
 function dedent(str) {
-	let arr = str.match(/^[\s\t]*(?=\S)/gm);
+	let arr = str.match(/^[ \t]*(?=\S)/gm);
 	let min = !!arr && Math.min(...arr.map(x => x.length));
-	return (!arr || !min) ? str : str.replace(new RegExp(`^[\\s\\t]{${min}}`, 'gm'), '');
+	return (!arr || !min) ? str : str.replace(new RegExp(`^[ \\t]{${min}}`, 'gm'), '');
 }
 
-// https://nodejs.org/api/assert.html#assert_class_assert_assertionerror
+function asserts(actual, expects, operator, msg, backup) {
+	if (msg instanceof Error) return msg;
+	return new Assertion({ message: msg || backup, generated: !msg, operator, expects, actual });
+}
+
 export class Assertion extends Error {
-	constructor(message, actual, expect) {
-		let msg = message;
-		if (expect && typeof expect == 'object') {
-			actual = dedent(JSON.stringify(actual, null, 2));
-			expect = dedent(JSON.stringify(expect, null, 2));
-		}
-		if (expect && actual && /[\r\n]/.test(''+expect)) {
-			msg += ':\n    ' + diff(actual, expect).replace(/\n/g, '\n    ');
-		}
-		super(msg);
+	constructor(opts={}) {
+		super(opts.message);
+		this.name = 'Assertion';
+		this.code = 'ERR_ASSERTION';
+		Error.captureStackTrace(this, this.constructor);
+		this.details = opts.operator.includes('not') ? false : compare(opts.actual, opts.expects);
+		this.generated = !!opts.generated;
+		this.operator = opts.operator;
+		this.expects = opts.expects;
+		this.actual = opts.actual;
 	}
 }
 
-export function ok(val, msg) {
-	if (!val) throw (msg instanceof Error ? msg : new Assertion(msg));
+export function ok(val, msg, oper = 'ok') {
+	if (!val) throw asserts(false, true, oper, msg, print`Expected ${val} to be truthy`);
 }
 
-export function is(val, exp, msg) {
-	ok(val === exp, msg || print`Expected ${val} to equal ${exp}`);
+export function is(val, exp, msg, oper = 'is') {
+	ok(val === exp, asserts(val, exp, oper, msg, print`Expected ${val} to be ${exp}`));
 }
 
 export function equal(val, exp, msg) {
-	ok(dequal(val, exp), msg || print`Expected ${val} to deeply equal ${exp}`);
+	ok(dequal(val, exp), asserts(val, exp, 'equal', msg, print`Expected ${val} to deeply equal ${exp}`));
 }
 
 export function type(val, exp, msg) {
-	ok(typeof val === exp, msg || print`Expected typeof(${val}) to be ${exp}`);
+	is(typeof val, exp, msg || print`Expected typeof(${val}) to be ${exp}`, 'type');
 }
 
 export function instance(val, exp, msg) {
-	ok(val instanceof exp, msg || print`Expected ${val} to be an instance of ${exp}`);
+	ok(val instanceof exp, msg || print`Expected ${val} to be an instance of ${exp}`, 'instance');
 }
 
 export function snapshot(val, exp, msg) {
-	val = dedent(val); exp = dedent(exp);
-	ok(val === exp, msg || new Assertion('Expected input to match expected snapshot:', val, exp));
+	is(val = dedent(val), exp = dedent(exp), msg || 'Expected input to match snapshot', 'snapshot');
 }
 
 export function throws(blk, exp, msg) {
@@ -106,42 +68,42 @@ export function throws(blk, exp, msg) {
 
 	try {
 		blk();
-		return ok(false, msg || print`Expected function to throw`);
+		return ok(false, msg || 'Expected function to throw', 'throws');
 	} catch (err) {
 		if (typeof exp === 'function') {
-			return ok(exp(err), msg || print`Expected function to throw matching exception`);
+			return ok(exp(err), msg || 'Expected function to throw matching exception', 'throws');
 		} else if (exp instanceof RegExp) {
-			return ok(exp.test(err.message), msg || print`Expected function to throw exception matching ${exp}`);
+			return ok(exp.test(err.message), msg || print`Expected function to throw exception matching ${exp}`, 'throws');
 		}
 	}
 }
 
 // ---
 
-export function not(val, msg) {
-	if (val) throw (msg instanceof Error ? msg : new Assertion(msg));
+export function not(val, msg, oper = 'not') {
+	if (val) throw asserts(true, false, oper, msg, print`Expected ${val} to be falsey`);
 }
 
 not.ok = not;
 
-is.not = function (val, exp, msg) {
-	ok(val !== exp, msg || print`Expected ${val} not to equal ${exp}`);
+is.not = function (val, exp, msg, oper = 'is.not') {
+	ok(val !== exp, asserts(val, exp, oper, msg, print`Expected ${val} not to be ${exp}`));
 }
 
 not.equal = function (val, exp, msg) {
-	not(dequal(val, exp), msg || print`Expected ${val} not to deeply equal ${exp}`);
+	not(dequal(val, exp), msg || print`Expected ${val} not to deeply equal ${exp}`, 'not.equal');
 }
 
 not.type = function (val, exp, msg) {
-	ok(typeof val !== exp, msg || print`Expected typeof(${val}) not to be ${exp}`);
+	is.not(typeof val, exp, msg || print`Expected typeof(${val}) not to be ${exp}`, 'not.type');
 }
 
 not.instance = function (val, exp, msg) {
-	not(val instanceof exp, msg || print`Expected ${val} not to be an instance of ${exp}`);
+	not(val instanceof exp, msg || print`Expected ${val} not to be an instance of ${exp}`, 'not.instance');
 }
 
 not.snapshot = function (val, exp, msg) {
-	ok(dedent(val) !== dedent(exp), msg || print`Expected input not to match expected snapshot`);
+	is.not(val = dedent(val), exp = dedent(exp), msg || 'Expected input not to match snapshot', 'not.snapshot');
 }
 
 not.throws = function (blk, exp, msg) {
@@ -153,11 +115,11 @@ not.throws = function (blk, exp, msg) {
 		blk();
 	} catch (err) {
 		if (typeof exp === 'function') {
-			return not(exp(err), msg || print`Expected function not to throw matching exception`);
+			return not(exp(err), msg || print`Expected function not to throw matching exception`, 'not.throws');
 		} else if (exp instanceof RegExp) {
-			return not(exp.test(err.message), msg || print`Expected function not to throw exception matching ${exp}`);
+			return not(exp.test(err.message), msg || print`Expected function not to throw exception matching ${exp}`, 'not.throws');
 		} else if (!exp) {
-			return ok(false, msg || print`Expected function not to throw`);
+			return not(true, msg || print`Expected function not to throw`, 'not.throws');
 		}
 	}
 }

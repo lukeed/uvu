@@ -15,15 +15,21 @@
     "./assert": {
       "require": "./assert/index.js",
       "import": "./assert/index.mjs"
+    },
+    "./diff": {
+      "require": "./diff/index.js",
+      "import": "./diff/index.mjs"
     }
   },
   "files": [
     "*.js",
     "*.d.ts",
     "assert",
+    "diff",
     "dist"
   ],
   "modes": {
+    "diff": "src/diff.js",
     "assert": "src/assert.js",
     "default": "src/index.js"
   },
@@ -32,6 +38,7 @@
   },
   "dependencies": {
     "dequal": "^1.0.0",
+    "diff": "^4.0.2",
     "kleur": "^3.0.0",
     "sade": "^1.7.3",
     "totalist": "^1.0.1"
