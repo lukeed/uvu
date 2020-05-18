@@ -1,5 +1,5 @@
 import dequal from 'dequal';
-import { compare } from '../diff';
+import { compare, direct, lines } from '../diff';
 
 function print(str, ...args) {
 	let i=0, tmp, msg=str[i];
@@ -23,17 +23,22 @@ function asserts(actual, expects, operator, msg, backup) {
 	return new Assertion({ message: msg || backup, generated: !msg, operator, expects, actual });
 }
 
+// TODO: more explicit `details` operator
 export class Assertion extends Error {
 	constructor(opts={}) {
 		super(opts.message);
 		this.name = 'Assertion';
 		this.code = 'ERR_ASSERTION';
-		Error.captureStackTrace(this, this.constructor);
-		this.details = opts.operator.includes('not') ? false : compare(opts.actual, opts.expects);
 		this.generated = !!opts.generated;
-		this.operator = opts.operator;
-		this.expects = opts.expects;
-		this.actual = opts.actual;
+		Error.captureStackTrace(this, this.constructor);
+		let { operator, expects, actual } = opts;
+		this.details = operator.includes('not') ? false
+			: operator === 'snapshot' ? lines(actual, expects)
+			: operator === 'equal' ? compare(actual, expects)
+			: direct(actual, expects);
+		this.operator = operator;
+		this.expects = expects;
+		this.actual = actual;
 	}
 }
 
@@ -46,7 +51,7 @@ export function is(val, exp, msg, oper = 'is') {
 }
 
 export function equal(val, exp, msg) {
-	ok(dequal(val, exp), asserts(val, exp, 'equal', msg, print`Expected ${val} to deeply equal ${exp}`));
+	ok(dequal(val, exp), asserts(val, exp, 'equal', msg, 'Expected values to be deeply equal:'));
 }
 
 export function type(val, exp, msg) {
@@ -58,7 +63,7 @@ export function instance(val, exp, msg) {
 }
 
 export function snapshot(val, exp, msg) {
-	is(val = dedent(val), exp = dedent(exp), msg || 'Expected input to match snapshot', 'snapshot');
+	is(val = dedent(val), exp = dedent(exp), msg || 'Expected input to match snapshot:', 'snapshot');
 }
 
 export function throws(blk, exp, msg) {
