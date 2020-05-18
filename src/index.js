@@ -75,7 +75,11 @@ function setup(ctx, name = '') {
 			let run = runner.bind(0, copy, name);
 			QUEUE[global.UVU_INDEX].push(run);
 		} else {
-			return runner(ctx, name);
+			return runner(ctx, name).then(([errs, ran, total]) => {
+				if (errs.length) write('\n' + errs);
+				if (typeof process !== 'undefined') process.exit(+!!errs.length);
+				return [errs, ran, total];
+			});
 		}
 	};
 	return test;
