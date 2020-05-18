@@ -18,14 +18,13 @@ function line(obj, prev) {
 	let i=0, tmp, arr = obj.value.split('\n');
 	let out='', fmt = colors[char];
 
-	if (obj.added) out += fmt().underline(TITLE('Expected:'));
-	else if (obj.removed) out += fmt().underline(TITLE('Actual:'));
+	if (obj.added) out += fmt().underline(TITLE('Expected:')) + '\n';
+	else if (obj.removed) out += fmt().underline(TITLE('Actual:')) + '\n';
 
 	for (; i < arr.length; i++) {
-		if (out) out += '\n';
 		if (tmp = arr[i]) {
 			if (prev) out += LINE(prev + i);
-			out += fmt(char + PRETTY(tmp));
+			out += fmt(char + PRETTY(tmp)) + '\n';
 		}
 	}
 
@@ -59,13 +58,13 @@ export function chars(input, expect) {
 	let p2 = PRETTY(expect);
 
 	// TODO: debug this
-	// if (tmp.removed) {
-	// 	p2 = ' '.repeat(tmp.count) + p2;
-	// 	l2 += tmp.count;
-	// } else if (tmp.added) {
-	// 	p1 = ' '.repeat(tmp.count) + p1;
-	// 	l1 += tmp.count;
-	// }
+	if (tmp.removed) {
+		p2 = ' '.repeat(tmp.count) + p2;
+		l2 += tmp.count;
+	} else if (tmp.added) {
+		p1 = ' '.repeat(tmp.count) + p1;
+		l1 += tmp.count;
+	}
 
 	let l3 = Math.max(l1, l2);
 	output += direct(p1, p2, l1, l2);

@@ -1,18 +1,45 @@
 import kleur from 'kleur';
+import { compare } from '../diff';
 
 const into = (ctx, key) => (name, handler) => ctx[key].push({ name, handler });
 const context = () => ({ tests:[], before:[], after:[], only:[] });
 const hook = (ctx, key) => handler => ctx[key].push(handler);
 const write = x => process.stdout.write(x);
 
-const PASS = kleur.gray('• ');
-const FAIL = kleur.red('✘ ');
+const QUOTE = kleur.dim('"'), GUTTER = '\n        ';
+const FAIL = kleur.red('✘ '), PASS = kleur.gray('• ');
+const IGNORE = /^\s*at.*(?:\(|\s)(?:node|(internal\/[\w/]*))/;
 
+function stack(stack, idx) {
+	let i=0, line, out='';
+	let arr = stack.substring(idx).replace(/\\/g, '/').split('\n');
+	for (; i < arr.length; i++) {
+		line = arr[i].trim();
+		if (line.length && !IGNORE.test(line)) {
+			out += '\n    ' + line;
+		}
+	}
+	return kleur.grey(out) + '\n';
+}
+
+function format(name, err) {
+	let details = err.details;
+	let idx = err.stack && err.stack.indexOf('\n');
+	if (err.name.startsWith('AssertionError') && !err.operator.includes('not')) details = compare(err.actual, err.expected); // TODO?
+	let str = '  ' + kleur.bold().bgRed(' FAIL ') + ' ' + QUOTE + kleur.red().bold(name) + QUOTE;
+	str += '\n    ' + err.message + kleur.italic().dim(`  (${err.operator})`) + '\n';
+	if (details) str += GUTTER + details.split('\n').join(GUTTER);
+	if (!!~idx) str += stack(err.stack, idx);
+	return str + '\n';
+}
+
+// TODO: before|afterEach
+// TODO: nested suite group(s)
 async function runner(ctx, name) {
 	let { only, tests, before, after } = ctx;
 	let arr = only.length ? only : tests;
 	let num=0, total=arr.length;
-	let test, hook, errs=[];
+	let test, hook, errors='';
 	try {
 		// console.log('(runner) name:', name);
 		for (hook of before) await hook();
@@ -22,15 +49,16 @@ async function runner(ctx, name) {
 				write(PASS);
 				num++;
 			} catch (err) {
-				errs.push(err);
+				if (errors.length) errors += '\n';
+				errors += format(test.name, err);
 				write(FAIL);
 			}
 		}
 	} finally {
 		for (hook of after) await hook();
 		let msg = `  (${num} / ${total})\n`;
-		write(errs.length ? kleur.red(msg) : kleur.green(msg));
-		return [!errs.length || errs, num, total];
+		write(errors.length ? kleur.red(msg) : kleur.green(msg));
+		return [errors || true, num, total];
 	}
 }
 

@@ -1,6 +1,6 @@
 declare namespace uvu {
 	type Callback = () => any | Promise<any>;
-	type Result = [Error[] | true, number, number];
+	type Result = [string | true, number, number];
 
 	interface Test {
 		(name: string, test: Callback): void;
