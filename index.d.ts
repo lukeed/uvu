@@ -21,25 +21,43 @@ declare module 'uvu' {
 
 declare module 'uvu/assert' {
 	export type Message = string | Error;
-	export function ok(val: any, msg?: Message): void;
-	export function is(val: any, exp: any, msg?: Message): void;
-	export function equal(val: any, exp: any, msg?: Message): void;
-	export function type(val: any, exp: any, msg?: Message): void;
-	export function instance(val: any, exp: any, msg?: Message): void;
-	export function snapshot(val: any, exp: any, msg?: Message): void;
-	export function throws(blk: Function, exp?: Message | RegExp | Function, msg?: Message): void;
-	export function not(val: any, msg?: Message): void;
+	export function ok(actual: any, msg?: Message, operation?: string): void;
+	export function is(actual: any, expects: any, msg?: Message, operation?: string): void;
+	export function equal(actual: any, expects: any, msg?: Message): void;
+	export function type(actual: any, expects: any, msg?: Message): void;
+	export function instance(actual: any, expects: any, msg?: Message): void;
+	export function snapshot(actual: any, expects: any, msg?: Message): void;
+	export function throws(blk: Function, expects?: Message | RegExp | Function, msg?: Message): void;
+	export function not(actual: any, msg?: Message): void;
 
 	export namespace is {
-		declare function not(val: any, exp: any, msg?: Message): void;
+		declare function not(actual: any, expects: any, msg?: Message, operation?: string): void;
 	}
 
 	export namespace not {
-		declare function ok(val: any, msg?: Message): void;
-		declare function equal(val: any, exp: any, msg?: Message): void;
-		declare function type(val: any, exp: any, msg?: Message): void;
-		declare function instance(val: any, exp: any, msg?: Message): void;
-		declare function snapshot(val: any, exp: any, msg?: Message): void;
-		declare function throws(blk: Function, exp?: Message | RegExp | Function, msg?: Message): void;
+		declare function ok(actual: any, msg?: Message, operation?: string): void;
+		declare function equal(actual: any, expects: any, msg?: Message): void;
+		declare function type(actual: any, expects: any, msg?: Message): void;
+		declare function instance(actual: any, expects: any, msg?: Message): void;
+		declare function snapshot(actual: any, expects: any, msg?: Message): void;
+		declare function throws(blk: Function, expects?: Message | RegExp | Function, msg?: Message): void;
 	}
+
+	export declare class Assertion extends Error {
+		name: 'Assertion';
+		code: 'ERR_ASSERTION';
+		details: false | string;
+		generated: boolean;
+		operator: string;
+		expects: any;
+		actual: any;
+	}
+}
+
+declare module 'uvu/diff' {
+	export function chars(input: any, expects: any): string;
+	export function lines(input: any, expects: any, linenum?: number): string;
+	export function direct(input: any, expects: any, lenA?: number, lenB?: number): string;
+	export function compare(input: any, expects: any): string;
+	export function arrays(input: any, expects: any): string;
 }
