@@ -9,22 +9,23 @@ const colors = {
 
 const TITLE = kleur.dim().italic;
 const LINE = num => kleur.dim('L' + num + ' ');
-const TAB = kleur.dim('→'), SPACE = kleur.dim('·');
-const PRETTY = str => str.replace(/[ ]/g, SPACE).replace(/\t/g, TAB);
+const TAB=kleur.dim('→'), SPACE=kleur.dim('·'), NL=kleur.dim('↵');
+const PRETTY = str => str.replace(/[ ]/g, SPACE).replace(/\t/g, TAB).replace(/(\r?\n)/g, NL);
 const PRINT = (sym, str, len) => colors[sym](sym + str + ' '.repeat(4 + len) + TITLE(sym == '++' ? '(Expected)\n' : '(Actual)\n'));
 
 function line(obj, prev) {
 	let char = obj.removed ? '--' : obj.added ? '++' : '··';
-	let i=0, tmp, arr = obj.value.split('\n');
+	let i=0, tmp, arr = obj.value.replace(/\n$/, '').split('\n');
 	let out='', fmt = colors[char];
 
 	if (obj.added) out += fmt().underline(TITLE('Expected:')) + '\n';
 	else if (obj.removed) out += fmt().underline(TITLE('Actual:')) + '\n';
 
 	for (; i < arr.length; i++) {
-		if (tmp = arr[i]) {
+		tmp = arr[i];
+		if (tmp != null) {
 			if (prev) out += LINE(prev + i);
-			out += fmt(char + PRETTY(tmp)) + '\n';
+			out += fmt(char + PRETTY(tmp || '\n')) + '\n';
 		}
 	}
 
