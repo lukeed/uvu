@@ -10,7 +10,7 @@ const colors = {
 const TITLE = kleur.dim().italic;
 const LINE = num => kleur.dim('L' + num + ' ');
 const TAB = kleur.dim('→'), SPACE = kleur.dim('·');
-const PRETTY = str => str.replace(/\{/g, 'Object {').replace(/\[/g, 'Array [').replace(/[ ]/g, SPACE).replace(/\t/g, TAB);
+const PRETTY = str => str.replace(/[ ]/g, SPACE).replace(/\t/g, TAB);
 const PRINT = (sym, str, len) => colors[sym](sym + str + ' '.repeat(4 + len) + TITLE(sym == '++' ? '(Expected)\n' : '(Actual)\n'));
 
 function line(obj, prev) {
