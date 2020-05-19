@@ -1,6 +1,5 @@
 declare namespace uvu {
 	type Callback = () => any | Promise<any>;
-	type Result = [string | true, number, number];
 
 	interface Test {
 		(name: string, test: Callback): void;
@@ -8,15 +7,15 @@ declare namespace uvu {
 		skip(name?: string, test?: Callback): void;
 		before(hook: Callback): void;
 		after(hook: Callback): void;
-		run(): Promise<Result>;
+		run(): VoidFunction;
 	}
 }
 
 declare module 'uvu' {
 	export const test: uvu.Test;
-	export type Result = uvu.Result;
 	export type Callback = uvu.Callback;
 	export function suite(title?: string): uvu.Test;
+	export function exec(bail?: boolean): Promise<void>;
 }
 
 declare module 'uvu/assert' {

@@ -1,15 +1,27 @@
 import kleur from 'kleur';
 import { compare } from '../diff';
 
+let isCLI = false, isNode = false;
+let write = x => process.stdout.write(x); // TODO(browser)
+let hrtime = (now = Date.now()) => () => (Date.now() - now).toFixed(2) + 'ms';
+
 const into = (ctx, key) => (name, handler) => ctx[key].push({ name, handler });
 const context = () => ({ tests:[], before:[], after:[], only:[] });
+const milli = arr => (arr[0]*1e3 + arr[1]/1e6).toFixed(2) + 'ms';
 const hook = (ctx, key) => handler => ctx[key].push(handler);
-const write = x => process.stdout.write(x);
+
+if (isNode = typeof process !== 'undefined') {
+	let rgx = /uvu[\\+\/]bin\.js/i;
+	isCLI = process.argv.some(x => rgx.test(x));
+	// attach node-specific utils
+	hrtime = (now = process.hrtime()) => () => milli(process.hrtime(now));
+}
 
 const QUOTE = kleur.dim('"'), GUTTER = '\n        ';
 const FAIL = kleur.red('✘ '), PASS = kleur.gray('• ');
 const IGNORE = /^\s*at.*(?:\(|\s)(?:node|(internal\/[\w/]*))/;
 const FAILURE = kleur.bold().bgRed(' FAIL ');
+const FILE = kleur.bold().underline().white;
 const SUITE = kleur.bgWhite().bold;
 
 function stack(stack, idx) {
@@ -36,7 +48,6 @@ function format(name, err, suite = '') {
 }
 
 // TODO: before|afterEach
-// TODO: nested suite group(s)
 async function runner(ctx, name) {
 	let { only, tests, before, after } = ctx;
 	let arr = only.length ? only : tests;
@@ -71,22 +82,47 @@ function setup(ctx, name = '') {
 	test.only = into(ctx, 'only');
 	test.skip = () => {};
 	test.run = () => {
-		if (global.UVU_DEFER) {
-			let copy = { ...ctx };
-			Object.assign(ctx, context());
-			let run = runner.bind(0, copy, name);
-			QUEUE[global.UVU_INDEX].push(run);
-		} else {
-			return runner(ctx, name).then(([errs, ran, total]) => {
-				if (errs.length) write('\n' + errs);
-				if (typeof process !== 'undefined') process.exit(+!!errs.length);
-				return [errs, ran, total];
-			});
-		}
+		let copy = { ...ctx };
+		Object.assign(ctx, context());
+		let run = runner.bind(0, copy, name);
+		QUEUE[global.UVU_INDEX || 0].push(run);
 	};
 	return test;
 }
 
 export const QUEUE = [];
+isCLI || QUEUE.push([null]);
+
 export const suite = (name = '') => setup(context(), name);
 export const test = suite();
+
+export async function exec(bail) {
+	let timer = hrtime();
+	let done=0, total=0, code=0;
+
+	for (let group of QUEUE) {
+		if (total) write('\n');
+
+		let name = group.shift();
+		if (name != null) write(FILE(name) + '\n');
+
+		for (let test of group) {
+			let [errs, ran, max] = await test();
+			total += max; done += ran;
+			if (errs.length) {
+				write('\n' + errs + '\n'); code=1;
+				if (bail) return isNode && process.exit(1);
+			}
+		}
+	}
+
+	write('\n  Total:     ' + total);
+	let color = code ? kleur.red : kleur.green;
+	write(color('\n  Passed:    ' + done));
+	write('\n  Skipped:   ' + '0'); // TODO
+	write('\n  Duration:  ' + timer() + '\n\n');
+
+	if (isCLI) process.exit(code);
+}
+
+isCLI || Promise.resolve().then(exec);
