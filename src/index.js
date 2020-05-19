@@ -9,6 +9,8 @@ const write = x => process.stdout.write(x);
 const QUOTE = kleur.dim('"'), GUTTER = '\n        ';
 const FAIL = kleur.red('✘ '), PASS = kleur.gray('• ');
 const IGNORE = /^\s*at.*(?:\(|\s)(?:node|(internal\/[\w/]*))/;
+const FAILURE = kleur.bold().bgRed(' FAIL ');
+const SUITE = kleur.bgWhite().bold;
 
 function stack(stack, idx) {
 	let i=0, line, out='';
@@ -22,11 +24,11 @@ function stack(stack, idx) {
 	return kleur.grey(out) + '\n';
 }
 
-function format(name, err) {
+function format(name, err, suite = '') {
 	let details = err.details;
 	let idx = err.stack && err.stack.indexOf('\n');
 	if (err.name.startsWith('AssertionError') && !err.operator.includes('not')) details = compare(err.actual, err.expected); // TODO?
-	let str = '  ' + kleur.bold().bgRed(' FAIL ') + ' ' + QUOTE + kleur.red().bold(name) + QUOTE;
+	let str = '  ' + FAILURE + (suite ? kleur.red(SUITE(` ${suite} `)) : '') + ' ' + QUOTE + kleur.red().bold(name) + QUOTE;
 	str += '\n    ' + err.message + kleur.italic().dim(`  (${err.operator})`) + '\n';
 	if (details) str += GUTTER + details.split('\n').join(GUTTER);
 	if (!!~idx) str += stack(err.stack, idx);
@@ -41,7 +43,7 @@ async function runner(ctx, name) {
 	let num=0, total=arr.length;
 	let test, hook, errors='';
 	try {
-		// console.log('(runner) name:', name);
+		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
 		for (hook of before) await hook();
 		for (test of arr) {
 			try {
@@ -50,7 +52,7 @@ async function runner(ctx, name) {
 				num++;
 			} catch (err) {
 				if (errors.length) errors += '\n';
-				errors += format(test.name, err);
+				errors += format(test.name, err, name);
 				write(FAIL);
 			}
 		}
