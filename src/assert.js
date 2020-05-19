@@ -33,6 +33,7 @@ export class Assertion extends Error {
 		Error.captureStackTrace(this, this.constructor);
 		let { operator, expects, actual } = opts;
 		this.details = operator.includes('not') ? false
+			: operator === 'fixture' ? lines(actual, expects, 1)
 			: operator === 'snapshot' ? lines(actual, expects)
 			: operator === 'equal' ? compare(actual, expects)
 			: direct(actual, expects);
@@ -64,6 +65,10 @@ export function instance(val, exp, msg) {
 
 export function snapshot(val, exp, msg) {
 	is(val = dedent(val), exp = dedent(exp), msg || 'Expected input to match snapshot:', 'snapshot');
+}
+
+export function fixture(val, exp, msg) {
+	is(val = dedent(val), exp = dedent(exp), msg || 'Expected input to match fixture:', 'fixture');
 }
 
 export function throws(blk, exp, msg) {
@@ -109,6 +114,10 @@ not.instance = function (val, exp, msg) {
 
 not.snapshot = function (val, exp, msg) {
 	is.not(val = dedent(val), exp = dedent(exp), msg || 'Expected input not to match snapshot', 'not.snapshot');
+}
+
+not.fixture = function (val, exp, msg) {
+	is.not(val = dedent(val), exp = dedent(exp), msg || 'Expected input not to match fixture', 'not.fixture');
 }
 
 not.throws = function (blk, exp, msg) {
