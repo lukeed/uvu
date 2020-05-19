@@ -34,7 +34,7 @@ sade('uvu [dir] [pattern]')
 		else pattern = /((\/|^)(tests?|__tests?__)\/.*|\.(tests?|spec)|^\/?tests?)\.([mc]js|[jt]sx?)$/i;
 		dir = resolve(opts.cwd, dir || '.');
 
-		let ignores = [].concat(opts.ignore || []).map(toRegex);
+		let ignores = ['node_modules'].concat(opts.ignore || []).map(toRegex);
 
 		[].concat(opts.require || []).filter(Boolean).forEach((name, tmp) => {
 			if (tmp = exists(name)) return require(tmp);
