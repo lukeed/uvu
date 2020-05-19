@@ -72,7 +72,7 @@ sade('uvu [dir] [pattern]')
 			}
 		}
 
-		write('  Total:     ' + total);
+		write('\n  Total:     ' + total);
 		let color = code ? kleur.red : kleur.green;
 		write(color('  Passed:    ' + done));
 		write('  Skipped:   ' + '0'); // TODO
