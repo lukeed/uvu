@@ -11,7 +11,7 @@ const milli = arr => (arr[0]*1e3 + arr[1]/1e6).toFixed(2) + 'ms';
 const hook = (ctx, key) => handler => ctx[key].push(handler);
 
 if (isNode = typeof process !== 'undefined') {
-	let rgx = /uvu[\\+\/]bin\.js/i;
+	let rgx = /(\.bin[\\+\/]uvu$|uvu[\\+\/]bin\.js)/i;
 	isCLI = process.argv.some(x => rgx.test(x));
 	// attach node-specific utils
 	hrtime = (now = process.hrtime()) => () => milli(process.hrtime(now));
