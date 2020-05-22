@@ -18,57 +18,57 @@ function dedent(str) {
 	return (!arr || !min) ? str : str.replace(new RegExp(`^[ \\t]{${min}}`, 'gm'), '');
 }
 
-function asserts(actual, expects, operator, msg, backup) {
-	if (msg instanceof Error) return msg;
-	return new Assertion({ message: msg || backup, generated: !msg, operator, expects, actual });
-}
-
-// TODO: more explicit `details` operator
 export class Assertion extends Error {
 	constructor(opts={}) {
 		super(opts.message);
 		this.name = 'Assertion';
 		this.code = 'ERR_ASSERTION';
-		this.generated = !!opts.generated;
 		Error.captureStackTrace(this, this.constructor);
-		let { operator, expects, actual } = opts;
-		this.details = operator.includes('not') ? false
-			: operator === 'fixture' ? lines(actual, expects, 1)
-			: operator === 'snapshot' ? lines(actual, expects)
-			: operator === 'equal' ? compare(actual, expects)
-			: direct(actual, expects);
-		this.operator = operator;
-		this.expects = expects;
-		this.actual = actual;
+		this.details = opts.details || false;
+		this.generated = !!opts.generated;
+		this.operator = opts.operator;
+		this.expects = opts.expects;
+		this.actual = opts.actual;
 	}
 }
 
-export function ok(val, msg, oper = 'ok') {
-	if (!val) throw asserts(false, true, oper, msg, print`Expected ${val} to be truthy`);
+function assert(bool, actual, expects, operator, detailer, backup, msg) {
+	if (bool) return;
+	let message = msg || backup;
+	if (msg instanceof Error) throw msg;
+	let details = detailer && detailer(actual, expects);
+	throw new Assertion({ actual, expects, operator, message, details, generated: !!msg });
 }
 
-export function is(val, exp, msg, oper = 'is') {
-	ok(val === exp, asserts(val, exp, oper, msg, 'Expected values to be strictly equal:'));
+export function ok(val, msg) {
+	assert(!!val, false, true, 'ok', false, print`Expected ${val} to be truthy`, msg);
+}
+
+export function is(val, exp, msg) {
+	assert(val === exp, val, exp, 'is', direct, 'Expected values to be strictly equal:', msg);
 }
 
 export function equal(val, exp, msg) {
-	ok(dequal(val, exp), asserts(val, exp, 'equal', msg, 'Expected values to be deeply equal:'));
+	assert(dequal(val, exp), val, exp, 'equal', compare, 'Expected values to be deeply equal:', msg);
 }
 
 export function type(val, exp, msg) {
-	is(typeof val, exp, msg || print`Expected typeof(${val}) to be ${exp}`, 'type');
+	assert(typeof val === exp, typeof val, exp, 'type', false, print`Expected typeof(${val}) to be ${exp}`, msg);
 }
 
 export function instance(val, exp, msg) {
-	ok(val instanceof exp, msg || print`Expected ${val} to be an instance of ${exp}`, 'instance');
+	assert(val instanceof exp, val, exp, 'instance', false, print`Expected ${val} to be an instance of ${exp}`, msg);
 }
 
 export function snapshot(val, exp, msg) {
-	is(val = dedent(val), exp = dedent(exp), msg || 'Expected input to match snapshot:', 'snapshot');
+	val=dedent(val); exp=dedent(exp);
+	assert(val === exp, val, exp, 'snapshot', lines, 'Expected input to match snapshot:', msg);
 }
 
+const lineNums = (x, y) => lines(x, y, 1);
 export function fixture(val, exp, msg) {
-	is(val = dedent(val), exp = dedent(exp), msg || 'Expected input to match fixture:', 'fixture');
+	val=dedent(val); exp=dedent(exp);
+	assert(val === exp, val, exp, 'fixture', lineNums, 'Expected input to match fixture:', msg);
 }
 
 export function throws(blk, exp, msg) {
@@ -78,12 +78,14 @@ export function throws(blk, exp, msg) {
 
 	try {
 		blk();
-		return ok(false, msg || 'Expected function to throw', 'throws');
+		assert(false, false, true, 'throws', direct, 'Expected function to throw', msg);
 	} catch (err) {
+		if (err instanceof Assertion) throw err;
+
 		if (typeof exp === 'function') {
-			return ok(exp(err), msg || 'Expected function to throw matching exception', 'throws');
+			assert(exp(err), false, true, 'throws', false, 'Expected function to throw matching exception', msg);
 		} else if (exp instanceof RegExp) {
-			return ok(exp.test(err.message), msg || print`Expected function to throw exception matching ${exp}`, 'throws');
+			assert(exp.test(err.message), false, true, 'throws', false, print`Expected function to throw exception matching ${exp}`, msg);
 		}
 	}
 }
@@ -91,33 +93,35 @@ export function throws(blk, exp, msg) {
 // ---
 
 export function not(val, msg, oper = 'not') {
-	if (val) throw asserts(true, false, oper, msg, print`Expected ${val} to be falsey`);
+	assert(!val, true, false, 'not', false, print`Expected ${val} to be falsey`, msg);
 }
 
 not.ok = not;
 
-is.not = function (val, exp, msg, oper = 'is.not') {
-	ok(val !== exp, asserts(val, exp, oper, msg, 'Expected values not to be strictly equal:'));
+is.not = function (val, exp, msg) {
+	assert(val !== exp, val, exp, 'is.not', false, 'Expected values not to be strictly equal', msg);
 }
 
 not.equal = function (val, exp, msg) {
-	not(dequal(val, exp), msg || print`Expected values not to be deeply equal:`, 'not.equal');
+	assert(!dequal(val, exp), val, exp, 'not.equal', false, 'Expected values not to be deeply equal', msg);
 }
 
 not.type = function (val, exp, msg) {
-	is.not(typeof val, exp, msg || print`Expected typeof(${val}) not to be ${exp}`, 'not.type');
+	assert(typeof val !== exp, typeof val, exp, 'not.type', false, print`Expected typeof(${val}) not to be ${exp}`, msg);
 }
 
 not.instance = function (val, exp, msg) {
-	not(val instanceof exp, msg || print`Expected ${val} not to be an instance of ${exp}`, 'not.instance');
+	assert(!(val instanceof exp), val, exp, 'not.instance', false, print`Expected ${val} not to be an instance of ${exp}`, msg);
 }
 
 not.snapshot = function (val, exp, msg) {
-	is.not(val = dedent(val), exp = dedent(exp), msg || 'Expected input not to match snapshot', 'not.snapshot');
+	val=dedent(val); exp=dedent(exp);
+	assert(val !== exp, val, exp, 'not.snapshot', false, 'Expected input not to match snapshot', msg);
 }
 
 not.fixture = function (val, exp, msg) {
-	is.not(val = dedent(val), exp = dedent(exp), msg || 'Expected input not to match fixture', 'not.fixture');
+	val=dedent(val); exp=dedent(exp);
+	assert(val !== exp, val, exp, 'not.fixture', false, 'Expected input not to match fixture', msg);
 }
 
 not.throws = function (blk, exp, msg) {
@@ -129,11 +133,11 @@ not.throws = function (blk, exp, msg) {
 		blk();
 	} catch (err) {
 		if (typeof exp === 'function') {
-			return not(exp(err), msg || print`Expected function not to throw matching exception`, 'not.throws');
+			assert(!exp(err), true, false, 'not.throws', false, 'Expected function not to throw matching exception', msg);
 		} else if (exp instanceof RegExp) {
-			return not(exp.test(err.message), msg || print`Expected function not to throw exception matching ${exp}`, 'not.throws');
+			assert(!exp.test(err.message), true, false, 'not.throws', false, print`Expected function not to throw exception matching ${exp}`, msg);
 		} else if (!exp) {
-			return not(true, msg || print`Expected function not to throw`, 'not.throws');
+			assert(false, true, false, 'not.throws', false, 'Expected function not to throw', msg);
 		}
 	}
 }
