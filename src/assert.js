@@ -48,7 +48,7 @@ export function ok(val, msg, oper = 'ok') {
 }
 
 export function is(val, exp, msg, oper = 'is') {
-	ok(val === exp, asserts(val, exp, oper, msg, print`Expected ${val} to be ${exp}`));
+	ok(val === exp, asserts(val, exp, oper, msg, 'Expected values to be strictly equal:'));
 }
 
 export function equal(val, exp, msg) {
@@ -97,11 +97,11 @@ export function not(val, msg, oper = 'not') {
 not.ok = not;
 
 is.not = function (val, exp, msg, oper = 'is.not') {
-	ok(val !== exp, asserts(val, exp, oper, msg, print`Expected ${val} not to be ${exp}`));
+	ok(val !== exp, asserts(val, exp, oper, msg, 'Expected values not to be strictly equal:'));
 }
 
 not.equal = function (val, exp, msg) {
-	not(dequal(val, exp), msg || print`Expected ${val} not to deeply equal ${exp}`, 'not.equal');
+	not(dequal(val, exp), msg || print`Expected values not to be deeply equal:`, 'not.equal');
 }
 
 not.type = function (val, exp, msg) {
