@@ -19,11 +19,13 @@ declare module 'uvu' {
 }
 
 declare module 'uvu/assert' {
+	type Types = 'string' | 'number' | 'boolean' | 'object' | 'undefined' | 'function';
+
 	export type Message = string | Error;
-	export function ok(actual: any, msg?: Message, operation?: string): void;
-	export function is(actual: any, expects: any, msg?: Message, operation?: string): void;
+	export function ok(actual: any, msg?: Message): void;
+	export function is(actual: any, expects: any, msg?: Message): void;
 	export function equal(actual: any, expects: any, msg?: Message): void;
-	export function type(actual: any, expects: any, msg?: Message): void;
+	export function type(actual: any, expects: Types, msg?: Message): void;
 	export function instance(actual: any, expects: any, msg?: Message): void;
 	export function snapshot(actual: any, expects: any, msg?: Message): void;
 	export function fixture(actual: any, expects: any, msg?: Message): void;
@@ -31,13 +33,13 @@ declare module 'uvu/assert' {
 	export function not(actual: any, msg?: Message): void;
 
 	export namespace is {
-		declare function not(actual: any, expects: any, msg?: Message, operation?: string): void;
+		declare function not(actual: any, expects: any, msg?: Message): void;
 	}
 
 	export namespace not {
-		declare function ok(actual: any, msg?: Message, operation?: string): void;
+		declare function ok(actual: any, msg?: Message): void;
 		declare function equal(actual: any, expects: any, msg?: Message): void;
-		declare function type(actual: any, expects: any, msg?: Message): void;
+		declare function type(actual: any, expects: Types, msg?: Message): void;
 		declare function instance(actual: any, expects: any, msg?: Message): void;
 		declare function snapshot(actual: any, expects: any, msg?: Message): void;
 		declare function fixture(actual: any, expects: any, msg?: Message): void;
