@@ -15,7 +15,7 @@ const PRINT = (sym, str, len) => colors[sym](sym + str + ' '.repeat(4 + len) + T
 
 function line(obj, prev) {
 	let char = obj.removed ? '--' : obj.added ? '++' : '··';
-	let i=0, tmp, arr = obj.value.replace(/\n$/, '').split('\n');
+	let i=0, tmp, arr = obj.value.replace(/\r?\n$/, '').split('\n');
 	let out='', fmt = colors[char];
 
 	if (obj.added) out += fmt().underline(TITLE('Expected:')) + '\n';
@@ -104,7 +104,7 @@ export function compare(input, expect) {
 		expect = JSON.stringify(expect, null, 2);
 	}
 
-	if (String(expect).includes('\n')) {
+	if (/\r?\n/.test(String(expect))) {
 		return lines(input, expect);
 	}
 
