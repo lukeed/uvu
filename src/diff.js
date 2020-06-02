@@ -8,12 +8,12 @@ const colors = {
 };
 
 const TITLE = kleur.dim().italic;
-const LINE = num => kleur.dim('L' + num + ' ');
 const TAB=kleur.dim('→'), SPACE=kleur.dim('·'), NL=kleur.dim('↵');
+const LINE = (num, x) => kleur.dim('L' + String(num).padStart(x, '0') + ' ');
 const PRETTY = str => str.replace(/[ ]/g, SPACE).replace(/\t/g, TAB).replace(/(\r?\n)/g, NL);
 const PRINT = (sym, str, len) => colors[sym](sym + str + ' '.repeat(4 + len) + TITLE(sym == '++' ? '(Expected)\n' : '(Actual)\n'));
 
-function line(obj, prev) {
+function line(obj, prev, pad) {
 	let char = obj.removed ? '--' : obj.added ? '++' : '··';
 	let i=0, tmp, arr = obj.value.replace(/\r?\n$/, '').split('\n');
 	let out='', fmt = colors[char];
@@ -24,7 +24,7 @@ function line(obj, prev) {
 	for (; i < arr.length; i++) {
 		tmp = arr[i];
 		if (tmp != null) {
-			if (prev) out += LINE(prev + i);
+			if (prev) out += LINE(prev + i, pad);
 			out += fmt(char + PRETTY(tmp || '\n')) + '\n';
 		}
 	}
@@ -40,9 +40,10 @@ export function arrays(input, expect) {
 export function lines(input, expect, linenum = 0) {
 	let i=0, tmp, output='';
 	let arr = diff.diffLines(input, expect);
+	let pad = String(expect.split(/\r?\n/g).length - linenum).length;
 
 	for (; i < arr.length; i++) {
-		output += line(tmp = arr[i], linenum);
+		output += line(tmp = arr[i], linenum, pad);
 		if (linenum && !tmp.removed) linenum += tmp.count;
 	}
 
