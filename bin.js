@@ -43,9 +43,9 @@ sade('uvu [dir] [pattern]')
 
 		suites.sort((a, b) => a.name.localeCompare(b.name));
 
-		global.UVU_DEFER = 1;
+		globalThis.UVU_DEFER = 1;
 		suites.forEach((x, idx) => {
-			global.UVU_INDEX = idx;
+			globalThis.UVU_INDEX = idx;
 			QUEUE.push([x.name]);
 			require(x.file); // auto-add to queue
 		});

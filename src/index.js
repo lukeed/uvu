@@ -85,7 +85,7 @@ function setup(ctx, name = '') {
 		let copy = { ...ctx };
 		Object.assign(ctx, context());
 		let run = runner.bind(0, copy, name);
-		QUEUE[global.UVU_INDEX || 0].push(run);
+		QUEUE[globalThis.UVU_INDEX || 0].push(run);
 	};
 	return test;
 }
