@@ -1,5 +1,5 @@
 import kleur from 'kleur';
-import { compare } from '../diff';
+import { compare } from 'uvu/diff';
 
 let isCLI = false, isNode = false;
 let write = x => process.stdout.write(x); // TODO(browser)
