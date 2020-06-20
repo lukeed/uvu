@@ -1,5 +1,5 @@
-import diff from 'diff';
 import kleur from 'kleur';
+import * as diff from 'diff';
 
 const colors = {
 	'--': kleur.red,
@@ -52,13 +52,15 @@ export function lines(input, expect, linenum = 0) {
 
 export function chars(input, expect) {
 	let arr = diff.diffChars(input, expect);
-	let i=0, output='', tmp = arr[i];
+	let i=0, output='', tmp;
 
 	let l1 = input.length;
 	let l2 = expect.length;
 
 	let p1 = PRETTY(input);
 	let p2 = PRETTY(expect);
+
+	tmp = arr[i];
 
 	// TODO: debug this
 	if (tmp.removed) {
