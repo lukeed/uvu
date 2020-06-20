@@ -44,6 +44,6 @@
     "totalist": "^1.0.1"
   },
   "devDependencies": {
-    "bundt": "1.0.0"
+    "bundt": "1.0.1"
   }
 }
