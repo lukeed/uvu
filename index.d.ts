@@ -31,6 +31,7 @@ declare module 'uvu/assert' {
 	export function fixture(actual: any, expects: any, msg?: Message): void;
 	export function throws(blk: Function, expects?: Message | RegExp | Function, msg?: Message): void;
 	export function not(actual: any, msg?: Message): void;
+	export function unreachable(msg?: Message): void;
 
 	export namespace is {
 		declare function not(actual: any, expects: any, msg?: Message): void;

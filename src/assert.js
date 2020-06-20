@@ -41,6 +41,10 @@ export function equal(val, exp, msg) {
 	assert(dequal(val, exp), val, exp, 'equal', compare, 'Expected values to be deeply equal:', msg);
 }
 
+export function unreachable(msg) {
+	assert(false, true, false, 'unreachable', false, 'Expected not to be reached!', msg);
+}
+
 export function type(val, exp, msg) {
 	let tmp = typeof val;
 	assert(tmp === exp, tmp, exp, 'type', false, `Expected "${tmp}" to be "${exp}"`, msg);
