@@ -84,7 +84,7 @@ export function throws(blk, exp, msg) {
 
 // ---
 
-export function not(val, msg, oper = 'not') {
+export function not(val, msg) {
 	assert(!val, true, false, 'not', false, 'Expected value to be falsey', msg);
 }
 
