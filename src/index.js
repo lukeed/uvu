@@ -11,6 +11,13 @@ const milli = arr => (arr[0]*1e3 + arr[1]/1e6).toFixed(2) + 'ms';
 const hook = (ctx, key) => handler => ctx[key].push(handler);
 
 if (isNode = typeof process !== 'undefined') {
+	// globalThis polyfill; Node < 12
+	if (typeof globalThis !== 'object') {
+		Object.defineProperty(global, 'globalThis', {
+			get: function () { return this }
+		});
+	}
+
 	let rgx = /(\.bin[\\+\/]uvu$|uvu[\\+\/]bin\.js)/i;
 	isCLI = process.argv.some(x => rgx.test(x));
 	// attach node-specific utils
