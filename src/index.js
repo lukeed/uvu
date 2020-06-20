@@ -2,8 +2,8 @@ import kleur from 'kleur';
 import { compare } from 'uvu/diff';
 
 let isCLI = false, isNode = false;
-let write = x => process.stdout.write(x); // TODO(browser)
 let hrtime = (now = Date.now()) => () => (Date.now() - now).toFixed(2) + 'ms';
+let write = console.log;
 
 const into = (ctx, key) => (name, handler) => ctx[key].push({ name, handler });
 const context = () => ({ tests:[], before:[], after:[], only:[] });
@@ -20,7 +20,9 @@ if (isNode = typeof process !== 'undefined') {
 
 	let rgx = /(\.bin[\\+\/]uvu$|uvu[\\+\/]bin\.js)/i;
 	isCLI = process.argv.some(x => rgx.test(x));
+
 	// attach node-specific utils
+	write = x => process.stdout.write(x);
 	hrtime = (now = process.hrtime()) => () => milli(process.hrtime(now));
 }
 
