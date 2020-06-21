@@ -13,6 +13,7 @@ sade('uvu [dir] [pattern]')
 	.action(async (dir, pattern, opts) => {
 		let { suites } = await parse(dir, pattern, opts);
 
+		// TODO: mjs vs js file
 		globalThis.UVU_DEFER = 1;
 		suites.forEach((x, idx) => {
 			globalThis.UVU_INDEX = idx;
