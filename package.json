@@ -42,6 +42,9 @@
   "scripts": {
     "build": "bundt"
   },
+  "engines": {
+    "node": ">= 8"
+  },
   "dependencies": {
     "dequal": "^1.0.0",
     "diff": "^4.0.2",
