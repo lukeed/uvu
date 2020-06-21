@@ -131,7 +131,7 @@ export async function exec(bail) {
 	write('\n  Skipped:   ' + '0'); // TODO
 	write('\n  Duration:  ' + timer() + '\n\n');
 
-	process.exit(code);
+	if (isNode) process.exit(code);
 }
 
 isCLI || Promise.resolve().then(exec);
