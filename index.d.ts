@@ -1,5 +1,8 @@
+type Arrayable<T> = T[] | T;
+type Promisable<T> = Promise<T> | T;
+
 declare namespace uvu {
-	type Callback = () => any | Promise<any>;
+	type Callback = () => Promisable<any>;
 
 	interface Test {
 		(name: string, test: Callback): void;
@@ -64,4 +67,27 @@ declare module 'uvu/diff' {
 	export function direct(input: any, expects: any, lenA?: number, lenB?: number): string;
 	export function compare(input: any, expects: any): string;
 	export function arrays(input: any, expects: any): string;
+}
+
+declare module 'uvu/parse' {
+	export interface Suite {
+		/** The relative file path */
+		name: string;
+		/** The absolute file path */
+		file: string;
+	}
+
+	export interface Options {
+		cwd: string;
+		require: Arrayable<string>;
+		ignore: Arrayable<string | RegExp>;
+	}
+
+	export interface Argv {
+		dir: string;
+		suites: Suite[];
+	}
+
+	function parse(dir: string, pattern: string, opts?: Partial<Options>): Promise<Argv>;
+	export = parse;
 }
