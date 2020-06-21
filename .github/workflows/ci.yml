@@ -4,11 +4,12 @@ on: [push, pull_request]
 
 jobs:
   test:
-    name: Node.js v${{ matrix.nodejs }}
+    name: Node.js v${{ matrix.nodejs }} (${{ matrix.os }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        nodejs: [6, 8, 10, 12]
+        nodejs: [8, 10, 12, 14]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
@@ -24,7 +25,7 @@ jobs:
       run: nyc --include=src npm test
 
     - name: Report
-      if: matrix.nodejs >= 12
+      if: matrix.nodejs >= 14 && matrix.os == 'ubuntu-latest'
       run: |
         nyc report --reporter=text-lcov > coverage.lcov
         bash <(curl -s https://codecov.io/bash)
