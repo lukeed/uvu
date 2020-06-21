@@ -19,17 +19,23 @@
     "./diff": {
       "require": "./diff/index.js",
       "import": "./diff/index.mjs"
+    },
+    "./parse": {
+      "require": "./parse/index.js",
+      "import": "./parse/index.mjs"
     }
   },
   "files": [
     "*.js",
     "*.d.ts",
     "assert",
+    "parse",
     "diff",
     "dist"
   ],
   "modes": {
     "diff": "src/diff.js",
+    "parse": "src/parse.js",
     "assert": "src/assert.js",
     "default": "src/index.js"
   },

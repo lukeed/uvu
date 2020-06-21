@@ -6,4 +6,5 @@ node_modules
 
 /dist
 /assert
+/parse
 /diff
