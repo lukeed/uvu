@@ -482,7 +482,7 @@ compare('should proxy `$.lines` for multi-line String inputs', () => {
 
 compare('should proxy `$.chars` for single-line String inputs', () => {
 	assert.is(
-		strip($.chars('foobar', 'foobaz')),
+		strip($.compare('foobar', 'foobaz')),
 		'++foobaz    (Expected)\n' +
 		'--foobar    (Actual)\n' +
 		'       ^'
@@ -491,7 +491,7 @@ compare('should proxy `$.chars` for single-line String inputs', () => {
 
 compare('should proxy `$.direct` for Number inputs', () => {
 	assert.snapshot(
-		strip($.direct(123, 12345)),
+		strip($.compare(123, 12345)),
 		'++12345    (Expected)\n' +
 		'--123      (Actual)\n'
 	);
@@ -499,7 +499,7 @@ compare('should proxy `$.direct` for Number inputs', () => {
 
 compare('should proxy `$.direct` for Boolean inputs', () => {
 	assert.snapshot(
-		strip($.direct(true, false)),
+		strip($.compare(true, false)),
 		'++false    (Expected)\n' +
 		'--true     (Actual)\n'
 	);
