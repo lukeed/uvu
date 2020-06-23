@@ -84,7 +84,9 @@ export function chars(input, expect) {
 	tmp = arr[i];
 
 	// TODO: debug this
-	if (tmp.removed) {
+	if (l1 === l2) {
+		// no length offsets
+	} else if (tmp.removed) {
 		p2 = ' '.repeat(tmp.count) + p2;
 		l2 += tmp.count;
 	} else if (tmp.added) {
@@ -92,7 +94,6 @@ export function chars(input, expect) {
 		l1 += tmp.count;
 	}
 
-	let l3 = Math.max(l1, l2);
 	output += direct(p1, p2, l1, l2);
 
 	if (l1 === l2) {
@@ -108,7 +109,6 @@ export function chars(input, expect) {
 				arr[i + 1].count -= arr[i].count;
 			}
 		}
-		while (i++ < l3) tmp += ' ';
 	}
 
 	return output + kleur.red(tmp);
