@@ -24,7 +24,6 @@ arrays('should handle simple values', () => {
 	);
 });
 
-
 arrays('should allow dangling "Actual" block', () => {
 	assert.is(
 		strip($.arrays([1, 2, 3, 4], [1, 2, 4])),
@@ -414,6 +413,96 @@ const compare = suite('compare');
 
 compare('should be a function', () => {
 	assert.type($.compare, 'function');
+});
+
+compare('should proxy `$.arrays` for Array inputs', () => {
+	assert.is(
+		strip($.compare([1, 2, 3], [1, 2, 4])),
+		'··[\n' +
+		'····1,\n' +
+		'····2,\n' +
+		'Actual:\n' +
+		'--··3,\n' +
+		'Expected:\n' +
+		'++··4,\n' +
+		'··]\n'
+	);
+});
+
+compare('should proxy `$.chars` for RegExp inputs', () => {
+	assert.is(
+		strip($.compare(/foo/g, /foobar/gi)),
+		'++/foobar/gi    (Expected)\n' +
+		'--/foo/g        (Actual)\n' +
+		'      ^^^  ^'
+	);
+
+	assert.is(
+		strip($.compare(/foobar/gi, /foo/g)),
+		'++/foo/g        (Expected)\n' +
+		'--/foobar/gi    (Actual)\n' +
+		'      ^^^  ^'
+	);
+});
+
+compare('should proxy `$.lines` for Object inputs', () => {
+	assert.is(
+		strip($.compare({ foo: 1 }, { foo: 2, bar: 3 })),
+		'··{\n' +
+		'Actual:\n' +
+		'--··"foo":·1\n' +
+		'Expected:\n' +
+		'++··"foo":·2,\n' +
+		'++··"bar":·3\n' +
+		'··}\n'
+	);
+
+	assert.is(
+		strip($.compare({ foo: 2, bar: 3 }, { foo: 1 })),
+		'··{\n' +
+		'Actual:\n' +
+		'--··"foo":·2,\n' +
+		'--··"bar":·3\n' +
+		'Expected:\n' +
+		'++··"foo":·1\n' +
+		'··}\n'
+	);
+});
+
+compare('should proxy `$.lines` for multi-line String inputs', () => {
+	assert.is(
+		strip($.compare('foo\nbar', 'foo\nbat')),
+		'··foo\n' +
+		'Actual:\n' +
+		'--bar\n' +
+		'Expected:\n' +
+		'++bat\n'
+	);
+});
+
+compare('should proxy `$.chars` for single-line String inputs', () => {
+	assert.is(
+		strip($.chars('foobar', 'foobaz')),
+		'++foobaz    (Expected)\n' +
+		'--foobar    (Actual)\n' +
+		'       ^'
+	);
+});
+
+compare('should proxy `$.direct` for Number inputs', () => {
+	assert.snapshot(
+		strip($.direct(123, 12345)),
+		'++12345    (Expected)\n' +
+		'--123      (Actual)\n'
+	);
+});
+
+compare('should proxy `$.direct` for Boolean inputs', () => {
+	assert.snapshot(
+		strip($.direct(true, false)),
+		'++false    (Expected)\n' +
+		'--true     (Actual)\n'
+	);
 });
 
 compare.run();

@@ -4,10 +4,6 @@ import * as uvu from '../src/index';
 
 const QUEUE = suite('QUEUE');
 
-QUEUE('should pass', () => {
-	assert.ok(true);
-})
-
 QUEUE('should be an Array', () => {
 	assert.instance(uvu.QUEUE, Array);
 });
@@ -43,5 +39,3 @@ exec('should be a function', () => {
 });
 
 exec.run();
-
-// ---
