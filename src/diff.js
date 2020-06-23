@@ -90,9 +90,11 @@ export function chars(input, expect) {
 		if (del == 0) {
 			// wash~
 		} else if (del > 0) {
+			expect = ' '.repeat(del) + expect;
 			p2 = ' '.repeat(del) + p2;
 			l2 += del;
 		} else if (del < 0) {
+			input = ' '.repeat(-del) + input;
 			p1 = ' '.repeat(-del) + p1;
 			l1 += -del;
 		}
@@ -102,7 +104,7 @@ export function chars(input, expect) {
 
 	if (l1 === l2) {
 		for (tmp='  '; i < l1; i++) {
-			tmp += p1[i] === p2[i] ? ' ' : '^';
+			tmp += input[i] === expect[i] ? ' ' : '^';
 		}
 	} else {
 		for (tmp='  '; i < arr.length; i++) {
