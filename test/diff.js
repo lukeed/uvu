@@ -111,7 +111,6 @@ chars('should handle `"yellow"` vs `"hello"` diff', () => {
 		'  ^    ^'
 	);
 
-	console.log(JSON.stringify(strip($.chars('hello', 'yellow'))))
 	assert.is(
 		strip($.chars('hello', 'yellow')),
 		'++yellow    (Expected)\n' +
@@ -144,7 +143,6 @@ chars('should handle shared prefix', () => {
 });
 
 chars('should handle shared suffix', () => {
-	console.log(JSON.stringify(strip($.chars('123xyz', '00xyz'))))
 	assert.is(
 		strip($.chars('123xyz', '00xyz')),
 		'++ 00xyz    (Expected)\n' +
@@ -152,7 +150,6 @@ chars('should handle shared suffix', () => {
 		'  ^^^   '
 	);
 
-	console.log(JSON.stringify(strip($.chars('00xyz', '123xyz'))))
 	assert.is(
 		strip($.chars('00xyz', '123xyz')),
 		'++123xyz    (Expected)\n' +
@@ -160,7 +157,6 @@ chars('should handle shared suffix', () => {
 		'  ^^^   '
 	);
 
-	console.log(JSON.stringify(strip($.chars('000xyz', '123xyz'))))
 	assert.is(
 		strip($.chars('000xyz', '123xyz')),
 		'++123xyz    (Expected)\n' +
@@ -170,7 +166,6 @@ chars('should handle shared suffix', () => {
 });
 
 chars('should handle shared middle', () => {
-	console.log(JSON.stringify(strip($.chars('123xyz456', '789xyz000'))))
 	assert.is(
 		strip($.chars('123xyz456', '789xyz000')),
 		'++789xyz000    (Expected)\n' +
@@ -178,7 +173,6 @@ chars('should handle shared middle', () => {
 		'  ^^^   ^^^'
 	);
 
-	console.log(JSON.stringify(strip($.chars('123xyz45', '789xyz000'))))
 	assert.is(
 		strip($.chars('123xyz45', '789xyz000')),
 		'++789xyz000    (Expected)\n' +
