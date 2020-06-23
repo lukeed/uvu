@@ -181,6 +181,26 @@ lines('should track "expected" for line numbers', () => {
 	);
 });
 
+lines('should retain new lines ("↵") differences', () => {
+	assert.is(
+		strip($.lines('foo\nbaz', 'foo\n\n\nbaz')),
+		'··foo\n' +
+		'Expected:\n' +
+		'++↵\n' +
+		'++↵\n' +
+		'··baz\n'
+	);
+
+	assert.is(
+		strip($.lines('foo\nbaz', 'foo\n\n\nbaz', 1)),
+		'L1 ··foo\n' +
+		'Expected:\n' +
+		'L2 ++↵\n' +
+		'L3 ++↵\n' +
+		'L4 ··baz\n'
+	);
+});
+
 lines.run();
 
 // ---
@@ -346,6 +366,45 @@ chars('should handle shared middle', () => {
 		'++789xyz000    (Expected)\n' +
 		'-- 23xyz45     (Actual)\n' +
 		'  ^^^   ^^^'
+	);
+});
+
+chars('should print "·" character for space', () => {
+	assert.is(
+		strip($.chars('foo bar', 'foo bar baz')),
+		'++foo·bar·baz    (Expected)\n' +
+		'--foo·bar        (Actual)\n' +
+		'         ^^^^'
+	);
+
+	assert.is(
+		strip($.chars('foo   bar', 'foo bar')),
+		'++foo·bar      (Expected)\n' +
+		'--foo···bar    (Actual)\n' +
+		'      ^^   '
+	);
+});
+
+chars('should print "→" character for tab', () => {
+	assert.is(
+		strip($.chars('foo bar\tbaz \t', 'foo bar\tbaz \t\t bat')),
+		'++foo·bar→baz·→→·bat    (Expected)\n' +
+		'--foo·bar→baz·→         (Actual)\n' +
+		'               ^^^^^'
+	);
+
+	assert.is(
+		strip($.chars('foo bar\tbaz \t\t bat', 'foo bar\tbaz \t')),
+		'++foo·bar→baz·→         (Expected)\n' +
+		'--foo·bar→baz·→→·bat    (Actual)\n' +
+		'               ^^^^^'
+	);
+
+	assert.is(
+		strip($.chars('foo\tbar\tbaz', 'foo bar baz')),
+		'++foo·bar·baz    (Expected)\n' +
+		'--foo→bar→baz    (Actual)\n' +
+		'     ^   ^   '
 	);
 });
 
