@@ -28,7 +28,7 @@ function assert(bool, actual, expects, operator, detailer, backup, msg) {
 	let message = msg || backup;
 	if (msg instanceof Error) throw msg;
 	let details = detailer && detailer(actual, expects);
-	throw new Assertion({ actual, expects, operator, message, details, generated: !!msg });
+	throw new Assertion({ actual, expects, operator, message, details, generated: !msg });
 }
 
 export function ok(val, msg) {
