@@ -10,6 +10,72 @@ arrays('should be a function', () => {
 	assert.type($.arrays, 'function');
 });
 
+arrays('should handle simple values', () => {
+	assert.is(
+		strip($.arrays([1, 2, 3], [1, 2, 4])),
+		'··[\n' +
+		'····1,\n' +
+		'····2,\n' +
+		'Actual:\n' +
+		'--··3,\n' +
+		'Expected:\n' +
+		'++··4,\n' +
+		'··]\n'
+	);
+});
+
+
+arrays('should allow dangling "Actual" block', () => {
+	assert.is(
+		strip($.arrays([1, 2, 3, 4], [1, 2, 4])),
+		'··[\n' +
+		'····1,\n' +
+		'····2,\n' +
+		'Actual:\n' +
+		'--··3,\n' +
+		'····4,\n' +
+		'··]\n'
+	);
+});
+
+arrays('should allow dangling "Expected" block', () => {
+	assert.is(
+		strip($.arrays([1, 2, 4], [1, 2, 3, 4])),
+		'··[\n' +
+		'····1,\n' +
+		'····2,\n' +
+		'Expected:\n' +
+		'++··3,\n' +
+		'····4,\n' +
+		'··]\n'
+	);
+});
+
+// TODO: improve later
+arrays('should print/bail on complex objects', () => {
+	assert.is(
+		strip(
+			$.arrays(
+				[{ foo: 1 }, { bar: 2 }],
+				[{ foo: 1 }]
+			)
+		),
+		'··[\n' +
+		'Actual:\n' +
+		'--··{\n' +
+		'--····"foo":·1,\n' +
+		'--··}\n' +
+		'--··{\n' +
+		'--····"bar":·2,\n' +
+		'--··}\n' +
+		'Expected:\n' +
+		'++··{\n' +
+		'++····"foo":·1,\n' +
+		'++··}\n' +
+		'··]\n'
+	);
+});
+
 arrays.run();
 
 // ---
