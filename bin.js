@@ -3,6 +3,11 @@ const sade = require('sade');
 const parse = require('./parse');
 const pkg = require('./package');
 
+const hasImport = (() => {
+	try { new Function('import').call(0) }
+	catch (err) { return !/unexpected/i.test(err.message) }
+})();
+
 sade('uvu [dir] [pattern]')
 	.version(pkg.version)
 	.option('-b, --bail', 'Exit on first failure')
@@ -16,15 +21,11 @@ sade('uvu [dir] [pattern]')
 			let { suites } = await parse(dir, pattern, opts);
 			let { exec, QUEUE } = require('.');
 
-			// TODO: mjs vs js file
-			globalThis.UVU_DEFER = 1;
-			suites.forEach((x, idx) => {
-				globalThis.UVU_INDEX = idx;
-				QUEUE.push([x.name]);
-				require(x.file); // auto-add to queue
-			});
-
-			await exec(opts.bail);
+			if (hasImport) {
+				await import('uvu/run').then(m => m.default(suites, opts));
+			} else {
+				await require('uvu/run')(suites, opts);
+			}
 		} catch (err) {
 			console.error(err.stack || err.message);
 			process.exit(1);

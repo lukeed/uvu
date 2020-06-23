@@ -26,6 +26,10 @@
     "./parse": {
       "require": "./parse/index.js",
       "import": "./parse/index.mjs"
+    },
+    "./run": {
+      "require": "./run/index.js",
+      "import": "./run/index.mjs"
     }
   },
   "files": [
@@ -34,7 +38,8 @@
     "assert",
     "parse",
     "diff",
-    "dist"
+    "dist",
+    "run"
   ],
   "modes": {
     "diff": "src/diff.js",
