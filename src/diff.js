@@ -85,16 +85,16 @@ export function chars(input, expect) {
 
 	if (l1 === l2) {
 		// no length offsets
-	} else if (tmp.added || tmp.removed) {
+	} else if (tmp.removed) {
 		let del = tmp.count - arr[i + 1].count;
-		if (tmp.removed && del > 0) {
+		if (del == 0) {
+			// wash~
+		} else if (del > 0) {
 			p2 = ' '.repeat(del) + p2;
 			l2 += del;
-		} else if (tmp.removed && del < 0) {
+		} else if (del < 0) {
 			p1 = ' '.repeat(-del) + p1;
 			l1 += -del;
-		} else {
-			console.log('TODO: Open issue with arguments (input: "%s", expect: "%s")', input, expect);
 		}
 	}
 
