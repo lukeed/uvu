@@ -1,8 +1,9 @@
 {
   "name": "uvu",
   "version": "0.0.14",
-  "module": "dist/index.mjs",
+  "description": "WIP",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
   "types": "index.d.ts",
   "bin": {
     "uvu": "bin.js"

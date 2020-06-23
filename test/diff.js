@@ -103,23 +103,94 @@ chars('should handle `"help"` vs `"hello"` diff', () => {
 	);
 });
 
-// TODO: improve this
 chars('should handle `"yellow"` vs `"hello"` diff', () => {
 	assert.is(
 		strip($.chars('yellow', 'hello')),
-		'++ hello      (Expected)\n' +
-		'--yellow     (Actual)\n' +
-		'  ^^^ ^^'
+		'++hello     (Expected)\n' +
+		'--yellow    (Actual)\n' +
+		'  ^    ^'
 	);
-});
 
-chars('should handle `"hello"` vs `"yellow"` diff', () => {
 	console.log(JSON.stringify(strip($.chars('hello', 'yellow'))))
 	assert.is(
 		strip($.chars('hello', 'yellow')),
 		'++yellow    (Expected)\n' +
 		'--hello     (Actual)\n' +
 		'  ^    ^'
+	);
+});
+
+chars('should handle shared prefix', () => {
+	assert.is(
+		strip($.chars('abc123', 'abc1890')),
+		'++abc1890    (Expected)\n' +
+		'--abc123     (Actual)\n' +
+		'      ^^^'
+	);
+
+	assert.is(
+		strip($.chars('abc1890', 'abc123')),
+		'++abc123     (Expected)\n' +
+		'--abc1890    (Actual)\n' +
+		'      ^^^'
+	);
+
+	assert.is(
+		strip($.chars('abc1890', 'abc1234')),
+		'++abc1234    (Expected)\n' +
+		'--abc1890    (Actual)\n' +
+		'      ^^^'
+	);
+});
+
+chars('should handle shared suffix', () => {
+	console.log(JSON.stringify(strip($.chars('123xyz', '00xyz'))))
+	assert.is(
+		strip($.chars('123xyz', '00xyz')),
+		'++ 00xyz    (Expected)\n' +
+		'--123xyz    (Actual)\n' +
+		'  ^^^   '
+	);
+
+	console.log(JSON.stringify(strip($.chars('00xyz', '123xyz'))))
+	assert.is(
+		strip($.chars('00xyz', '123xyz')),
+		'++123xyz    (Expected)\n' +
+		'-- 00xyz    (Actual)\n' +
+		'  ^^^   '
+	);
+
+	console.log(JSON.stringify(strip($.chars('000xyz', '123xyz'))))
+	assert.is(
+		strip($.chars('000xyz', '123xyz')),
+		'++123xyz    (Expected)\n' +
+		'--000xyz    (Actual)\n' +
+		'  ^^^   '
+	);
+});
+
+chars('should handle shared middle', () => {
+	console.log(JSON.stringify(strip($.chars('123xyz456', '789xyz000'))))
+	assert.is(
+		strip($.chars('123xyz456', '789xyz000')),
+		'++789xyz000    (Expected)\n' +
+		'--123xyz456    (Actual)\n' +
+		'  ^^^   ^^^'
+	);
+
+	console.log(JSON.stringify(strip($.chars('123xyz45', '789xyz000'))))
+	assert.is(
+		strip($.chars('123xyz45', '789xyz000')),
+		'++789xyz000    (Expected)\n' +
+		'--123xyz45     (Actual)\n' +
+		'  ^^^   ^^^'
+	);
+
+	assert.is(
+		strip($.chars('23xyz45', '789xyz000')),
+		'++789xyz000    (Expected)\n' +
+		'-- 23xyz45     (Actual)\n' +
+		'  ^^^   ^^^'
 	);
 });
 

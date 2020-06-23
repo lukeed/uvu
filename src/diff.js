@@ -83,15 +83,19 @@ export function chars(input, expect) {
 
 	tmp = arr[i];
 
-	// TODO: debug this
 	if (l1 === l2) {
 		// no length offsets
-	} else if (tmp.removed) {
-		p2 = ' '.repeat(tmp.count) + p2;
-		l2 += tmp.count;
-	} else if (tmp.added) {
-		p1 = ' '.repeat(tmp.count) + p1;
-		l1 += tmp.count;
+	} else if (tmp.added || tmp.removed) {
+		let del = tmp.count - arr[i + 1].count;
+		if (tmp.removed && del > 0) {
+			p2 = ' '.repeat(del) + p2;
+			l2 += del;
+		} else if (tmp.removed && del < 0) {
+			p1 = ' '.repeat(-del) + p1;
+			l1 += -del;
+		} else {
+			console.log('TODO: Open issue with arguments (input: "%s", expect: "%s")', input, expect);
+		}
 	}
 
 	output += direct(p1, p2, l1, l2);
