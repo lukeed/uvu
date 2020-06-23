@@ -20,6 +20,102 @@ lines('should be a function', () => {
 	assert.type($.lines, 'function');
 });
 
+lines('should split on `\\r\\n` chars', () => {
+	assert.is(
+		strip($.lines('foo\nbar', 'foo\nbat')),
+		'··foo\n' +
+		'Actual:\n' +
+		'--bar\n' +
+		'Expected:\n' +
+		'++bat\n'
+	);
+
+	assert.is(
+		strip($.lines('foo\r\nbar', 'foo\r\nbat')),
+		'··foo\n' +
+		'Actual:\n' +
+		'--bar\n' +
+		'Expected:\n' +
+		'++bat\n'
+	);
+});
+
+lines('should allow for dangling "Actual" block', () => {
+	assert.is(
+		strip($.lines('foo\nbar\nbaz', 'foo\nbaz')),
+		'··foo\n' +
+		'Actual:\n' +
+		'--bar\n' +
+		'··baz\n'
+	);
+});
+
+lines('should allow for dangling "Expected" block', () => {
+	assert.is(
+		strip($.lines('foo\nbaz', 'foo\nbar\nbaz')),
+		'··foo\n' +
+		'Expected:\n' +
+		'++bar\n' +
+		'··baz\n'
+	);
+});
+
+lines('should accept line numbers', () => {
+	assert.is(
+		strip($.lines('foo\nbar', 'foo\nbat', 1)),
+		'L1 ··foo\n' +
+		'Actual:\n' +
+		'L2 --bar\n' +
+		'Expected:\n' +
+		'L2 ++bat\n'
+	);
+});
+
+lines('should handle line numbers with num-digits change', () => {
+	assert.is(
+		strip($.lines(
+			'1\n2\n3\n4\n5\n6\n7\n8a\n9a\n10a\n11\n12\n13',
+			'1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13', 1
+		)),
+		'L01 ··1\n' +
+		'L02 ··2\n' +
+		'L03 ··3\n' +
+		'L04 ··4\n' +
+		'L05 ··5\n' +
+		'L06 ··6\n' +
+		'L07 ··7\n' +
+		'Actual:\n' +
+		'L08 --8a\n' +
+		'L09 --9a\n' +
+		'L10 --10a\n' +
+		'Expected:\n' +
+		'L08 ++8\n' +
+		'L09 ++9\n' +
+		'L10 ++10\n' +
+		'L11 ··11\n' +
+		'L12 ··12\n' +
+		'L13 ··13\n'
+	);
+});
+
+lines('should track "expected" for line numbers', () => {
+	assert.is(
+		strip($.lines('foo\nbaz', 'foo\nbar\nbaz', 1)),
+		'L1 ··foo\n' +
+		'Expected:\n' +
+		'L2 ++bar\n' +
+		'L3 ··baz\n'
+	);
+
+	assert.is(
+		strip($.lines('foo\nbar\nbaz', 'foo\nbaz', 1)),
+		'L1 ··foo\n' +
+		'Actual:\n' +
+		'L2 --bar\n' +
+		'L2 ··baz\n'
+	);
+});
+
 lines.run();
 
 // ---
