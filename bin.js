@@ -10,6 +10,7 @@ sade('uvu [dir] [pattern]')
 	.option('-i, --ignore', 'Any file patterns to ignore')
 	.option('-r, --require', 'Additional module(s) to preload')
 	.option('-C, --cwd', 'The current directory to resolve from', '.')
+	.option('-c, --color', 'Print colorized output', true)
 	.action(async (dir, pattern, opts) => {
 		let { suites } = await parse(dir, pattern, opts);
 

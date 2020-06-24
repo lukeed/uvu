@@ -12,6 +12,8 @@ function exists(dep) {
 }
 
 export default async function (dir, pattern, opts = {}) {
+	if (opts.color) process.env.FORCE_COLOR = '1';
+
 	if (pattern) pattern = toRegex(pattern);
 	else if (dir) pattern = /(((?:[^\/]*(?:\/|$))*)[\\\/])?\w+\.([mc]js|[jt]sx?)$/;
 	else pattern = /((\/|^)(tests?|__tests?__)\/.*|\.(tests?|spec)|^\/?tests?)\.([mc]js|[jt]sx?)$/i;
