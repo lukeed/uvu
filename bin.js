@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const sade = require('sade');
 const parse = require('./parse');
-const { exec, QUEUE } = require('.');
 const pkg = require('./package');
 
 sade('uvu [dir] [pattern]')
@@ -12,7 +11,9 @@ sade('uvu [dir] [pattern]')
 	.option('-C, --cwd', 'The current directory to resolve from', '.')
 	.option('-c, --color', 'Print colorized output', true)
 	.action(async (dir, pattern, opts) => {
+		if (opts.color) process.env.FORCE_COLOR = '1';
 		let { suites } = await parse(dir, pattern, opts);
+		let { exec, QUEUE } = require('.');
 
 		// TODO: mjs vs js file
 		globalThis.UVU_DEFER = 1;
