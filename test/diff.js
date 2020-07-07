@@ -693,20 +693,30 @@ circular('should replace circular references with "[Circular]" :: Object', () =>
 		() => JSON.stringify(input),
 		'Converting circular structure to JSON'
 	);
+
+	assert.is(
+		JSON.stringify({ aaa: input, bbb: 123 }, $.circular()),
+		'{"aaa":{"a":1,"b":2,"self":"[Circular]"},"bbb":123}'
+	);
 });
 
 circular('should replace circular references with "[Circular]" :: Array', () => {
-	const input = [{}]
-	input[0].self = input;
+	const input = { a:1, b:2 };
+	input.self = input;
 
 	assert.is(
-		JSON.stringify(input, $.circular()),
-		'[{"self":"[Circular]"}]'
+		JSON.stringify([input], $.circular()),
+		'[{"a":1,"b":2,"self":"[Circular]"}]'
 	);
 
 	assert.throws(
 		() => JSON.stringify(input),
 		'Converting circular structure to JSON'
+	);
+
+	assert.is(
+		JSON.stringify([{ aaa:1 }, { aaa:input }], $.circular()),
+		'[{"aaa":1},{"aaa":{"a":1,"b":2,"self":"[Circular]"}}]',
 	);
 });
 
