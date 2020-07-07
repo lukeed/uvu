@@ -666,3 +666,48 @@ sort('should handle Object dictionary', () => {
 });
 
 sort.run();
+
+// ---
+
+const circular = suite('circular');
+
+circular('should ignore non-object values', () => {
+	const input = { a:1, b:2, c:'c', d:null, e:undefined };
+
+	assert.is(
+		JSON.stringify(input, $.circular()),
+		JSON.stringify(input),
+	);
+});
+
+circular('should replace circular references with "[Circular]" :: Object', () => {
+	const input = { a:1, b:2 };
+	input.self = input;
+
+	assert.is(
+		JSON.stringify(input, $.circular()),
+		'{"a":1,"b":2,"self":"[Circular]"}'
+	);
+
+	assert.throws(
+		() => JSON.stringify(input),
+		'Converting circular structure to JSON'
+	);
+});
+
+circular('should replace circular references with "[Circular]" :: Array', () => {
+	const input = [{}]
+	input[0].self = input;
+
+	assert.is(
+		JSON.stringify(input, $.circular()),
+		'[{"self":"[Circular]"}]'
+	);
+
+	assert.throws(
+		() => JSON.stringify(input),
+		'Converting circular structure to JSON'
+	);
+});
+
+circular.run();

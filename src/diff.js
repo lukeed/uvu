@@ -156,13 +156,22 @@ export function sort(input, expect) {
 	return out;
 }
 
+export function circular() {
+	var cache = new Set;
+	return function print(key, val) {
+		if (!val || typeof val !== 'object') return val;
+		if (cache.has(val)) return '[Circular]';
+		cache.add(val); return val;
+	}
+}
+
 export function compare(input, expect) {
 	if (Array.isArray(expect)) return arrays(input, expect);
 	if (expect instanceof RegExp) return chars(''+input, ''+expect);
 
 	if (expect && typeof expect == 'object') {
-		input = JSON.stringify(sort(input, expect), null, 2);
-		expect = JSON.stringify(expect, null, 2);
+		input = JSON.stringify(sort(input, expect), circular(), 2);
+		expect = JSON.stringify(expect, circular(), 2);
 	}
 
 	if (/\r?\n/.test(String(expect))) {
