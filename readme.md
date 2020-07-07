@@ -79,6 +79,26 @@ TODO: `assert` api docs
 #### after(hook: Callback)
 #### run()
 
+
+## Benchmarks
+
+> via the [`/bench`](/bench) directory with Node v10.13.0
+
+Below you'll find each test runner with two timing values:
+
+* the `took ___` value is the total process execution time – from startup to termination
+* the parenthesis value (`(___)`) is the self-reported execution time, if known
+
+Each test runner's `stdout` is printed to the console to verify all assertions pass. That output is excluded below for brevity.
+
+```
+~> "jest"  took  1,630ms  (861  ms)
+~> "mocha" took    215ms  (  3  ms)
+~> "tape"  took    132ms  (  ???  )
+~> "uvu"   took     74ms  (  1.4ms)
+```
+
+
 ## License
 
 MIT © [Luke Edwards](https://lukeed.com)

@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "foo": "jest suites/jest"
+  },
+  "devDependencies": {
+    "jest": "26.1.0",
+    "mocha": "8.0.1",
+    "tape": "5.0.1",
+    "uvu": "file:../"
+  }
+}
