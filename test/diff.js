@@ -565,3 +565,86 @@ compare('should proxy `$.direct` for Boolean inputs', () => {
 });
 
 compare.run();
+
+// ---
+
+const sort = suite('sort()');
+
+sort('should ignore Date instances', () => {
+	assert.equal($.sort({}, new Date), {});
+	assert.equal($.sort(new Date, new Date), {});
+	assert.equal($.sort(new Date, {}), {});
+});
+
+sort('should ignore RegExp instances', () => {
+	assert.equal($.sort({}, /foo/), {});
+	assert.equal($.sort(/foo/, /foo/), {});
+	assert.equal($.sort(/foo/, {}), {});
+});
+
+sort('should ignore Set instances', () => {
+	assert.equal($.sort({}, new Set), {});
+	assert.equal($.sort(new Set, new Set), {});
+	assert.equal($.sort(new Set, {}), {});
+});
+
+sort('should ignore Map instances', () => {
+	assert.equal($.sort({}, new Map), {});
+	assert.equal($.sort(new Map, new Map), {});
+	assert.equal($.sort(new Map, {}), {});
+});
+
+sort('should align `input` to `expect` key order', () => {
+	assert.equal(
+		$.sort({ b: 2, a: 1 }, { a: 1, b: 2 }),
+		{ a: 1, b: 2 }
+	);
+});
+
+sort('should append extra `input` keys', () => {
+	assert.equal(
+		$.sort({ c: 3, b: 2, a: 1 }, { a: 1 }),
+		{ a: 1, c: 3, b: 2 }
+	);
+});
+
+sort('should omit missing `expect` keys', () => {
+	assert.equal(
+		$.sort({ c: 3, a: 1 }, { a: 1, b: 2, c: 3 }),
+		{ a: 1, c: 3 }
+	);
+});
+
+sort('should loop through Arrays for nested sorts', () => {
+	assert.equal(
+		$.sort([
+			{ a2: 2, a1: 1 },
+			{ b3: 3, b2: 2 },
+		], [
+			{ a1: 1, a2: 2, a3: 3 },
+			{ b1: 1, b2: 2, b3: 3 },
+		]),
+		[
+			{ a1: 1, a2: 2 },
+			{ b2: 2, b3: 3 },
+		]
+	);
+});
+
+sort('should handle nested Object sorts', () => {
+	assert.equal(
+		$.sort({
+			bar: { b:2, a:1 },
+			foo: { c:3, b:2, a:1 },
+		}, {
+			foo: { b:2, c:3 },
+			bar: { b:2 },
+		}),
+		{
+			foo: { b:2, c:3, a:1 },
+			bar: { b:2, a:1 },
+		}
+	);
+});
+
+sort.run();

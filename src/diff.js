@@ -125,12 +125,44 @@ export function direct(input, expect, lenA = String(input).length, lenB = String
 	return PRINT('++', expect, lenC - lenB) + PRINT('--', input, lenC - lenA);
 }
 
+export function sort(input, expect) {
+	var k, i=0, tmp, isArr = Array.isArray(input);
+	var keys=[], out=isArr ? Array(input.length) : {};
+
+	if (isArr) {
+		for (i=0; i < out.length; i++) {
+			tmp = input[i];
+			if (!tmp || typeof tmp !== 'object') out[i] = tmp;
+			else out[i] = sort(tmp, expect[i]); // might not be right
+		}
+	} else {
+		for (k in expect)
+			keys.push(k);
+
+		for (; i < keys.length; i++) {
+			if (input.hasOwnProperty(k = keys[i])) {
+				tmp = input[k];
+				if (!tmp || typeof tmp !== 'object') out[k] = tmp;
+				else out[k] = sort(tmp, expect[k]);
+			}
+		}
+
+		for (k in input) {
+			if (!out.hasOwnProperty(k)) {
+				out[k] = input[k]; // expect didnt have
+			}
+		}
+	}
+
+	return out;
+}
+
 export function compare(input, expect) {
 	if (Array.isArray(expect)) return arrays(input, expect);
 	if (expect instanceof RegExp) return chars(''+input, ''+expect);
 
 	if (expect && typeof expect == 'object') {
-		input = JSON.stringify(input, null, 2);
+		input = JSON.stringify(sort(input, expect), null, 2);
 		expect = JSON.stringify(expect, null, 2);
 	}
 
