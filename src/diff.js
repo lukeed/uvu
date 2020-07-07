@@ -140,9 +140,8 @@ export function sort(input, expect) {
 			keys.push(k);
 
 		for (; i < keys.length; i++) {
-			if (input.hasOwnProperty(k = keys[i])) {
-				tmp = input[k];
-				if (!tmp || typeof tmp !== 'object') out[k] = tmp;
+			if (Object.prototype.hasOwnProperty.call(input, k = keys[i])) {
+				if (!(tmp = input[k]) || typeof tmp !== 'object') out[k] = tmp;
 				else out[k] = sort(tmp, expect[k]);
 			}
 		}

@@ -647,4 +647,22 @@ sort('should handle nested Object sorts', () => {
 	);
 });
 
+sort('should handle Object dictionary', () => {
+	let input = Object.create(null);
+	let expect = Object.create(null);
+
+	input.aaa = 123;
+	input.bbb = 123;
+	input.ccc = 123;
+
+	expect.ccc = 123;
+	expect.aaa = 123;
+	expect.bbb = 123;
+
+	assert.equal(
+		$.sort(input, expect),
+		{ ccc: 123, bbb: 123, aaa: 123 }
+	);
+});
+
 sort.run();
