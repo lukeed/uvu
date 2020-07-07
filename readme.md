@@ -82,7 +82,7 @@ TODO: `assert` api docs
 
 ## Benchmarks
 
-> via the [`/bench`](/bench) directory with Node v10.13.0
+> via the [`/bench`](/bench) directory with Node v10.21.0
 
 Below you'll find each test runner with two timing values:
 
