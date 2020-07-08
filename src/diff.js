@@ -107,8 +107,6 @@ export function chars(input, expect) {
 		}
 	} else {
 		for (tmp='  '; i < arr.length; i++) {
-			// TODO: debug this
-			// tmp += ((arr[i].added || arr[i].removed) ? '^' : ' ').repeat(arr[i].count);
 			tmp += ((arr[i].added || arr[i].removed) ? '^' : ' ').repeat(Math.max(arr[i].count, 0));
 			if (i + 1 < arr.length && ((arr[i].added && arr[i+1].removed) || (arr[i].removed && arr[i+1].added))) {
 				arr[i + 1].count -= arr[i].count;

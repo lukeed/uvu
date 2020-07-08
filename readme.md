@@ -22,7 +22,7 @@
 ## Features
 
 * Super [lightweight](#load-time)
-* Extremely [performant](#performance)
+* Extremely [performant](#benchmarks)
 * Individually executable test files
 * Supports `async`/`await` tests
 * Supports native ES Modules
@@ -89,7 +89,7 @@ Below you'll find each test runner with two timing values:
 * the `took ___` value is the total process execution time – from startup to termination
 * the parenthesis value (`(___)`) is the self-reported execution time, if known
 
-Each test runner's `stdout` is printed to the console to verify all assertions pass. That output is excluded below for brevity.
+Each test runner's `stdout` is printed to the console to verify all assertions pass.<br>Said output is excluded below for brevity.
 
 ```
 ~> "jest"  took  1,630ms  (861  ms)
