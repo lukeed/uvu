@@ -38,6 +38,8 @@ $ npm install --save-dev uvu
 
 ## Usage
 
+> Check out [`/examples`](/examples) for a list of working demos!
+
 TODO: simple demo, link to examples
 
 ## Assertions
