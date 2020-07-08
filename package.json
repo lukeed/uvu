@@ -1,6 +1,6 @@
 {
   "name": "uvu",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "WIP",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
