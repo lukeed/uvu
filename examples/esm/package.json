@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "uvu -r esm tests"
+  },
+  "devDependencies": {
+    "esm": "3.2.25",
+    "uvu": "^0.0.18"
+  }
+}
