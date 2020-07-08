@@ -12,7 +12,6 @@ const TAB=kleur.dim('→'), SPACE=kleur.dim('·'), NL=kleur.dim('↵');
 const LOG = (sym, str) => colors[sym](sym + PRETTY(str)) + '\n';
 const LINE = (num, x) => kleur.dim('L' + String(num).padStart(x, '0') + ' ');
 const PRETTY = str => str.replace(/[ ]/g, SPACE).replace(/\t/g, TAB).replace(/(\r?\n)/g, NL);
-const PRINT = (sym, str, len) => colors[sym](sym + str + ' '.repeat(4 + len) + TITLE(sym == '++' ? '(Expected)\n' : '(Actual)\n'));
 
 function line(obj, prev, pad) {
 	let char = obj.removed ? '--' : obj.added ? '++' : '··';
@@ -121,8 +120,26 @@ export function chars(input, expect) {
 }
 
 export function direct(input, expect, lenA = String(input).length, lenB = String(expect).length) {
+	let gutter = 4;
 	let lenC = Math.max(lenA, lenB);
-	return PRINT('++', expect, lenC - lenB) + PRINT('--', input, lenC - lenA);
+	let typeA=typeof input, typeB=typeof expect;
+
+	if (typeA !== typeB) {
+		gutter = 2;
+
+		let delA = gutter + lenC - lenA;
+		let delB = gutter + lenC - lenB;
+
+		input += ' '.repeat(delA) + kleur.dim(`[${typeA}]`);
+		expect += ' '.repeat(delB) + kleur.dim(`[${typeB}]`);
+
+		lenA += delA + typeA.length + 2;
+		lenB += delB + typeB.length + 2;
+		lenC = Math.max(lenA, lenB);
+	}
+
+	let output = colors['++']('++' + expect + ' '.repeat(gutter + lenC - lenB) + TITLE('(Expected)')) + '\n';
+	return output + colors['--']('--' + input + ' '.repeat(gutter + lenC - lenA) + TITLE('(Actual)')) + '\n';
 }
 
 export function sort(input, expect) {

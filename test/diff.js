@@ -455,12 +455,73 @@ direct('should handle `123` vs `456` diff', () => {
 	);
 });
 
-// TODO: show type difference
 direct('should handle `123` vs `"123"` diff', () => {
 	assert.snapshot(
 		strip($.direct(123, '123')),
-		'++123    (Expected)\n' +
-		'--123    (Actual)\n'
+		'++123  [string]  (Expected)\n' +
+		'--123  [number]  (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.direct('123', 123)),
+		'++123  [number]  (Expected)\n' +
+		'--123  [string]  (Actual)\n'
+	);
+});
+
+direct('should handle `12` vs `"123"` diff', () => {
+	assert.snapshot(
+		strip($.direct(12, '123')),
+		'++123  [string]  (Expected)\n' +
+		'--12   [number]  (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.direct('123', 12)),
+		'++12   [number]  (Expected)\n' +
+		'--123  [string]  (Actual)\n'
+	);
+});
+
+direct('should handle `null` vs `"null"` diff', () => {
+	assert.snapshot(
+		strip($.direct(null, 'null')),
+		'++null  [string]  (Expected)\n' +
+		'--null  [object]  (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.direct('null', null)),
+		'++null  [object]  (Expected)\n' +
+		'--null  [string]  (Actual)\n'
+	);
+});
+
+direct('should handle `true` vs `"true"` diff', () => {
+	assert.snapshot(
+		strip($.direct(true, 'true')),
+		'++true  [string]   (Expected)\n' +
+		'--true  [boolean]  (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.direct('true', true)),
+		'++true  [boolean]  (Expected)\n' +
+		'--true  [string]   (Actual)\n'
+	);
+});
+
+direct('should handle `false` vs `"true"` diff', () => {
+	assert.snapshot(
+		strip($.direct(false, 'true')),
+		'++true   [string]   (Expected)\n' +
+		'--false  [boolean]  (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.direct('true', false)),
+		'++false  [boolean]  (Expected)\n' +
+		'--true   [string]   (Actual)\n'
 	);
 });
 
