@@ -37,20 +37,20 @@ declare module 'uvu/assert' {
 	export function unreachable(msg?: Message): void;
 
 	export namespace is {
-		declare function not(actual: any, expects: any, msg?: Message): void;
+		function not(actual: any, expects: any, msg?: Message): void;
 	}
 
 	export namespace not {
-		declare function ok(actual: any, msg?: Message): void;
-		declare function equal(actual: any, expects: any, msg?: Message): void;
-		declare function type(actual: any, expects: Types, msg?: Message): void;
-		declare function instance(actual: any, expects: any, msg?: Message): void;
-		declare function snapshot(actual: any, expects: any, msg?: Message): void;
-		declare function fixture(actual: any, expects: any, msg?: Message): void;
-		declare function throws(fn: Function, expects?: Message | RegExp | Function, msg?: Message): void;
+		function ok(actual: any, msg?: Message): void;
+		function equal(actual: any, expects: any, msg?: Message): void;
+		function type(actual: any, expects: Types, msg?: Message): void;
+		function instance(actual: any, expects: any, msg?: Message): void;
+		function snapshot(actual: any, expects: any, msg?: Message): void;
+		function fixture(actual: any, expects: any, msg?: Message): void;
+		function throws(fn: Function, expects?: Message | RegExp | Function, msg?: Message): void;
 	}
 
-	export declare class Assertion extends Error {
+	export class Assertion extends Error {
 		name: 'Assertion';
 		code: 'ERR_ASSERTION';
 		details: false | string;
@@ -58,6 +58,14 @@ declare module 'uvu/assert' {
 		operator: string;
 		expects: any;
 		actual: any;
+		constructor(options?: {
+			message: string;
+			details?: string;
+			generated?: boolean;
+			operator: string;
+			expects: any;
+			actual: any;
+		});
 	}
 }
 
@@ -70,20 +78,20 @@ declare module 'uvu/diff' {
 }
 
 declare module 'uvu/parse' {
-	export interface Suite {
+	interface Suite {
 		/** The relative file path */
 		name: string;
 		/** The absolute file path */
 		file: string;
 	}
 
-	export interface Options {
+	interface Options {
 		cwd: string;
 		require: Arrayable<string>;
 		ignore: Arrayable<string | RegExp>;
 	}
 
-	export interface Argv {
+	interface Argv {
 		dir: string;
 		suites: Suite[];
 	}
