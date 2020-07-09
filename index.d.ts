@@ -30,8 +30,8 @@ declare module 'uvu/assert' {
 	export function equal(actual: any, expects: any, msg?: Message): void;
 	export function type(actual: any, expects: Types, msg?: Message): void;
 	export function instance(actual: any, expects: any, msg?: Message): void;
-	export function snapshot(actual: any, expects: any, msg?: Message): void;
-	export function fixture(actual: any, expects: any, msg?: Message): void;
+	export function snapshot(actual: string, expects: string, msg?: Message): void;
+	export function fixture(actual: string, expects: string, msg?: Message): void;
 	export function throws(fn: Function, expects?: Message | RegExp | Function, msg?: Message): void;
 	export function not(actual: any, msg?: Message): void;
 	export function unreachable(msg?: Message): void;
@@ -45,8 +45,8 @@ declare module 'uvu/assert' {
 		function equal(actual: any, expects: any, msg?: Message): void;
 		function type(actual: any, expects: Types, msg?: Message): void;
 		function instance(actual: any, expects: any, msg?: Message): void;
-		function snapshot(actual: any, expects: any, msg?: Message): void;
-		function fixture(actual: any, expects: any, msg?: Message): void;
+		function snapshot(actual: string, expects: string, msg?: Message): void;
+		function fixture(actual: string, expects: string, msg?: Message): void;
 		function throws(fn: Function, expects?: Message | RegExp | Function, msg?: Message): void;
 	}
 

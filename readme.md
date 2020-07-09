@@ -44,6 +44,7 @@ $ npm install --save-dev uvu
 > Check out [`/examples`](/examples) for a list of working demos!
 
 ```js
+// tests/demo.js
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 
@@ -68,43 +69,39 @@ test('JSON', () => {
 test.run();
 ```
 
+Then execute this test file:
+
+```sh
+# via `uvu` cli, for all `/tests/**` files
+$ uvu -r esm tests
+
+# via `node` directly, for file isolation
+$ node -r esm tests/demo.js
+```
+
+
 ## Assertions
 
-You may use any assertion library, including Node's native [`assert`](https://nodejs.org/api/assert.html) module! This works because `uvu` relies on thrown Errors to detect failures. Implicitly, this means that any uncaught exceptions and/or unhandled `Promise` rejections will result in a failure, which is what you want!
+The [`uvu/assert`](/docs/api.assert.md) module is _completely_ optional. In fact, you may use any assertion library, including Node's native [`assert`](https://nodejs.org/api/assert.html) module!
 
-TODO: `assert` api docs
+This works because `uvu` relies on thrown Errors to detect failures. Implicitly, this also means that any uncaught exceptions and/or unhandled `Promise` rejections will result in a failure, which is what you want!
 
 ## API
 
-### Assert
+### Module: `uvu`
 
-#### ok(actual: T, msg?: Message)
-#### is(actual: T, expects: T, msg?: Message)
-#### is.not(actual: T, expects: T, msg?: Message)
-#### equal(actual: T, expects: T, msg?: Message)
-#### type(actual: T, expects: Types, msg?: Message)
-#### instance(actual: T, expects: T, msg?: Message)
-#### snapshot(actual: T, expects: T, msg?: Message)
-#### fixture(actual: T, expects: T, msg?: Message)
-#### throws(fn: Function, expects?: Message | RegExp | Function, msg?: Message)
-#### unreachable(msg?: Message)
-#### not(actual: T, msg?: Message)
-#### not.ok(actual: T, msg?: Message)
-#### not.equal(actual: T, expects: T, msg?: Message)
-#### not.type(actual: T, expects: Types, msg?: Message)
-#### not.instance(actual: T, expects: T, msg?: Message)
-#### not.snapshot(actual: T, expects: T, msg?: Message)
-#### not.fixture(actual: T, expects: T, msg?: Message)
-#### not.throws(fn: Function, expects?: Message | RegExp | Function, msg?: Message)
+> [View `uvu` API documentation](/docs/api.uvu.md)
 
-### Suite
+The main entry from which you will import the `test` or `suite` methods.
 
-#### (name: string, test: Callback)
-#### only(name: string, test: Callback)
-#### skip(name?: string, test?: Callback)
-#### before(hook: Callback)
-#### after(hook: Callback)
-#### run()
+### Module: `uvu/assert`
+
+> [View `uvu/assert` API documentation](/docs/api.assert.md)
+
+A collection of assertion methods to use within your tests. Please note that:
+
+* these are browser compatible
+* these are _completely_ optional
 
 
 ## Benchmarks
