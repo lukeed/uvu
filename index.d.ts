@@ -8,8 +8,8 @@ declare namespace uvu {
 		(name: string, test: Callback): void;
 		only(name: string, test: Callback): void;
 		skip(name?: string, test?: Callback): void;
-		before(hook: Callback): void;
-		after(hook: Callback): void;
+		before: { (hook: Callback): void, each(hook:Callback): void };
+		after: { (hook: Callback): void, each(hook:Callback): void };
 		run(): VoidFunction;
 	}
 }

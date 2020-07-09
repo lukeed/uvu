@@ -89,8 +89,8 @@ function setup(ctx, name = '') {
 	const test = into(ctx, 'tests');
 	test.before = hook(ctx, 'before');
 	test.after = hook(ctx, 'after');
-	test.beforeEach = hook(ctx, 'beforeEach');
-	test.afterEach = hook(ctx, 'afterEach');
+	test.before.each = hook(ctx, 'beforeEach');
+	test.after.each = hook(ctx, 'afterEach');
 	test.only = into(ctx, 'only');
 	test.skip = () => {};
 	test.run = () => {

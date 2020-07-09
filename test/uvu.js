@@ -57,11 +57,11 @@ hooks.after(() => {
   afterCalls++;
 });
 
-hooks.beforeEach(() => {
+hooks.before.each(() => {
   beforeEachCalls++;
 });
 
-hooks.afterEach(() => {
+hooks.after.each(() => {
   afterEachCalls++;
 });
 
