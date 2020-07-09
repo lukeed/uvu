@@ -18,9 +18,11 @@
 </div>
 
 <div align="center">
-  <b>U</b>ltimate <b>V</b>elocity, <b>U</b>nleashed<br>
-  <b>uvu</b> is an extremely fast and lightweight test runner for Node.js and the browser
+  <b>uvu</b> is an extremely fast and lightweight test runner for Node.js and the browser<br>
+  <b>U</b>ltimate <b>V</b>elocity, <b>U</b>nleashed<br><br>
+  <img width="380" alt="example with suites" src="shots/suites.gif"/>
 </div>
+
 
 ## Features
 
@@ -38,6 +40,7 @@
 ```
 $ npm install --save-dev uvu
 ```
+
 
 ## Usage
 
@@ -85,6 +88,7 @@ $ node -r esm tests/demo.js
 The [`uvu/assert`](/docs/api.assert.md) module is _completely_ optional.
 
 In fact, you may use any assertion library, including Node's native [`assert`](https://nodejs.org/api/assert.html) module! This works because `uvu` relies on thrown Errors to detect failures. Implicitly, this also means that any uncaught exceptions and/or unhandled `Promise` rejections will result in a failure, which is what you want!
+
 
 ## API
 
