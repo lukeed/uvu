@@ -17,7 +17,10 @@
   </a>
 </div>
 
-<div align="center"><b>U</b>TODO.<b>V</b>TODO.<b>U</b>TODO.</div>
+<div align="center">
+  <b>U</b>ltimate <b>V</b>elocity, <b>U</b>nleashed<br>
+  <b>uvu</b> is a lightweight and extremely fast test runner for Node.js and the browser
+</div>
 
 ## Features
 
@@ -40,13 +43,35 @@ $ npm install --save-dev uvu
 
 > Check out [`/examples`](/examples) for a list of working demos!
 
-TODO: simple demo, link to examples
+```js
+import { test } from 'uvu';
+import * as assert from 'uvu/assert';
+
+test('Math.sqrt()', () => {
+  assert.is(Math.sqrt(4), 2);
+  assert.is(Math.sqrt(144), 12);
+  assert.is(Math.sqrt(2), Math.SQRT2);
+});
+
+test('JSON', () => {
+  const input = {
+    foo: 'hello',
+    bar: 'world'
+  };
+
+  const output = JSON.stringify(input);
+
+  assert.snapshot(output, `{"foo":"hello","bar":"world"}`);
+  assert.equal(JSON.parse(output), input, 'matches original');
+});
+
+test.run();
+```
 
 ## Assertions
 
-You may use any assertion library, including Node's native [`assert`](https://nodejs.org/api/assert.html) module! This works because `uvu` relies on thrown Errors to detect failures.
+You may use any assertion library, including Node's native [`assert`](https://nodejs.org/api/assert.html) module! This works because `uvu` relies on thrown Errors to detect failures. Implicitly, this means that any uncaught exceptions and/or unhandled `Promise` rejections will result in a failure, which is what you want!
 
-TODO: uncaught exceptions + unhandled rejections ==> assertion error
 TODO: `assert` api docs
 
 ## API
