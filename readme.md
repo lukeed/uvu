@@ -82,9 +82,9 @@ $ node -r esm tests/demo.js
 
 ## Assertions
 
-The [`uvu/assert`](/docs/api.assert.md) module is _completely_ optional. In fact, you may use any assertion library, including Node's native [`assert`](https://nodejs.org/api/assert.html) module!
+The [`uvu/assert`](/docs/api.assert.md) module is _completely_ optional.
 
-This works because `uvu` relies on thrown Errors to detect failures. Implicitly, this also means that any uncaught exceptions and/or unhandled `Promise` rejections will result in a failure, which is what you want!
+In fact, you may use any assertion library, including Node's native [`assert`](https://nodejs.org/api/assert.html) module! This works because `uvu` relies on thrown Errors to detect failures. Implicitly, this also means that any uncaught exceptions and/or unhandled `Promise` rejections will result in a failure, which is what you want!
 
 ## API
 

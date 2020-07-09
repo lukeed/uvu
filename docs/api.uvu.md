@@ -1,6 +1,6 @@
 # `uvu`
 
-This is the main module. All `uvu` tests require that either [`suite`](#TODO) or [`test`](#TODO) (or both) be imported.
+This is the main module. All `uvu` tests require that either [`suite`](#uvusuitename-string) or [`test`](#uvutestname-string-callback-function) (or both) be imported.
 
 You may declare multiple [`Suites`](#suites) in the same file. This helps with organization as it group test output in a more readable fashion and allows related items to remain neighbors.
 
@@ -8,7 +8,7 @@ You should choose `uvu.suite` if/when you'd like to leverage the additional orga
 
 There is no penalty for choosing `uvu.suite` vs `uvu.test`. In fact, `uvu.test` _is_ an unnamed [Suite](#suites)!
 
-No matter which you choose, the Suite's [`run`](#todo) must be called in order for it to be added to `uvu`'s queue.
+No matter which you choose, the Suite's [`run`](#suiterun) must be called in order for it to be added to `uvu`'s queue.
 
 > **Note:** Because of this API decision, `uvu` test files can be executed with `node` directly!
 
@@ -66,6 +66,8 @@ Invoke the provided `callback` after this suite finishes. <br>This is ideal for 
 
 ### suite.run()
 Start/Add the suite to the `uvu` test queue.
+
+> **Important:** You **must** call this method in order for your suite to be run!
 
 <!-- TODO?: ***Hooks*** -->
 
