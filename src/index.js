@@ -65,26 +65,24 @@ async function runner(ctx, name) {
 		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
 		for (hook of before) await hook();
 		for (test of arr) {
-			for (hook of beforeEach) await hook();
 			try {
+				for (hook of beforeEach) await hook();
 				await test.handler();
+				for (hook of afterEach) await hook();
+				write(PASS);
+				num++;
 			} catch (err) {
 				if (errors.length) errors += '\n';
 				errors += format(test.name, err, name);
 				write(FAIL);
 			}
-			for (hook of afterEach) await hook();
-			write(PASS);
-			num++;
 		}
+	} finally {
 		for (hook of after) await hook();
-	} catch (err) {
-		if (errors.length) errors += '\n';
-		errors += format(`${test.name}:hook`, err, name);
+		let msg = `  (${num} / ${total})\n`;
+		write(errors.length ? kleur.red(msg) : kleur.green(msg));
+		return [errors || true, num, total];
 	}
-	let msg = `  (${num} / ${total})\n`;
-	write(errors.length ? kleur.red(msg) : kleur.green(msg));
-	return [errors || true, num, total];
 }
 
 function setup(ctx, name = '') {
