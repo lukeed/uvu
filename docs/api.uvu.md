@@ -64,6 +64,12 @@ Invoke the provided `callback` before this suite begins. <br>This is ideal for c
 ### suite.after(callback)
 Invoke the provided `callback` after this suite finishes. <br>This is ideal for fixture or environment cleanup.
 
+### suite.before.each(callback)
+Invoke the provided `callback` before each test of this suite begins.
+
+### suite.after.each(callback)
+Invoke the provided `callback` after each test of this suite finishes.
+
 ### suite.run()
 Start/Add the suite to the `uvu` test queue.
 
