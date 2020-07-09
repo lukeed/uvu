@@ -6,7 +6,7 @@ let hrtime = (now = Date.now()) => () => (Date.now() - now).toFixed(2) + 'ms';
 let write = console.log;
 
 const into = (ctx, key) => (name, handler) => ctx[key].push({ name, handler });
-const context = () => ({ tests:[], before:[], after:[], only:[] });
+const context = () => ({ tests:[], before:[], after:[], beforeEach: [], afterEach: [], only:[] });
 const milli = arr => (arr[0]*1e3 + arr[1]/1e6).toFixed(2) + 'ms';
 const hook = (ctx, key) => handler => ctx[key].push(handler);
 
@@ -56,9 +56,8 @@ function format(name, err, suite = '') {
 	return str + '\n';
 }
 
-// TODO: before|afterEach
 async function runner(ctx, name) {
-	let { only, tests, before, after } = ctx;
+	let { only, tests, before, after, beforeEach, afterEach } = ctx;
 	let arr = only.length ? only : tests;
 	let num=0, total=arr.length;
 	let test, hook, errors='';
@@ -67,7 +66,9 @@ async function runner(ctx, name) {
 		for (hook of before) await hook();
 		for (test of arr) {
 			try {
+				for (hook of beforeEach) await hook();
 				await test.handler();
+				for (hook of afterEach) await hook();
 				write(PASS);
 				num++;
 			} catch (err) {
@@ -88,6 +89,8 @@ function setup(ctx, name = '') {
 	const test = into(ctx, 'tests');
 	test.before = hook(ctx, 'before');
 	test.after = hook(ctx, 'after');
+	test.beforeEach = hook(ctx, 'beforeEach');
+	test.afterEach = hook(ctx, 'afterEach');
 	test.only = into(ctx, 'only');
 	test.skip = () => {};
 	test.run = () => {

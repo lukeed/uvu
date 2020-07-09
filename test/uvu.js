@@ -39,3 +39,44 @@ exec('should be a function', () => {
 });
 
 exec.run();
+
+// ---
+
+let beforeCalls = 0;
+let afterCalls = 0;
+let beforeEachCalls = 0;
+let afterEachCalls = 0;
+
+const hooks = suite('hooks');
+
+hooks.before(() => {
+  beforeCalls++;
+});
+
+hooks.after(() => {
+  afterCalls++;
+});
+
+hooks.beforeEach(() => {
+  beforeEachCalls++;
+});
+
+hooks.afterEach(() => {
+  afterEachCalls++;
+});
+
+hooks('case 1', () => {});
+
+hooks('case 2', () => {});
+
+hooks.run();
+
+hooks('should call hooks', () => {
+	assert.is(beforeCalls, 1);
+	assert.is(afterCalls, 1);
+	assert.is(beforeEachCalls, 2);
+	assert.is(afterEachCalls, 2);
+});
+
+hooks.run();
+
