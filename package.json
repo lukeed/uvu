@@ -1,10 +1,12 @@
 {
   "name": "uvu",
   "version": "0.1.0",
+  "repository": "lukeed/uvu",
   "description": "uvu is an extremely fast and lightweight test runner for Node.js and the browser",
-  "main": "dist/index.js",
   "module": "dist/index.mjs",
+  "main": "dist/index.js",
   "types": "index.d.ts",
+  "license": "MIT",
   "bin": {
     "uvu": "bin.js"
   },
