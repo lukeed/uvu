@@ -19,12 +19,12 @@
 
 <div align="center">
   <b>U</b>ltimate <b>V</b>elocity, <b>U</b>nleashed<br>
-  <b>uvu</b> is a lightweight and extremely fast test runner for Node.js and the browser
+  <b>uvu</b> is an extremely fast and lightweight test runner for Node.js and the browser
 </div>
 
 ## Features
 
-* Super [lightweight](#load-time)
+* Super [lightweight](https://npm.anvaka.com/#!/view/2d/uvu)
 * Extremely [performant](#benchmarks)
 * Individually executable test files
 * Supports `async`/`await` tests

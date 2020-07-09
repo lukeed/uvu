@@ -1,7 +1,7 @@
 {
   "name": "uvu",
   "version": "0.0.19",
-  "description": "WIP",
+  "description": "uvu is an extremely fast and lightweight test runner for Node.js and the browser",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "index.d.ts",
@@ -47,6 +47,13 @@
   "engines": {
     "node": ">=8"
   },
+  "keywords": [
+    "assert",
+    "diffs",
+    "runner",
+    "snapshot",
+    "test"
+  ],
   "dependencies": {
     "dequal": "^1.0.0",
     "diff": "^4.0.2",
