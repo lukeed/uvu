@@ -42,41 +42,60 @@ exec.run();
 
 // ---
 
-let beforeCalls = 0;
-let afterCalls = 0;
-let beforeEachCalls = 0;
-let afterEachCalls = 0;
-
 const hooks = suite('hooks');
 
+const hooks_state = {
+	before: 0,
+	after: 0,
+	each: 0,
+};
+
 hooks.before(() => {
-  beforeCalls++;
+	assert.is(hooks_state.before, 0);
+	assert.is(hooks_state.after, 0);
+	assert.is(hooks_state.each, 0);
+	hooks_state.before++;
 });
 
 hooks.after(() => {
-  afterCalls++;
+	assert.is(hooks_state.before, 1);
+	assert.is(hooks_state.after, 0);
+	assert.is(hooks_state.each, 0);
+	hooks_state.after++;
 });
 
 hooks.before.each(() => {
-  beforeEachCalls++;
+	assert.is(hooks_state.before, 1);
+	assert.is(hooks_state.after, 0);
+	assert.is(hooks_state.each, 0);
+	hooks_state.each++;
 });
 
 hooks.after.each(() => {
-  afterEachCalls++;
+	assert.is(hooks_state.before, 1);
+	assert.is(hooks_state.after, 0);
+	assert.is(hooks_state.each, 1);
+	hooks_state.each--;
 });
 
-hooks('case 1', () => {});
+hooks('test #1', () => {
+	assert.is(hooks_state.before, 1);
+	assert.is(hooks_state.after, 0);
+	assert.is(hooks_state.each, 1);
+});
 
-hooks('case 2', () => {});
+hooks('test #2', () => {
+	assert.is(hooks_state.before, 1);
+	assert.is(hooks_state.after, 0);
+	assert.is(hooks_state.each, 1);
+});
 
 hooks.run();
 
-hooks('should call hooks', () => {
-	assert.is(beforeCalls, 1);
-	assert.is(afterCalls, 1);
-	assert.is(beforeEachCalls, 2);
-	assert.is(afterEachCalls, 2);
+hooks('ensure after() ran', () => {
+	assert.is(hooks_state.before, 1);
+	assert.is(hooks_state.after, 1);
+	assert.is(hooks_state.each, 0);
 });
 
 hooks.run();
-
