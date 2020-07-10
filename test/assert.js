@@ -687,3 +687,76 @@ notInstance('should throw with custom message', () => {
 });
 
 notInstance.run();
+
+// ---
+
+// TODO
+// const notSnapshot = suite('not.snapshot');
+// notSnapshot.run();
+
+// ---
+
+// TODO
+// const notFixture = suite('not.fixture');
+// notFixture.run();
+
+// ---
+
+const notThrows = suite('not.throws');
+
+notThrows('should be a function', () => {
+	assert.type($.throws, 'function');
+});
+
+notThrows('should not throw if function does not throw Error :: generic', () => {
+	assert.not.throws(
+		() => $.not.throws(() => 123)
+	);
+});
+
+notThrows('should not throw if function does not throw matching Error :: RegExp', () => {
+	assert.not.throws(
+		() => $.not.throws(() => { throw new Error('hello') }, /world/)
+	);
+});
+
+notThrows('should not throw if function does not throw matching Error :: Function', () => {
+	assert.not.throws(() => {
+		$.not.throws(
+			() => { throw new Error('hello') },
+			(err) => err.message.includes('world')
+		)
+	});
+});
+
+notThrows('should throw if function does throw Error :: generic', () => {
+	try {
+		$.not.throws(() => { throw new Error });
+	} catch (err) {
+		assert.is(err.message, 'Expected function not to throw');
+		isError(err, '', true, false, 'not.throws', false); // no details
+	}
+});
+
+notThrows('should throw if function does throw matching Error :: RegExp', () => {
+	try {
+		$.not.throws(() => { throw new Error('hello') }, /hello/);
+	} catch (err) {
+		assert.is(err.message, 'Expected function not to throw exception matching `/hello/` pattern');
+		isError(err, '', true, false, 'not.throws', false); // no details
+	}
+});
+
+notThrows('should throw if function does throw matching Error :: Function', () => {
+	try {
+		$.not.throws(
+			() => { throw new Error },
+			(err) => err instanceof Error
+		);
+	} catch (err) {
+		assert.is(err.message, 'Expected function not to throw matching exception');
+		isError(err, '', true, false, 'not.throws', false); // no details
+	}
+});
+
+notThrows.run();
