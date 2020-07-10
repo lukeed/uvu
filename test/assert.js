@@ -631,3 +631,59 @@ notType('should throw with custom message', () => {
 });
 
 notType.run();
+
+// ---
+
+const notInstance = suite('not.instance');
+
+notInstance('should be a function', () => {
+	assert.type($.not.instance, 'function');
+});
+
+notInstance('should throw if values match', () => {
+	// isError uses is() check -- lazy
+	let inputs = {
+		date: new Date,
+		regexp: /foo/,
+		object: {},
+		array: [],
+	};
+
+	try {
+		$.not.instance(inputs.date, Date);
+	} catch (err) {
+		isError(err, '', inputs.date, Date, 'not.instance', false);
+	}
+
+	try {
+		$.not.instance(inputs.regexp, RegExp);
+	} catch (err) {
+		isError(err, '', inputs.regexp, RegExp, 'not.instance', false);
+	}
+
+	try {
+		$.not.instance(inputs.object, Object);
+	} catch (err) {
+		isError(err, '', inputs.object, Object, 'not.instance', false);
+	}
+
+	try {
+		$.not.instance(inputs.array, Array);
+	} catch (err) {
+		isError(err, '', inputs.array, Array, 'not.instance', false);
+	}
+});
+
+notInstance('should not throw on mismatch', () => {
+	assert.not.throws(() => $.not.instance('foo', Error));
+});
+
+notInstance('should throw with custom message', () => {
+	try {
+		$.not.instance('foo', String, 'hello there');
+	} catch (err) {
+		isError(err, 'hello there', 'foo', String, 'instance', false);
+	}
+});
+
+notInstance.run();
