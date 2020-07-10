@@ -58,3 +58,63 @@ hooks('ensure after() ran', () => {
 });
 
 hooks.run();
+
+// ---
+
+const skips = suite('suite.skip()');
+
+const skips_state = {
+	each: 0,
+};
+
+skips.before.each(() => {
+	skips_state.each++;
+});
+
+skips('normal #1', () => {
+	assert.ok('i should run');
+	assert.is(skips_state.each, 1);
+});
+
+skips.skip('literal', () => {
+	assert.unreachable('i should not run');
+});
+
+skips('normal #2', () => {
+	assert.ok('but i should');
+	assert.is(skips_state.each, 2, 'did not run hook for skipped function');
+});
+
+skips.run();
+
+// ---
+
+const only = suite('suite.only()');
+
+const only_state = {
+	each: 0,
+};
+
+only.before.each(() => {
+	only_state.each++;
+});
+
+only('normal', () => {
+	assert.unreachable('i should not run');
+});
+
+only.skip('modifier: skip', () => {
+	assert.unreachable('i should not run');
+});
+
+only.only('modifier: only #1', () => {
+	assert.ok('i should run');
+	assert.is(only_state.each, 1, 'did not run normal or skipped tests');
+});
+
+only.only('modifier: only #2', () => {
+	assert.ok('i should also run');
+	assert.is(only_state.each, 2, 'did not run normal or skipped tests');
+});
+
+only.run();
