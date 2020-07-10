@@ -6,6 +6,7 @@ jobs:
   test:
     name: Node.js v${{ matrix.nodejs }} (${{ matrix.os }})
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     strategy:
       matrix:
         nodejs: [8, 10, 12, 14]
