@@ -295,6 +295,7 @@ type.run();
 
 // ---
 
+// TODO
 const snapshot = suite('snapshot');
 
 snapshot('should be a function', () => {
@@ -305,6 +306,7 @@ snapshot.run();
 
 // ---
 
+// TODO
 const fixture = suite('fixture');
 
 fixture('should be a function', () => {
@@ -407,3 +409,37 @@ not('should throw with custom message', () => {
 });
 
 not.run();
+
+// ---
+
+const notOk = suite('not.ok');
+
+notOk('should be a function', () => {
+	assert.type($.not.ok, 'function');
+});
+
+notOk('should not throw if falsey', () => {
+	assert.not.throws(() => $.not.ok(false));
+	assert.not.throws(() => $.not.ok(undefined));
+	assert.not.throws(() => $.not.ok(null));
+	assert.not.throws(() => $.not.ok(''));
+	assert.not.throws(() => $.not.ok(0));
+});
+
+notOk('should throw if truthy', () => {
+	try {
+		$.not.ok(true);
+	} catch (err) {
+		isError(err, '', true, false, 'not', false);
+	}
+});
+
+notOk('should throw with custom message', () => {
+	try {
+		$.not.ok(true, 'hello there');
+	} catch (err) {
+		isError(err, 'hello there', true, false, 'not', false);
+	}
+});
+
+notOk.run();
