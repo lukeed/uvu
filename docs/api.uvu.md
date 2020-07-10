@@ -59,23 +59,21 @@ For this `suite`, only run this test. <br>This is a shortcut for isolating one (
 Skip this test block entirely.
 
 ### suite.before(callback)
-Invoke the provided `callback` before this suite begins. <br>This is ideal for creating fixtures or setting up an environment.
+Invoke the provided `callback` before this suite begins. <br>This is ideal for creating fixtures or setting up an environment. <br>Please see [Hooks](#hooks) for more information.
 
 ### suite.after(callback)
-Invoke the provided `callback` after this suite finishes. <br>This is ideal for fixture or environment cleanup.
+Invoke the provided `callback` after this suite finishes. <br>This is ideal for fixture or environment cleanup. <br>Please see [Hooks](#hooks) for more information.
 
 ### suite.before.each(callback)
-Invoke the provided `callback` before each test of this suite begins.
+Invoke the provided `callback` before each test of this suite begins. <br>Please see [Hooks](#hooks) for more information.
 
 ### suite.after.each(callback)
-Invoke the provided `callback` after each test of this suite finishes.
+Invoke the provided `callback` after each test of this suite finishes. <br>Please see [Hooks](#hooks) for more information.
 
 ### suite.run()
 Start/Add the suite to the `uvu` test queue.
 
 > **Important:** You **must** call this method in order for your suite to be run!
-
-<!-- TODO?: ***Hooks*** -->
 
 ***Example***
 
@@ -117,4 +115,63 @@ Now.only('should progress with time', () => {
 });
 
 Now.run();
+```
+
+
+## Hooks
+
+Your suite can implement "hooks" that run before and/or after the entire suite, as well as before and/or after the suite's individual tests.
+
+It may be useful to use `suite.before` and `suite.after` to set up and teardown suite-level assumptions like:
+
+* environment variables
+* database clients and/or seed data
+* generating fixtures
+* mocks, spies, etc
+
+It may be appropriate to use `suite.before.each` and `suite.after.each` to reset parts of suite's context, or for passing values between tests. This may include &mdash; but of course, is not limited to &mdash; rolling back database transactions, restoring a mocked function, etc.
+
+> **Important:** Any `after` and `after.each` hooks will _always_ be invoked – including after failed assertions.
+
+***Example: Lifecycle***
+
+The following implements all available hooks so that their call patterns can be recorded:
+
+```js
+test.before(() => {
+  console.log('SETUP');
+});
+
+test.after(() => {
+  console.log('CLEANUP');
+});
+
+test.before.each(() => {
+  console.log('>> BEFORE');
+});
+
+test.after.each(() => {
+  console.log('>> AFTER');
+});
+
+// ---
+
+test('foo', () => {
+  console.log('>>>> TEST: FOO');
+});
+
+test('bar', () => {
+  console.log('>>>> TEST: BAR');
+});
+
+test.run();
+
+// SETUP
+// >> BEFORE
+// >>>> TEST: FOO
+// >> AFTER
+// >> BEFORE
+// >>>> TEST: BAR
+// >> AFTER
+// CLEANUP
 ```
