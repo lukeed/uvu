@@ -36,7 +36,7 @@ export function ok(val, msg) {
 }
 
 export function is(val, exp, msg) {
-	assert(val === exp, val, exp, 'is', direct, 'Expected values to be strictly equal:', msg);
+	assert(val === exp, val, exp, 'is', compare, 'Expected values to be strictly equal:', msg);
 }
 
 export function equal(val, exp, msg) {
