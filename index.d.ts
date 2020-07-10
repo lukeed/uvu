@@ -4,12 +4,17 @@ type Promisable<T> = Promise<T> | T;
 declare namespace uvu {
 	type Callback = () => Promisable<any>;
 
+	interface Hook {
+		(hook: Callback): void;
+		each(hook: Callback): void;
+	}
+
 	interface Test {
 		(name: string, test: Callback): void;
 		only(name: string, test: Callback): void;
 		skip(name?: string, test?: Callback): void;
-		before: { (hook: Callback): void, each(hook:Callback): void };
-		after: { (hook: Callback): void, each(hook:Callback): void };
+		before: Hook;
+		after: Hook
 		run(): VoidFunction;
 	}
 }
