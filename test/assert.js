@@ -575,3 +575,59 @@ notEqual('should use deep equality checks', () => {
 });
 
 notEqual.run();
+
+// ---
+
+const notType = suite('not.type');
+
+notType('should be a function', () => {
+	assert.type($.not.type, 'function');
+});
+
+notType('should throw if types match', () => {
+	try {
+		$.not.type(123, 'number');
+	} catch (err) {
+		isError(err, '', 'number', 'number', 'not.type', false);
+	}
+
+	try {
+		$.not.type(true, 'boolean');
+	} catch (err) {
+		isError(err, '', 'boolean', 'boolean', 'not.type', false);
+	}
+
+	try {
+		$.not.type($.not.type, 'function');
+	} catch (err) {
+		isError(err, '', 'function', 'function', 'not.type', false);
+	}
+
+	try {
+		$.not.type('abc', 'string');
+	} catch (err) {
+		isError(err, '', 'string', 'string', 'not.type', false);
+	}
+
+	try {
+		$.not.type(/x/, 'object');
+	} catch (err) {
+		isError(err, '', 'object', 'object', 'not.type', false);
+	}
+});
+
+type('should not throw if types do not match', () => {
+	assert.not.throws(
+		() => $.not.type('foo', 'number')
+	);
+});
+
+notType('should throw with custom message', () => {
+	try {
+		$.not.type('abc', 'string', 'hello world');
+	} catch (err) {
+		isError(err, 'hello world', 'string', 'string', 'not.type', false);
+	}
+});
+
+notType.run();
