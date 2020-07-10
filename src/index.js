@@ -6,7 +6,7 @@ let hrtime = (now = Date.now()) => () => (Date.now() - now).toFixed(2) + 'ms';
 let write = console.log;
 
 const into = (ctx, key) => (name, handler) => ctx[key].push({ name, handler });
-const context = () => ({ tests:[], before:[], after:[], bEach: [], aEach: [], only:[] });
+const context = () => ({ tests:[], before:[], after:[], bEach:[], aEach:[], only:[], skips:0 });
 const milli = arr => (arr[0]*1e3 + arr[1]/1e6).toFixed(2) + 'ms';
 const hook = (ctx, key) => handler => ctx[key].push(handler);
 
@@ -81,8 +81,9 @@ async function runner(ctx, name) {
 	} finally {
 		for (hook of after) await hook();
 		let msg = `  (${num} / ${total})\n`;
+		let skipped = (only.length ? tests.length : 0) + ctx.skips;
 		write(errors.length ? kleur.red(msg) : kleur.green(msg));
-		return [errors || true, num, total];
+		return [errors || true, num, skipped, total];
 	}
 }
 
@@ -93,7 +94,7 @@ function setup(ctx, name = '') {
 	test.after = hook(ctx, 'after');
 	test.after.each = hook(ctx, 'aEach');
 	test.only = into(ctx, 'only');
-	test.skip = () => {};
+	test.skip = () => { ctx.skips++ };
 	test.run = () => {
 		let copy = { ...ctx };
 		Object.assign(ctx, context());
@@ -111,7 +112,7 @@ export const test = suite();
 
 export async function exec(bail) {
 	let timer = hrtime();
-	let done=0, total=0, code=0;
+	let done=0, total=0, skips=0, code=0;
 
 	for (let group of QUEUE) {
 		if (total) write('\n');
@@ -120,8 +121,8 @@ export async function exec(bail) {
 		if (name != null) write(FILE(name) + '\n');
 
 		for (let test of group) {
-			let [errs, ran, max] = await test();
-			total += max; done += ran;
+			let [errs, ran, skip, max] = await test();
+			total += max; done += ran; skips += skip;
 			if (errs.length) {
 				write('\n' + errs + '\n'); code=1;
 				if (bail) return isNode && process.exit(1);
@@ -130,9 +131,8 @@ export async function exec(bail) {
 	}
 
 	write('\n  Total:     ' + total);
-	let color = code ? kleur.red : kleur.green;
-	write(color('\n  Passed:    ' + done));
-	write('\n  Skipped:   ' + '0'); // TODO
+	write((code ? kleur.red : kleur.green)('\n  Passed:    ' + done));
+	write('\n  Skipped:   ' + (skips ? kleur.yellow(skips) : skips));
 	write('\n  Duration:  ' + timer() + '\n\n');
 
 	if (isNode) process.exit(code);
