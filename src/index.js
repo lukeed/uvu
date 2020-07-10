@@ -72,6 +72,7 @@ async function runner(ctx, name) {
 				write(PASS);
 				num++;
 			} catch (err) {
+				for (hook of aEach) await hook();
 				if (errors.length) errors += '\n';
 				errors += format(test.name, err, name);
 				write(FAIL);
