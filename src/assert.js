@@ -1,5 +1,5 @@
 import dequal from 'dequal';
-import { compare, direct, lines } from 'uvu/diff';
+import { compare, lines } from 'uvu/diff';
 
 function dedent(str) {
 	let arr = str.match(/^[ \t]*(?=\S)/gm);
