@@ -443,3 +443,37 @@ notOk('should throw with custom message', () => {
 });
 
 notOk.run();
+
+// ---
+
+const notIs = suite('is.not');
+
+notIs('should be a function', () => {
+	assert.type($.is.not, 'function');
+});
+
+notIs('should not throw if values are not strictly equal', () => {
+	assert.not.throws(() => $.is.not(true, false));
+	assert.not.throws(() => $.is.not(123, undefined));
+	assert.not.throws(() => $.is.not('123', 123));
+	assert.not.throws(() => $.is.not(NaN, NaN));
+	assert.not.throws(() => $.is.not([], []));
+});
+
+notIs('should throw if values are strictly equal', () => {
+	try {
+		$.is.not('hello', 'hello');
+	} catch (err) {
+		isError(err, '', 'hello', 'hello', 'is.not', false);
+	}
+});
+
+notIs('should throw with custom message', () => {
+	try {
+		$.is.not('foo', 'foo', 'hello there');
+	} catch (err) {
+		isError(err, 'hello there', 'foo', 'foo', 'is.not', false);
+	}
+});
+
+notIs.run();
