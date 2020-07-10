@@ -477,3 +477,101 @@ notIs('should throw with custom message', () => {
 });
 
 notIs.run();
+
+// ---
+
+const notEqual = suite('not.equal');
+
+notEqual('should be a function', () => {
+	assert.type($.not.equal, 'function');
+});
+
+notEqual('should throw if values are deeply equal', () => {
+	try {
+		$.not.equal('abc', 'abc');
+	} catch (err) {
+		isError(err, '', 'abc', 'abc', 'not.equal', false); // no details
+	}
+
+	try {
+		$.not.equal(true, true);
+	} catch (err) {
+		isError(err, '', true, true, 'not.equal', false); // no details
+	}
+
+	try {
+		$.not.equal(123, 123);
+	} catch (err) {
+		isError(err, '', 123, 123, 'not.equal', false); // no details
+	}
+
+	let arr = [1, 2, 3];
+	let obj = { foo: [2, 3] };
+
+	try {
+		$.not.equal(arr, arr);
+	} catch (err) {
+		isError(err, '', arr, arr, 'not.equal', false); // no details
+	}
+
+	try {
+		$.not.equal(obj, obj);
+	} catch (err) {
+		isError(err, '', obj, obj, 'not.equal', false); // no details
+	}
+});
+
+notEqual('should not throw if values are not deeply equal', () => {
+	let input = {
+		foo: ['aaa'],
+		bar: [2, 3]
+	};
+
+	let expect = {
+		foo: ['a', 'a'],
+		bar: [{ a: 1, b: 2 }]
+	};
+
+	assert.not.throws(
+		() => $.not.equal(input, expect)
+	);
+});
+
+notEqual('should throw with custom message', () => {
+	let input = {
+		foo: ['aaa'],
+		bar: [2, 3]
+	};
+
+	try {
+		$.not.equal(input, input, 'hello there');
+	} catch (err) {
+		isError(err, 'hello there', input, input, 'not.equal', false); // no details
+	}
+});
+
+notEqual('should use deep equality checks', () => {
+	try {
+		$.not.equal(
+			{ a:[{ b:2 }] },
+			{ a:[{ b:2 }] },
+		);
+		assert.unreachable();
+	} catch (err) {
+		assert.instance(err, $.Assertion);
+		assert.is(err.operator, 'not.equal');
+	}
+
+	try {
+		$.not.equal(
+			[{ a:2 }, { b:2 }],
+			[{ a:2 }, { b:2 }],
+		);
+		assert.unreachable();
+	} catch (err) {
+		assert.instance(err, $.Assertion);
+		assert.is(err.operator, 'not.equal');
+	}
+});
+
+notEqual.run();
