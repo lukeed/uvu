@@ -116,8 +116,8 @@ Since `expects` is optional, you may also invoke the `assert.throws(fn, msg)` si
 const OOPS = () => (null)[0];
 
 assert.throws(() => OOPS());
-assert.throws(() => OOPS(), /TypeError/);
-assert.throws(() => OOPS(), 'Cannot read property', 'invalid access');
+assert.throws(() => OOPS(), /Cannot read property/);
+assert.throws(() => OOPS(), err => err instanceof TypeError);
 ```
 
 ### unreachable(msg?: Message)
@@ -207,8 +207,9 @@ const FAIL = () => {
 
 assert.not.throws(() => PASS()); //=> pass
 assert.not.throws(() => FAIL()); //=> fails
-assert.not.throws(() => FAIL(), /Error/); //=> fails
-assert.not.throws(() => FAIL(), /TypeError/); //=> pass
+assert.not.throws(() => FAIL(), /Oops/); //=> pass
+assert.not.throws(() => FAIL(), /foobar/); //=> fails
+assert.not.throws(() => FAIL(), err => err.message.length > 0); //=> pass
 ```
 
 ### Assertion(options)

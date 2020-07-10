@@ -321,6 +321,57 @@ throws('should be a function', () => {
 	assert.type($.throws, 'function');
 });
 
+throws('should throw if function does not throw Error :: generic', () => {
+	try {
+		$.throws(() => 123);
+	} catch (err) {
+		assert.is(err.message, 'Expected function to throw');
+		isError(err, '', false, true, 'throws', true);
+	}
+});
+
+throws('should throw if function does not throw matching Error :: RegExp', () => {
+	try {
+		$.throws(() => { throw new Error('hello') }, /world/);
+	} catch (err) {
+		assert.is(err.message, 'Expected function to throw exception matching `/world/` pattern');
+		isError(err, '', false, true, 'throws', false); // no details
+	}
+});
+
+throws('should throw if function does not throw matching Error :: Function', () => {
+	try {
+		$.throws(
+			() => { throw new Error },
+			(err) => err.message.includes('foobar')
+		);
+	} catch (err) {
+		assert.is(err.message, 'Expected function to throw matching exception');
+		isError(err, '', false, true, 'throws', false); // no details
+	}
+});
+
+throws('should not throw if function does throw Error :: generic', () => {
+	assert.not.throws(
+		() => $.throws(() => { throw new Error })
+	);
+});
+
+throws('should not throw if function does throw matching Error :: RegExp', () => {
+	assert.not.throws(
+		() => $.throws(() => { throw new Error('hello') }, /hello/)
+	);
+});
+
+throws('should not throw if function does throw matching Error :: Function', () => {
+	assert.not.throws(() => {
+		$.throws(
+			() => { throw new Error('foobar') },
+			(err) => err.message.includes('foobar')
+		)
+	});
+});
+
 throws.run();
 
 // ---
@@ -355,4 +406,4 @@ not('should throw with custom message', () => {
 	}
 });
 
-ok.run();
+not.run();
