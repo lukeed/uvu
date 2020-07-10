@@ -75,7 +75,7 @@ export function throws(blk, exp, msg) {
 
 	try {
 		blk();
-		assert(false, false, true, 'throws', direct, 'Expected function to throw', msg);
+		assert(false, false, true, 'throws', false, 'Expected function to throw', msg);
 	} catch (err) {
 		if (err instanceof Assertion) throw err;
 

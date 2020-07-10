@@ -326,7 +326,7 @@ throws('should throw if function does not throw Error :: generic', () => {
 		$.throws(() => 123);
 	} catch (err) {
 		assert.is(err.message, 'Expected function to throw');
-		isError(err, '', false, true, 'throws', true);
+		isError(err, '', false, true, 'throws', false); // no details (true vs false)
 	}
 });
 
