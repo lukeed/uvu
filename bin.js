@@ -5,7 +5,7 @@ const pkg = require('./package');
 
 sade('uvu [dir] [pattern]')
 	.version(pkg.version)
-	.option('-b, --bail', 'fail fast')
+	.option('-b, --bail', 'Exit on first failure')
 	.option('-i, --ignore', 'Any file patterns to ignore')
 	.option('-r, --require', 'Additional module(s) to preload')
 	.option('-C, --cwd', 'The current directory to resolve from', '.')
