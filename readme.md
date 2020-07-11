@@ -82,6 +82,8 @@ $ uvu -r esm tests
 $ node -r esm tests/demo.js
 ```
 
+> [View the `uvu` CLI documentation](/docs/cli.md)
+
 
 ## Assertions
 
