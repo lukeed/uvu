@@ -20,6 +20,7 @@ export default async function (dir, pattern, opts = {}) {
 	[].concat(opts.require || []).filter(Boolean).forEach(name => {
 		let tmp = exists(name);
 		if (tmp) return require(tmp);
+		if (tmp = exists(resolve(name))) return require(tmp);
 		throw new Error(`Cannot find module '${name}'`);
 	});
 
