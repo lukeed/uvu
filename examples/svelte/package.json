@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "test": "uvu -r esm -r tests/setup/register tests"
+    "test": "uvu tests -r esm -r tests/setup/register -i setup"
   },
   "devDependencies": {
     "esm": "3.2.25",
