@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "uvu -r esm -r tests/setup/register tests"
+  },
+  "devDependencies": {
+    "esm": "3.2.25",
+    "jsdom": "16.3.0",
+    "svelte": "3.24.0",
+    "uvu": "^0.2.0"
+  }
+}
