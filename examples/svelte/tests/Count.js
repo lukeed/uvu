@@ -9,9 +9,7 @@ test.before(ENV.setup);
 test.before.each(ENV.reset);
 
 test('should render with "5" by default', () => {
-	const component = ENV.render(Count);
-
-	assert.is(component.$$.ctx[0], 5);
+	ENV.render(Count);
 
 	assert.snapshot(
 		document.body.innerHTML,
@@ -20,8 +18,7 @@ test('should render with "5" by default', () => {
 });
 
 test('should accept custom `count` prop', () => {
-	const component = ENV.render(Count, { count: 99 });
-	assert.is(component.$$.ctx[0], 99);
+	ENV.render(Count, { count: 99 });
 
 	assert.snapshot(
 		document.body.innerHTML,
