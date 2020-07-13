@@ -26,10 +26,10 @@ export function render(Tag, props = {}) {
 }
 
 /**
- *
  * @param {HTMLElement} elem
  * @param {String} event
  * @param {any} [details]
+ * @returns Promise<void>
  */
 export function fire(elem, event, details) {
 	let evt = new window.Event(event, details);
