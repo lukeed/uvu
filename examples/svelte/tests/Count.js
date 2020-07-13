@@ -9,57 +9,57 @@ test.before(ENV.setup);
 test.before.each(ENV.reset);
 
 test('should render with "5" by default', () => {
-	ENV.render(Count);
+	const { container } = ENV.render(Count);
 
 	assert.snapshot(
-		document.body.innerHTML,
+		container.innerHTML,
 		`<button id="decr">--</button> <span>5</span> <button id="incr">++</button>`
 	);
 });
 
 test('should accept custom `count` prop', () => {
-	ENV.render(Count, { count: 99 });
+	const { container } = ENV.render(Count, { count: 99 });
 
 	assert.snapshot(
-		document.body.innerHTML,
+		container.innerHTML,
 		`<button id="decr">--</button> <span>99</span> <button id="incr">++</button>`
 	);
 });
 
 test('should increment count after `button#incr` click', async () => {
-	ENV.render(Count);
+	const { container } = ENV.render(Count);
 
 	assert.snapshot(
-		document.body.innerHTML,
+		container.innerHTML,
 		`<button id="decr">--</button> <span>5</span> <button id="incr">++</button>`
 	);
 
 	await ENV.fire(
-		document.querySelector('#incr'),
+		container.querySelector('#incr'),
 		'click'
 	);
 
 	assert.snapshot(
-		document.body.innerHTML,
+		container.innerHTML,
 		`<button id="decr">--</button> <span>6</span> <button id="incr">++</button>`
 	);
 });
 
 test('should decrement count after `button#decr` click', async () => {
-	ENV.render(Count);
+	const { container } = ENV.render(Count);
 
 	assert.snapshot(
-		document.body.innerHTML,
+		container.innerHTML,
 		`<button id="decr">--</button> <span>5</span> <button id="incr">++</button>`
 	);
 
 	await ENV.fire(
-		document.querySelector('#decr'),
+		container.querySelector('#decr'),
 		'click'
 	);
 
 	assert.snapshot(
-		document.body.innerHTML,
+		container.innerHTML,
 		`<button id="decr">--</button> <span>4</span> <button id="incr">++</button>`
 	);
 });

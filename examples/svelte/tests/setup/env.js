@@ -19,10 +19,18 @@ export function reset() {
 }
 
 /**
- * @return {import('svelte').SvelteComponent}
+ * @typedef RenderOutput
+ * @property container {HTMLElement}
+ * @property component {import('svelte').SvelteComponent}
+ */
+
+/**
+ * @return {RenderOutput}
  */
 export function render(Tag, props = {}) {
-	return new Tag({ props, target: window.document.body });
+	const container = window.document.body;
+	const component = new Tag({ props, target: container  });
+	return { container, component };
 }
 
 /**
