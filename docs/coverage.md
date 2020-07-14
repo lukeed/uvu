@@ -6,6 +6,8 @@ Instead, `uvu` plays nicely with existing coverage tools like [`c8`](https://www
 
 ## Examples
 
+> Visit the working [`/examples/coverage`](/examples/coverage) demonstration~!
+
 Assuming we have a `uvu` command hooked up to the `npm test` script:
 
 ```js
