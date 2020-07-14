@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "uvu tests",
+    "test:coverage": "c8 --include=src npm test",
+    "test:report": "c8 report --reporter=text-lcov > coverage.lcov"
+  },
+  "devDependencies": {
+    "c8": "^7.2.0",
+    "uvu": "^0.2.0"
+  }
+}
