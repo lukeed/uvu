@@ -2,7 +2,7 @@ import { JSDOM } from 'jsdom';
 import * as Preact from 'preact';
 import { act } from 'preact/test-utils';
 
-const { window } = new JSDOM('');
+const { window } = new JSDOM('<main></main');
 
 export function setup() {
 	// @ts-ignore
@@ -16,7 +16,7 @@ export function setup() {
 export function reset() {
 	window.document.title = '';
 	window.document.head.innerHTML = '';
-	window.document.body.innerHTML = '';
+	window.document.body.innerHTML = '<main></main';
 }
 
 /**
@@ -29,7 +29,7 @@ export function reset() {
  * @return {RenderOutput}
  */
 export function render(Tag, props = {}) {
-	const container = window.document.body;
+	const container = window.document.querySelector('main');
 	const component = Preact.h(Tag, props);
 	Preact.render(component, container)
 	return { container, component };
@@ -42,9 +42,7 @@ export function render(Tag, props = {}) {
  */
 export async function fire(elem, event, details) {
 	await act(() => {
-		console.log('[action] before send');
 		let evt = new window.Event(event, details);
 		elem.dispatchEvent(evt);
-		console.log('[action] after send');
 	});
 }
