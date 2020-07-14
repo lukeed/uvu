@@ -28,6 +28,7 @@ export function reset() {
  * @return {RenderOutput}
  */
 export function render(Tag, props = {}) {
+	Tag = Tag.default || Tag;
 	const container = window.document.body;
 	const component = new Tag({ props, target: container  });
 	return { container, component };

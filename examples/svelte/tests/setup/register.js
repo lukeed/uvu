@@ -1,20 +1,13 @@
 const { parse } = require('path');
-const { readFileSync } = require('fs');
 const { compile } = require('svelte/compiler');
 
-function capitalise(name) {
-	return name[0].toUpperCase() + name.substring(1);
-}
+function transform(hook, source, filename) {
+	const { name } = parse(filename);
 
-// Runtime DOM hook for require("*.svelte") files
-// Note: for SSR/Node.js hook, use `svelte/register`
-require.extensions['.svelte'] = function(mod, filename) {
-	const name = parse(filename).name.replace(/^\d/, '_$&').replace(/[^a-zA-Z0-9_$]/g, '');
-
-	const { js, warnings } = compile(readFileSync(filename, 'utf-8'), {
+	const { js, warnings } = compile(source, {
+		name: name[0].toUpperCase() + name.substring(1),
+		format: 'cjs',
 		filename,
-		name: capitalise(name),
-		format: 'cjs'
 	});
 
 	warnings.forEach(warning => {
@@ -23,5 +16,15 @@ require.extensions['.svelte'] = function(mod, filename) {
 		console.warn(warning.frame);
 	});
 
-	return mod._compile(js.code, filename);
+	return hook(js.code, filename);
+}
+
+const loadJS = require.extensions['.js'];
+
+// Runtime DOM hook for require("*.svelte") files
+// Note: for SSR/Node.js hook, use `svelte/register`
+require.extensions['.svelte'] = function (mod, filename) {
+	const orig = mod._compile.bind(mod);
+	mod._compile = code => transform(orig, code, filename);
+	loadJS(mod, filename);
 }

@@ -2,8 +2,8 @@ import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 import * as ENV from './setup/env';
 
-// Must be require() –> setup/register
-const Count = require('../src/Count.svelte').default;
+// Relies on `setup/register`
+import Count from '../src/Count.svelte';
 
 test.before(ENV.setup);
 test.before.each(ENV.reset);
