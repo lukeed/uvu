@@ -2,8 +2,8 @@ import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 import * as ENV from './setup/env';
 
-// Must be require() –> @babel/register
-const Count = require('../src/Count.jsx').default;
+// Relies on `@babel/register`
+import Count from '../src/Count.jsx';
 
 test.before(ENV.setup);
 test.before.each(ENV.reset);
