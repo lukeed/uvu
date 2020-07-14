@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "uvu tests",
+    "watch": "watchlist src tests -- yarn test"
+  },
+  "devDependencies": {
+    "uvu": "^0.2.0",
+    "watchlist": "^0.2.1"
+  }
+}
