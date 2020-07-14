@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "uvu tests -r esm -r @babel/register -i setup"
+  },
+  "dependencies": {
+    "preact": "^10.4.5"
+  },
+  "devDependencies": {
+    "@babel/core": "7.10.4",
+    "@babel/register": "7.10.4",
+    "@babel/plugin-syntax-jsx": "7.10.4",
+    "@babel/plugin-transform-react-jsx": "7.10.4",
+    "esm": "3.2.25",
+    "jsdom": "16.3.0",
+    "uvu": "^0.2.0"
+  }
+}
