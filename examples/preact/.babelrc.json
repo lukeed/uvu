@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    "@babel/plugin-syntax-jsx",
+    ["@babel/plugin-transform-react-jsx", {
+			"pragmaFrag": "Fragment",
+			"pragma": "h"
+		}]
+  ]
+}
