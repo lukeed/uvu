@@ -2,7 +2,7 @@ import { JSDOM } from 'jsdom';
 import * as Preact from 'preact';
 import { act } from 'preact/test-utils';
 
-const { window } = new JSDOM('<main></main');
+const { window } = new JSDOM('<main></main>');
 
 export function setup() {
 	// @ts-ignore
@@ -16,7 +16,7 @@ export function setup() {
 export function reset() {
 	window.document.title = '';
 	window.document.head.innerHTML = '';
-	window.document.body.innerHTML = '<main></main';
+	window.document.body.innerHTML = '<main></main>';
 }
 
 /**
