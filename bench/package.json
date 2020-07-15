@@ -1,9 +1,7 @@
 {
   "private": true,
-  "scripts": {
-    "foo": "jest suites/jest"
-  },
   "devDependencies": {
+    "ava": "3.10.1",
     "jest": "26.1.0",
     "mocha": "8.0.1",
     "tape": "5.0.1",

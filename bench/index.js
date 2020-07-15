@@ -6,6 +6,7 @@ const spawn = promisify(execFile);
 const PAD = reset().dim('    ||  ');
 
 const runners = {
+	ava: [require.resolve('ava/cli.js'), 'suites/ava/**'],
 	jest: [require.resolve('jest/bin/jest.js'), 'suites/jest'],
 	mocha: [require.resolve('mocha/bin/mocha'), 'suites/mocha'],
 	tape: [require.resolve('tape/bin/tape'), 'suites/tape'],
