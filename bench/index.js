@@ -7,7 +7,7 @@ const PAD = reset().dim('    ||  ');
 
 const runners = {
 	ava: [require.resolve('ava/cli.js'), 'suites/ava/**'],
-	jest: [require.resolve('jest/bin/jest.js'), 'suites/jest'],
+	jest: [require.resolve('jest/bin/jest.js'), 'suites/jest', '--env=node'],
 	mocha: [require.resolve('mocha/bin/mocha'), 'suites/mocha'],
 	tape: [require.resolve('tape/bin/tape'), 'suites/tape'],
 	uvu: [require.resolve('uvu/bin.js'), 'suites/uvu'],
