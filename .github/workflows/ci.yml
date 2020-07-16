@@ -2,9 +2,19 @@ name: CI
 
 on:
   push:
+    paths-ignore:
+      - 'docs/**'
+      - 'bench/**'
+      - 'examples/**'
+      - 'shots/**'
     branches:
     - master
   pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'bench/**'
+      - 'examples/**'
+      - 'shots/**'
     branches:
     - master
 
