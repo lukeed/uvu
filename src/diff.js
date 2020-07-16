@@ -198,7 +198,7 @@ export function compare(input, expect) {
 		return lines(input, expect);
 	}
 
-	if (typeof expect == 'string') {
+	if (typeof expect == 'string' && typeof input == 'string') {
 		return chars(input, expect);
 	}
 

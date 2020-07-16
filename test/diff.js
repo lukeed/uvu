@@ -736,6 +736,44 @@ compare('should proxy `$.direct` for Boolean inputs', () => {
 	);
 });
 
+compare('should handle string against non-type mismatch', () => {
+	assert.snapshot(
+		strip($.compare('foobar', null)),
+		'++null    [object]  (Expected)\n' +
+		'--foobar  [string]  (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(null, 'foobar')),
+		'++foobar  [string]  (Expected)\n' +
+		'--null    [object]  (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare('foobar', 123)),
+		'++123     [number]  (Expected)\n' +
+		'--foobar  [string]  (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(123, 'foobar')),
+		'++foobar  [string]  (Expected)\n' +
+		'--123     [number]  (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare('foobar', undefined)),
+		'++undefined  [undefined]  (Expected)\n' +
+		'--foobar     [string]     (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(undefined, 'foobar')),
+		'++foobar     [string]     (Expected)\n' +
+		'--undefined  [undefined]  (Actual)\n'
+	);
+});
+
 compare.run();
 
 // ---
