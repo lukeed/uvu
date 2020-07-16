@@ -187,7 +187,7 @@ assert.not.snapshot(
 ```
 
 ### not.fixture(actual: string, expects: string, msg?: Message)
-Assert that `actual` does not matche the `expects` multi-line string.<br>Equivalent to `assert.not.snapshot` except that line numbers are printed in the error diff!
+Assert that `actual` does not match the `expects` multi-line string.<br>Equivalent to `assert.not.snapshot` except that line numbers are printed in the error diff!
 
 ```js
 assert.not.fixture(
