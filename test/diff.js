@@ -774,6 +774,62 @@ compare('should handle string against non-type mismatch', () => {
 	);
 });
 
+compare('should handle multi-line string against non-type mismatch', () => {
+	assert.snapshot(
+		strip($.compare('foo\nbar', null)),
+		'Actual:\n' +
+		'--foo\n' +
+		'--bar\n' +
+		'Expected:\n' +
+		'++null\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(null, 'foo\nbar')),
+		'Actual:\n' +
+		'--null\n' +
+		'Expected:\n' +
+		'++foo\n' +
+		'++bar\n'
+	);
+
+	assert.snapshot(
+		strip($.compare('foo\nbar', 123)),
+		'Actual:\n' +
+		'--foo\n' +
+		'--bar\n' +
+		'Expected:\n' +
+		'++123\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(123, 'foo\nbar')),
+		'Actual:\n' +
+		'--123\n' +
+		'Expected:\n' +
+		'++foo\n' +
+		'++bar\n'
+	);
+
+	assert.snapshot(
+		strip($.compare('foo\nbar', undefined)),
+		'Actual:\n' +
+		'--foo\n' +
+		'--bar\n' +
+		'Expected:\n' +
+		'++undefined\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(undefined, 'foo\nbar')),
+		'Actual:\n' +
+		'--undefined\n' +
+		'Expected:\n' +
+		'++foo\n' +
+		'++bar\n'
+	);
+});
+
 compare.run();
 
 // ---

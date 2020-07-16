@@ -194,13 +194,12 @@ export function compare(input, expect) {
 		expect = JSON.stringify(expect, circular(), 2);
 	}
 
-	if (/\r?\n/.test(String(expect))) {
-		return lines(input, expect);
-	}
+	let isA = typeof input == 'string';
+	let isB = typeof expect == 'string';
 
-	if (typeof expect == 'string' && typeof input == 'string') {
-		return chars(input, expect);
-	}
+	if (isA && /\r?\n/.test(input)) return lines(input, ''+expect);
+	if (isB && /\r?\n/.test(expect)) return lines(''+input, expect);
+	if (isA && isB) return chars(input, expect);
 
 	return direct(input, expect);
 }
