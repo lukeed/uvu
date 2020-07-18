@@ -10,8 +10,10 @@ sade('uvu [dir] [pattern]')
 	.option('-r, --require', 'Additional module(s) to preload')
 	.option('-C, --cwd', 'The current directory to resolve from', '.')
 	.option('-c, --color', 'Print colorized output', true)
+	.option('-p, --progress', 'Print dot progress', false)
 	.action(async (dir, pattern, opts) => {
 		if (opts.color) process.env.FORCE_COLOR = '1';
+		if (opts.progress) process.env.FORCE_PROGRESS = '1';
 		let { suites } = await parse(dir, pattern, opts);
 		let { exec, QUEUE } = require('.');
 

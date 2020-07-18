@@ -69,13 +69,13 @@ async function runner(ctx, name) {
 				for (hook of bEach) await hook();
 				await test.handler();
 				for (hook of aEach) await hook();
-				write(PASS);
+				if (process.env.FORCE_PROGRESS) write(PASS);
 				num++;
 			} catch (err) {
 				for (hook of aEach) await hook();
 				if (errors.length) errors += '\n';
 				errors += format(test.name, err, name);
-				write(FAIL);
+				if (process.env.FORCE_PROGRESS) write(FAIL);
 			}
 		}
 	} finally {
