@@ -118,3 +118,120 @@ only.only('modifier: only #2', () => {
 });
 
 only.run();
+
+// ---
+
+const context1 = suite('context #1');
+
+context1.before(ctx => {
+	assert.is(ctx.before, undefined);
+	assert.is(ctx.after, undefined);
+	assert.is(ctx.each, undefined);
+
+	Object.assign(ctx, {
+		before: 1,
+		after: 0,
+		each: 0,
+	});
+});
+
+context1.after(ctx => {
+	assert.is(ctx.before, 1);
+	assert.is(ctx.after, 0);
+	assert.is(ctx.each, 0);
+	ctx.after++;
+});
+
+context1.before.each(ctx => {
+	assert.is(ctx.before, 1);
+	assert.is(ctx.after, 0);
+	assert.is(ctx.each, 0);
+	ctx.each++;
+});
+
+context1.after.each(ctx => {
+	assert.is(ctx.before, 1);
+	assert.is(ctx.after, 0);
+	assert.is(ctx.each, 1);
+	ctx.each--;
+});
+
+context1('test #1', ctx => {
+	assert.is(ctx.before, 1);
+	assert.is(ctx.after, 0);
+	assert.is(ctx.each, 1);
+});
+
+context1('test #2', ctx => {
+	assert.is(ctx.before, 1);
+	assert.is(ctx.after, 0);
+	assert.is(ctx.each, 1);
+});
+
+context1.run();
+
+context1('ensure after() ran', ctx => {
+	assert.is(ctx.before, 1);
+	assert.is(ctx.after, 1);
+	assert.is(ctx.each, 0);
+});
+
+context1.run();
+
+// ---
+
+const context2 = suite('context #2', {
+	before: 0,
+	after: 0,
+	each: 0,
+});
+
+context2.before(ctx => {
+	assert.is(ctx.before, 0);
+	assert.is(ctx.after, 0);
+	assert.is(ctx.each, 0);
+	ctx.before++;
+});
+
+context2.after(ctx => {
+	assert.is(ctx.before, 1);
+	assert.is(ctx.after, 0);
+	assert.is(ctx.each, 0);
+	ctx.after++;
+});
+
+context2.before.each(ctx => {
+	assert.is(ctx.before, 1);
+	assert.is(ctx.after, 0);
+	assert.is(ctx.each, 0);
+	ctx.each++;
+});
+
+context2.after.each(ctx => {
+	assert.is(ctx.before, 1);
+	assert.is(ctx.after, 0);
+	assert.is(ctx.each, 1);
+	ctx.each--;
+});
+
+context2('test #1', ctx => {
+	assert.is(ctx.before, 1);
+	assert.is(ctx.after, 0);
+	assert.is(ctx.each, 1);
+});
+
+context2('test #2', ctx => {
+	assert.is(ctx.before, 1);
+	assert.is(ctx.after, 0);
+	assert.is(ctx.each, 1);
+});
+
+context2.run();
+
+context2('ensure after() ran', ctx => {
+	assert.is(ctx.before, 1);
+	assert.is(ctx.after, 1);
+	assert.is(ctx.each, 0);
+});
+
+context2.run();
