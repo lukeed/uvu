@@ -252,3 +252,39 @@ context2('ensure after() ran', ctx => {
 });
 
 context2.run();
+
+// ---
+
+const input = {
+	a: 1,
+	b: [2, 3, 4],
+	c: { foo: 5 },
+};
+
+const context3 = suite('context #3', input);
+
+context3('should access keys', ctx => {
+	assert.is(ctx.a, input.a);
+	assert.equal(ctx.b, input.b);
+	assert.equal(ctx.c, input.c);
+});
+
+context3('should ignore modifications', ctx => {
+	ctx.a++;
+	assert.is(ctx.a, 1);
+	assert.is(input.a, 1);
+
+	ctx.b.push(999);
+	assert.equal(ctx.b, [2, 3, 4]);
+	assert.equal(input.b, [2, 3, 4]);
+
+	ctx.c.foo++;
+	assert.is(ctx.c.foo, 5);
+	assert.is(input.c.foo, 5);
+
+	ctx.c.bar = 6;
+	assert.equal(ctx.c, { foo: 5 });
+	assert.equal(input.c, { foo: 5 });
+});
+
+context3.run();
