@@ -56,61 +56,31 @@ function format(name, err, suite = '') {
 	return str + '\n';
 }
 
-async function loop(arr, state) {
-	let tmp, copy=state;
-	for (let hook of arr) {
-		tmp = await hook(copy);
-		if (tmp !== void 0) copy=state;
-	}
-	return copy;
-}
-
 async function runner(ctx, name) {
 	let { only, tests, state, before, after, bEach, aEach } = ctx;
 	let arr = only.length ? only : tests;
-	let test, hook, errors='', tmp;
 	let num=0, total=arr.length;
+	let test, hook, errors='';
 	try {
 		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
-		if (before.length) state = await loop(before, state);
-
-		// for (hook of before) {
-		// 	tmp = await hook(state);
-		// 	if (tmp !== void 0) state = tmp;
-		// }
+		for (hook of before) await hook(state);
 
 		for (test of arr) {
 			try {
-				if (bEach.length) state = await loop(bEach, state);
-
-				// for (hook of bEach) {
-				// 	tmp = await hook(state);
-				// 	if (tmp !== void 0) state = tmp;
-				// }
-
+				for (hook of bEach) await hook(state);
 				await test.handler(state);
-
-				if (aEach.length) state = await loop(aEach, state);
-				// for (hook of aEach) {
-				// 	tmp = await hook(state);
-				// 	if (tmp !== void 0) state = tmp;
-				// }
-
+				for (hook of aEach) await hook(state);
 				write(PASS);
 				num++;
 			} catch (err) {
-				// for (hook of aEach) {
-				// 	tmp = await hook(state);
-				// 	if (tmp !== void 0) state = tmp;
-				// }
-				if (aEach.length) state = await loop(aEach, state);
+				for (hook of aEach) await hook(state);
 				if (errors.length) errors += '\n';
 				errors += format(test.name, err, name);
 				write(FAIL);
 			}
 		}
 	} finally {
-		for (hook of after) await hook();
+		for (hook of after) await hook(state);
 		let msg = `  (${num} / ${total})\n`;
 		let skipped = (only.length ? tests.length : 0) + ctx.skips;
 		write(errors.length ? kleur.red(msg) : kleur.green(msg));
