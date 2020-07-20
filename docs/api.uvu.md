@@ -14,12 +14,23 @@ No matter which you choose, the Suite's [`run`](#suiterun) must be called in ord
 
 ## API
 
-### uvu.suite(name: string)
+### uvu.suite<T>(name: string, context?: T)
 Returns: [`Suite`](#suites)
 
 Creates a new `Suite` instance.
 
 Of course, you may have multiple `Suite`s in the same file.<br>However, you must remember to call `run()` on each suite!
+
+#### name
+Type: `String`
+
+The name of your suite. <br>This groups all console output together and will prefix the name of any failing test.
+
+#### context
+Type: `any`<br>
+Default: `{}`
+
+The suite's initial [context](#context-1) value, if any. <br>This will be passed to every [hook](#hooks) for modification and to every test block within the suite for read-only access.
 
 ### uvu.test(name: string, callback: function)
 Returns: `void`
@@ -37,6 +48,8 @@ The name of your test. <br>Choose a descriptive name as it identifies failing te
 Type: `Function<any>` or `Promise<any>`
 
 The callback that contains your test code. <br>Your callback may be asynchronous and may `return` any value, although returned values are discarded completely and have no effect.
+
+> **Note:** Tests' callbacks have **read-only access** to the [suite's context](#context-1).
 
 
 ## Suites
@@ -133,6 +146,8 @@ It may be appropriate to use `suite.before.each` and `suite.after.each` to reset
 
 > **Important:** Any `after` and `after.each` hooks will _always_ be invoked – including after failed assertions.
 
+Additionally, as of `uvu@0.3.0`, hooks will receive the suite's context value. Unlike the suite's tests, hooks are permitted to modify the `context` value directly, allowing you to organize and abstract hooks into reusable setup/teardown blocks. Please read [Context](#context-1) for examples and more information.
+
 ***Example: Lifecycle***
 
 The following implements all available hooks so that their call patterns can be recorded:
@@ -174,4 +189,188 @@ test.run();
 // >>>> TEST: BAR
 // >> AFTER
 // CLEANUP
+```
+
+
+## Context
+
+When using [suite hooks](#hooks) to establish and reset environments, there's often some side-effect that you wish to make accessible to your tests. For example, this may be a HTTP client, a database table record, a JSDOM instance, etc.
+
+Typically, these side-effects would have to be saved into top-level variables that so that all parties involved can access them. The following is an example of this pattern:
+
+```js
+const User = suite('User');
+
+let client, user;
+
+User.before(async () => {
+  client = await DB.connect();
+});
+
+User.before.each(async () => {
+  user = await client.insert('insert into users ... returning *');
+});
+
+User.after.each(async () => {
+  await client.destroy(`delete from users where id = ${user.id}`);
+  user = undefined;
+});
+
+User.after(async () => {
+  client = await client.end();
+});
+
+User('should not have Teams initially', async () => {
+  const teams = await client.select(`
+    select id from users_teams
+    where user_id = ${user.id};
+  `);
+
+  assert.is(teams.length, 0);
+});
+
+// ...
+
+User.run();
+```
+
+While this certainly works, it can quickly become unruly once multiple suites exist within the same file. Additionally, it **requires** that all our suite hooks (`User.before`, `User.before.each`, etc) are defined within this file so that they may have access to the `user` and `client` variables that they're modifying.
+
+Instead, we can improve this by writing into the suite's "context" directly!
+
+> **Note:** If it helps your mental model, "context" can be interchanged with "state" – except that it's intended to umbrella the tests with a certain environment.
+
+```js
+const User = suite('User');
+
+User.before(async context => {
+  context.client = await DB.connect();
+});
+
+User.before.each(async context => {
+  context.user = await context.client.insert('insert into users ... returning *');
+});
+
+User.after.each(async context => {
+  await context.client.destroy(`delete from users where id = ${user.id}`);
+  context.user = undefined;
+});
+
+User.after(async context => {
+  context.client = await context.client.end();
+});
+
+// <insert tests>
+
+User.run();
+```
+
+A "context" is unique to each suite and can be defined through [`suite()`](#uvusuitename-string) initialization and/or modified by the suite's hooks. Because of this, hooks can be abstracted into separate files and then attached safely to different suites:
+
+```js
+import * as $ from './helpers';
+
+const User = suite('User');
+
+// Reuse generic/shared helpers
+// ---
+
+User.before($.DB.connect);
+User.after($.DB.destroy);
+
+// Keep User-specific helpers in this file
+// ---
+
+User.before.each(async context => {
+  context.user = await context.client.insert('insert into users ... returning *');
+});
+
+User.after.each(async context => {
+  await context.client.destroy(`delete from users where id = ${user.id}`);
+  context.user = undefined;
+});
+
+// <insert tests>
+
+User.run()
+```
+
+Individual tests will receive a **read-only** snapshot of the context. This is how tests can access the HTTP client or database fixture you've set up, for example. However tests **cannot modify context** so as to preserve the environment and prevent tests from affecting sequential tests.
+
+Here's an example `User` test, now acessing its `user` and `client` values from context instead of globally-scoped variables:
+
+```js
+User('should not have Teams initially', async context => {
+  const { client, user } = context;
+
+  const teams = await client.select(`
+    select id from users_teams
+    where user_id = ${user.id};
+  `);
+
+  assert.is(teams.length, 0);
+});
+```
+
+Now, to enforce read-only access, `uvu` will emit a warning whenever a test attempts to set or mutate a context value:
+
+```js
+User('this will do nothing', context => {
+  context.hello = 'world';
+  // stdout => [WARN] Cannot modify context within tests!
+  assert.is(context.hello, 'world');   // FAIL!
+  assert.is(context.hello, undefined); // PASS!
+});
+```
+
+***TypeScript***
+
+Finally, TypeScript users can easily define their suites' contexts on a suite-by-suite basis.
+
+Let's revisit our initial example, now using context and TypeScript interfaces:
+
+```ts
+interface Context {
+  client?: DB.Client;
+  user?: IUser;
+}
+
+const User = suite<Context>('User', {
+  client: undefined,
+  user: undefined,
+});
+
+// Our `context` is type-checked
+// ---
+
+User.before(async context => {
+  context.client = await DB.connect();
+});
+
+User.after(async context => {
+  context.client = await context.client.end();
+});
+
+User.before.each(async context => {
+  context.user = await context.client.insert('insert into users ... returning *');
+});
+
+User.after.each(async context => {
+  await context.client.destroy(`delete from users where id = ${user.id}`);
+  context.user = undefined;
+});
+
+// Our `context` is *still* type-checked 🎉
+User('should not have Teams initially', async context => {
+  const { client, user } = context;
+
+  const teams = await client.select(`
+    select id from users_teams
+    where user_id = ${user.id};
+  `);
+
+  assert.is(teams.length, 0);
+});
+
+User.run();
 ```
