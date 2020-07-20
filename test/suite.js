@@ -121,6 +121,15 @@ only.run();
 
 // ---
 
+// changes should be ignored
+function test_mutation(ctx) {
+	ctx.hello = 'world';
+	assert.is(ctx.hello, undefined);
+
+	let old = ctx.before++;
+	assert.is(ctx.before, old);
+}
+
 const context1 = suite('context #1');
 
 context1.before(ctx => {
@@ -166,6 +175,8 @@ context1('test #2', ctx => {
 	assert.is(ctx.before, 1);
 	assert.is(ctx.after, 0);
 	assert.is(ctx.each, 1);
+
+	test_mutation(ctx);
 });
 
 context1.run();
@@ -174,6 +185,8 @@ context1('ensure after() ran', ctx => {
 	assert.is(ctx.before, 1);
 	assert.is(ctx.after, 1);
 	assert.is(ctx.each, 0);
+
+	test_mutation(ctx);
 });
 
 context1.run();
@@ -218,12 +231,16 @@ context2('test #1', ctx => {
 	assert.is(ctx.before, 1);
 	assert.is(ctx.after, 0);
 	assert.is(ctx.each, 1);
+
+	test_mutation(ctx);
 });
 
 context2('test #2', ctx => {
 	assert.is(ctx.before, 1);
 	assert.is(ctx.after, 0);
 	assert.is(ctx.each, 1);
+
+	test_mutation(ctx);
 });
 
 context2.run();
