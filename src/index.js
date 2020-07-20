@@ -56,11 +56,32 @@ function format(name, err, suite = '') {
 	return str + '\n';
 }
 
+function toProxy(cache) {
+	return {
+		get(obj, key) {
+			let tmp = obj[key];
+			if (!tmp || typeof tmp !== 'object') return tmp;
+
+			let nxt = cache.get(tmp);
+			if (nxt) return nxt;
+
+			nxt = new Proxy(tmp, this);
+			cache.set(tmp, nxt);
+			return nxt;
+		},
+		set() {
+			write('\n' + kleur.yellow('[WARN]') + ' Cannot modify context within tests!\n');
+			return false;
+		}
+	}
+}
+
 async function runner(ctx, name) {
-	let { only, tests, state, before, after, bEach, aEach } = ctx;
-	let arr = only.length ? only : tests;
-	let num=0, total=arr.length;
-	let test, hook, errors='';
+	let { only, tests, before, after, bEach, aEach, state } = ctx;
+	let reader = Proxy.revocable(state, toProxy(new Map));
+	let hook, test, arr = only.length ? only : tests;
+	let num=0, errors='', total=arr.length;
+
 	try {
 		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
 		for (hook of before) await hook(state);
@@ -68,7 +89,7 @@ async function runner(ctx, name) {
 		for (test of arr) {
 			try {
 				for (hook of bEach) await hook(state);
-				await test.handler(state);
+				await test.handler(reader.proxy);
 				for (hook of aEach) await hook(state);
 				write(PASS);
 				num++;
@@ -80,6 +101,7 @@ async function runner(ctx, name) {
 			}
 		}
 	} finally {
+		reader.revoke();
 		for (hook of after) await hook(state);
 		let msg = `  (${num} / ${total})\n`;
 		let skipped = (only.length ? tests.length : 0) + ctx.skips;
@@ -98,8 +120,8 @@ function setup(ctx, name = '') {
 	test.skip = () => { ctx.skips++ };
 	test.run = () => {
 		let copy = { ...ctx };
-		Object.assign(ctx, context());
 		let run = runner.bind(0, copy, name);
+		Object.assign(ctx, context(copy.state));
 		QUEUE[globalThis.UVU_INDEX || 0].push(run);
 	};
 	return test;
