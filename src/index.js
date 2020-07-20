@@ -71,7 +71,7 @@ function toProxy(cache) {
 		},
 		set() {
 			write('\n' + kleur.yellow('[WARN]') + ' Cannot modify context within tests!\n');
-			return false;
+			return true;
 		}
 	}
 }
