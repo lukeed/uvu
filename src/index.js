@@ -6,7 +6,7 @@ let hrtime = (now = Date.now()) => () => (Date.now() - now).toFixed(2) + 'ms';
 let write = console.log;
 
 const into = (ctx, key) => (name, handler) => ctx[key].push({ name, handler });
-const context = () => ({ tests:[], before:[], after:[], bEach:[], aEach:[], only:[], skips:0 });
+const context = (state) => ({ tests:[], before:[], after:[], bEach:[], aEach:[], only:[], skips:0, state });
 const milli = arr => (arr[0]*1e3 + arr[1]/1e6).toFixed(2) + 'ms';
 const hook = (ctx, key) => handler => ctx[key].push(handler);
 
@@ -56,30 +56,53 @@ function format(name, err, suite = '') {
 	return str + '\n';
 }
 
+function toProxy(cache) {
+	return {
+		get(obj, key) {
+			let tmp = obj[key];
+			if (!tmp || typeof tmp !== 'object') return tmp;
+
+			let nxt = cache.get(tmp);
+			if (nxt) return nxt;
+
+			nxt = new Proxy(tmp, this);
+			cache.set(tmp, nxt);
+			return nxt;
+		},
+		set() {
+			write('\n' + kleur.yellow('[WARN]') + ' Cannot modify context within tests!\n');
+			return true;
+		}
+	}
+}
+
 async function runner(ctx, name) {
-	let { only, tests, before, after, bEach, aEach } = ctx;
-	let arr = only.length ? only : tests;
-	let num=0, total=arr.length;
-	let test, hook, errors='';
+	let { only, tests, before, after, bEach, aEach, state } = ctx;
+	let reader = Proxy.revocable(state, toProxy(new Map));
+	let hook, test, arr = only.length ? only : tests;
+	let num=0, errors='', total=arr.length;
+
 	try {
 		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
-		for (hook of before) await hook();
+		for (hook of before) await hook(state);
+
 		for (test of arr) {
 			try {
-				for (hook of bEach) await hook();
-				await test.handler();
-				for (hook of aEach) await hook();
+				for (hook of bEach) await hook(state);
+				await test.handler(reader.proxy);
+				for (hook of aEach) await hook(state);
 				write(PASS);
 				num++;
 			} catch (err) {
-				for (hook of aEach) await hook();
+				for (hook of aEach) await hook(state);
 				if (errors.length) errors += '\n';
 				errors += format(test.name, err, name);
 				write(FAIL);
 			}
 		}
 	} finally {
-		for (hook of after) await hook();
+		reader.revoke();
+		for (hook of after) await hook(state);
 		let msg = `  (${num} / ${total})\n`;
 		let skipped = (only.length ? tests.length : 0) + ctx.skips;
 		write(errors.length ? kleur.red(msg) : kleur.green(msg));
@@ -97,8 +120,8 @@ function setup(ctx, name = '') {
 	test.skip = () => { ctx.skips++ };
 	test.run = () => {
 		let copy = { ...ctx };
-		Object.assign(ctx, context());
 		let run = runner.bind(0, copy, name);
+		Object.assign(ctx, context(copy.state));
 		QUEUE[globalThis.UVU_INDEX || 0].push(run);
 	};
 	return test;
@@ -107,7 +130,7 @@ function setup(ctx, name = '') {
 export const QUEUE = [];
 isCLI || QUEUE.push([null]);
 
-export const suite = (name = '') => setup(context(), name);
+export const suite = (name = '', state = {}) => setup(context(state), name);
 export const test = suite();
 
 export async function exec(bail) {
