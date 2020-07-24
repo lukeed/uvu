@@ -104,3 +104,11 @@ declare module 'uvu/parse' {
 	function parse(dir: string, pattern: string, opts?: Partial<Options>): Promise<Argv>;
 	export = parse;
 }
+
+declare module 'uvu/spy' {
+	interface Spy<T extends any[], R> {
+		(...args: T): R;
+		calls: Array<{ args: T, return: R }>;
+	}
+	function spy<T extends any[], R>(fn: (...args: T) => R): Spy<T, R>;
+}

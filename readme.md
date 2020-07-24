@@ -33,6 +33,7 @@
 * Supports native ES Modules
 * Browser-Compatible
 * Familiar API
+* Function Spies
 
 
 ## Install
@@ -109,6 +110,11 @@ A collection of assertion methods to use within your tests. Please note that:
 * these are browser compatible
 * these are _completely_ optional
 
+### Module: `uvu/spy`
+
+> [View `uvu/spy` API documentation](/docs/api.spy.md)
+
+Functions to spy on functions to assert how often and with wich arguments they were called.
 
 ## Benchmarks
 
