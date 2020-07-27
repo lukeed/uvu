@@ -13,8 +13,8 @@ function isError(err, msg, input, expect, operator, details) {
 	assert.is(err.code, 'ERR_ASSERTION');
 	assert.is(!!err.details, !!details, '~> details');
 	assert.is(err.operator, operator, '~> operator');
-	assert.is(err.expects, expect, '~> expects');
-	assert.is(err.actual, input, '~> actual');
+	assert.equal(err.expects, expect, '~> expects');
+	assert.equal(err.actual, input, '~> actual');
 }
 
 const Assertion = suite('Assertion');
@@ -317,6 +317,46 @@ fixture.run();
 
 // ---
 
+const match = suite('match');
+
+match('should be a function', () => {
+	assert.type($.match, 'function');
+});
+
+match('should not throw if valid', () => {
+	assert.not.throws(() => $.match('foobar', 'foo'));
+	assert.not.throws(() => $.match('foobar', 'bar'));
+
+	assert.not.throws(() => $.match('foobar', /foo/));
+	assert.not.throws(() => $.match('foobar', /bar/i));
+});
+
+match('should throw if invalid', () => {
+	try {
+		$.match('foobar', 'hello');
+	} catch (err) {
+		isError(err, '', 'foobar', 'hello', 'match', false);
+	}
+
+	try {
+		$.match('foobar', /hello/i);
+	} catch (err) {
+		isError(err, '', 'foobar', /hello/i, 'match', false);
+	}
+});
+
+match('should throw with custom message', () => {
+	try {
+		$.match('foobar', 'hello', 'howdy partner');
+	} catch (err) {
+		isError(err, 'howdy partner', 'foobar', 'hello', 'match', false);
+	}
+});
+
+match.run();
+
+// ---
+
 const throws = suite('throws');
 
 throws('should be a function', () => {
@@ -616,7 +656,7 @@ notType('should throw if types match', () => {
 	}
 });
 
-type('should not throw if types do not match', () => {
+notType('should not throw if types do not match', () => {
 	assert.not.throws(
 		() => $.not.type('foo', 'number')
 	);
@@ -699,6 +739,54 @@ notInstance.run();
 // TODO
 // const notFixture = suite('not.fixture');
 // notFixture.run();
+
+// ---
+
+const notMatch = suite('not.match');
+
+notMatch('should be a function', () => {
+	assert.type($.not.match, 'function');
+});
+
+notMatch('should throw if values match', () => {
+	try {
+		$.not.match('foobar', 'foo');
+	} catch (err) {
+		isError(err, '', 'foobar', 'foo', 'not.match', false);
+	}
+
+	try {
+		$.not.match('foobar', 'bar');
+	} catch (err) {
+		isError(err, '', 'foobar', 'bar', 'not.match', false);
+	}
+
+	try {
+		$.not.match('foobar', /foo/);
+	} catch (err) {
+		isError(err, '', 'foobar', /foo/, 'not.match', false);
+	}
+});
+
+notMatch('should not throw if types do not match', () => {
+	assert.not.throws(
+		() => $.not.match('foobar', 'hello')
+	);
+
+	assert.not.throws(
+		() => $.not.match('foobar', /hello/)
+	);
+});
+
+notMatch('should throw with custom message', () => {
+	try {
+		$.not.match('foobar', 'hello', 'hello world');
+	} catch (err) {
+		isError(err, 'hello world', 'foobar', 'hello', 'not.match', false);
+	}
+});
+
+notMatch.run();
 
 // ---
 

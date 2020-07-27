@@ -57,6 +57,15 @@ export function instance(val, exp, msg) {
 	assert(val instanceof exp, val, exp, 'instance', false, `Expected value to be an instance of ${name}`, msg);
 }
 
+export function match(val, exp, msg) {
+	if (typeof exp === 'string') {
+		assert(val.includes(exp), val, exp, 'match', false, `Expected value to include "${exp}" substring`, msg);
+	} else {
+		let tmp = '`' + String(exp) + '`';
+		assert(exp.test(val), val, exp, 'match', false, `Expected value to match ${tmp} pattern`, msg);
+	}
+}
+
 export function snapshot(val, exp, msg) {
 	val=dedent(val); exp=dedent(exp);
 	assert(val === exp, val, exp, 'snapshot', lines, 'Expected value to match snapshot:', msg);
@@ -122,6 +131,15 @@ not.snapshot = function (val, exp, msg) {
 not.fixture = function (val, exp, msg) {
 	val=dedent(val); exp=dedent(exp);
 	assert(val !== exp, val, exp, 'not.fixture', false, 'Expected value not to match fixture', msg);
+}
+
+not.match = function (val, exp, msg) {
+	if (typeof exp === 'string') {
+		assert(!val.includes(exp), val, exp, 'not.match', false, `Expected value not to include "${exp}" substring`, msg);
+	} else {
+		let tmp = '`' + String(exp) + '`';
+		assert(!exp.test(val), val, exp, 'not.match', false, `Expected value not to match ${tmp} pattern`, msg);
+	}
 }
 
 not.throws = function (blk, exp, msg) {
