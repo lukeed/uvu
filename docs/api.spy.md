@@ -7,8 +7,10 @@ import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 import { spy } from 'uvu/spy';
 
+const add = (a, b) => a + b;
+
 test('check if function is called twice', () => {
-  const testFunction = spy((a, b) => a + b);
+  const testFunction = spy(add);
 
   add(1, 2);
   add(3, 4);
