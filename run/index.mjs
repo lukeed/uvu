@@ -7,7 +7,7 @@ export default async function (suites, opts={}) {
 	for (suite of suites) {
 		QUEUE.push([suite.name]);
 		globalThis.UVU_INDEX = idx++;
-		await import(suite.file);
+		await import('file:///' + suite.file);
 	}
 
 	await exec(opts.bail);
