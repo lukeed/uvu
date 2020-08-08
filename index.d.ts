@@ -1,7 +1,7 @@
-type Arrayable<T> = T[] | T;
-type Promisable<T> = Promise<T> | T;
-
 declare namespace uvu {
+	type Arrayable<T> = T[] | T;
+	type Promisable<T> = Promise<T> | T;
+
 	type Callback<T> = (context: T) => Promisable<void>;
 
 	interface Hook<T> {
@@ -95,8 +95,8 @@ declare module 'uvu/parse' {
 
 	interface Options {
 		cwd: string;
-		require: Arrayable<string>;
-		ignore: Arrayable<string | RegExp>;
+		require: uvu.Arrayable<string>;
+		ignore: uvu.Arrayable<string | RegExp>;
 	}
 
 	interface Argv {
