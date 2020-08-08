@@ -698,6 +698,31 @@ compare('should proxy `$.lines` for Object inputs', () => {
 		'++··"foo":·1\n' +
 		'··}\n'
 	);
+
+	assert.is(
+		strip($.compare({ foo: 2, bar: undefined, baz: NaN }, { foo: 1, bar: null })),
+		'··{\n' +
+		'Actual:\n' +
+		'--··"foo":·2,\n' +
+		'--··"bar":·undefined,\n' +
+		'--··"baz":·NaN\n' +
+		'Expected:\n' +
+		'++··"foo":·1,\n' +
+		'++··"bar":·null\n' +
+		'··}\n'
+	);
+
+	assert.is(
+		strip($.compare({ foo: 2, bar: null, baz: NaN }, { foo: 2, bar: undefined, baz: NaN })),
+		'··{\n' +
+		'····"foo":·2,\n' +
+		'Actual:\n' +
+		'--··"bar":·null,\n' +
+		'Expected:\n' +
+		'++··"bar":·undefined,\n' +
+		'····"baz":·NaN\n' +
+		'··}\n'
+	);
 });
 
 compare('should proxy `$.lines` for multi-line String inputs', () => {
@@ -725,6 +750,18 @@ compare('should proxy `$.direct` for Number inputs', () => {
 		strip($.compare(123, 12345)),
 		'++12345    (Expected)\n' +
 		'--123      (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(123, NaN)),
+		'++NaN    (Expected)\n' +
+		'--123    (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(NaN, 123)),
+		'++123    (Expected)\n' +
+		'--NaN    (Actual)\n'
 	);
 });
 
@@ -770,6 +807,18 @@ compare('should handle string against non-type mismatch', () => {
 	assert.snapshot(
 		strip($.compare(undefined, 'foobar')),
 		'++foobar     [string]     (Expected)\n' +
+		'--undefined  [undefined]  (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(NaN, undefined)),
+		'++undefined  [undefined]  (Expected)\n' +
+		'--NaN        [number]     (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(undefined, NaN)),
+		'++NaN        [number]     (Expected)\n' +
 		'--undefined  [undefined]  (Actual)\n'
 	);
 });
