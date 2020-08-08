@@ -938,11 +938,25 @@ sort.run();
 const circular = suite('circular');
 
 circular('should ignore non-object values', () => {
-	const input = { a:1, b:2, c:'c', d:null, e:undefined };
+	const input = { a:1, b:2, c:'c', d:null, e:()=>{} };
 
 	assert.is(
 		JSON.stringify(input, $.circular()),
+		'{"a":1,"b":2,"c":"c","d":null}'
+	);
+});
+
+circular('should retain `undefined` and `NaN` values', () => {
+	const input = { a:1, b:undefined, c:NaN };
+
+	assert.is(
+		JSON.stringify(input, $.circular()),
+		'{"a":1,"b":"[__VOID__]","c":"[__NAN__]"}'
+	);
+
+	assert.is(
 		JSON.stringify(input),
+		'{"a":1,"c":null}'
 	);
 });
 
