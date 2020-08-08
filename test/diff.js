@@ -698,6 +698,31 @@ compare('should proxy `$.lines` for Object inputs', () => {
 		'++··"foo":·1\n' +
 		'··}\n'
 	);
+
+	assert.is(
+		strip($.compare({ foo: 2, bar: undefined, baz: NaN }, { foo: 1, bar: null })),
+		'··{\n' +
+		'Actual:\n' +
+		'--··"foo":·2,\n' +
+		'--··"bar":·undefined,\n' +
+		'--··"baz":·NaN\n' +
+		'Expected:\n' +
+		'++··"foo":·1,\n' +
+		'++··"bar":·null\n' +
+		'··}\n'
+	);
+
+	assert.is(
+		strip($.compare({ foo: 2, bar: null, baz: NaN }, { foo: 2, bar: undefined, baz: NaN })),
+		'··{\n' +
+		'····"foo":·2,\n' +
+		'Actual:\n' +
+		'--··"bar":·null,\n' +
+		'Expected:\n' +
+		'++··"bar":·undefined,\n' +
+		'····"baz":·NaN\n' +
+		'··}\n'
+	);
 });
 
 compare('should proxy `$.lines` for multi-line String inputs', () => {
@@ -725,6 +750,18 @@ compare('should proxy `$.direct` for Number inputs', () => {
 		strip($.compare(123, 12345)),
 		'++12345    (Expected)\n' +
 		'--123      (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(123, NaN)),
+		'++NaN    (Expected)\n' +
+		'--123    (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(NaN, 123)),
+		'++123    (Expected)\n' +
+		'--NaN    (Actual)\n'
 	);
 });
 
@@ -770,6 +807,18 @@ compare('should handle string against non-type mismatch', () => {
 	assert.snapshot(
 		strip($.compare(undefined, 'foobar')),
 		'++foobar     [string]     (Expected)\n' +
+		'--undefined  [undefined]  (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(NaN, undefined)),
+		'++undefined  [undefined]  (Expected)\n' +
+		'--NaN        [number]     (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.compare(undefined, NaN)),
+		'++NaN        [number]     (Expected)\n' +
 		'--undefined  [undefined]  (Actual)\n'
 	);
 });
@@ -938,11 +987,25 @@ sort.run();
 const circular = suite('circular');
 
 circular('should ignore non-object values', () => {
-	const input = { a:1, b:2, c:'c', d:null, e:undefined };
+	const input = { a:1, b:2, c:'c', d:null, e:()=>{} };
 
 	assert.is(
 		JSON.stringify(input, $.circular()),
+		'{"a":1,"b":2,"c":"c","d":null}'
+	);
+});
+
+circular('should retain `undefined` and `NaN` values', () => {
+	const input = { a:1, b:undefined, c:NaN };
+
+	assert.is(
+		JSON.stringify(input, $.circular()),
+		'{"a":1,"b":"[__VOID__]","c":"[__NAN__]"}'
+	);
+
+	assert.is(
 		JSON.stringify(input),
+		'{"a":1,"c":null}'
 	);
 });
 
@@ -987,3 +1050,33 @@ circular('should replace circular references with "[Circular]" :: Array', () => 
 });
 
 circular.run();
+
+// ---
+
+const stringify = suite('stringify');
+
+stringify('should wrap `JSON.stringify` native', () => {
+	const input = { a:1, b:2, c:'c', d:null, e:()=>{} };
+
+	assert.is(
+		$.stringify(input),
+		JSON.stringify(input, null, 2)
+	);
+});
+
+stringify('should retain `undefined` and `NaN` values :: Object', () => {
+	assert.is(
+		$.stringify({ a: 1, b: undefined, c: NaN }),
+		'{\n  "a": 1,\n  "b": undefined,\n  "c": NaN\n}'
+	);
+});
+
+// In ES6, array holes are treated like `undefined` values
+stringify('should retain `undefined` and `NaN` values :: Array', () => {
+	assert.is(
+		$.stringify([1, undefined, 2, , 3, NaN, 4, 5]),
+		'[\n  1,\n  undefined,\n  2,\n  undefined,\n  3,\n  NaN,\n  4,\n  5\n]'
+	);
+});
+
+stringify.run();
