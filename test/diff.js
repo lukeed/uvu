@@ -1001,3 +1001,33 @@ circular('should replace circular references with "[Circular]" :: Array', () => 
 });
 
 circular.run();
+
+// ---
+
+const stringify = suite('stringify');
+
+stringify('should wrap `JSON.stringify` native', () => {
+	const input = { a:1, b:2, c:'c', d:null, e:()=>{} };
+
+	assert.is(
+		$.stringify(input),
+		JSON.stringify(input, null, 2)
+	);
+});
+
+stringify('should retain `undefined` and `NaN` values :: Object', () => {
+	assert.is(
+		$.stringify({ a: 1, b: undefined, c: NaN }),
+		'{\n  "a": 1,\n  "b": undefined,\n  "c": NaN\n}'
+	);
+});
+
+// In ES6, array holes are treated like `undefined` values
+stringify('should retain `undefined` and `NaN` values :: Array', () => {
+	assert.is(
+		$.stringify([1, undefined, 2, , 3, NaN, 4, 5]),
+		'[\n  1,\n  undefined,\n  2,\n  undefined,\n  3,\n  NaN,\n  4,\n  5\n]'
+	);
+});
+
+stringify.run();
