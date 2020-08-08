@@ -58,11 +58,11 @@ function format(name, err, suite = '') {
 
 async function runner(ctx, name) {
 	let { only, tests, before, after, bEach, aEach, state } = ctx;
-	let hook, test, arr = only.length ? only : tests;
-	let num=0, errors='', total=arr.length;
+	let arr=only.length ? only : tests, total=arr.length;
+	let output='', num=0, errors='', hook, test;
 
 	try {
-		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
+		if (name) output += (SUITE(kleur.black(` ${name} `)) + ' ');
 		for (hook of before) await hook(state);
 
 		for (test of arr) {
@@ -71,13 +71,13 @@ async function runner(ctx, name) {
 				for (hook of bEach) await hook(state);
 				await test.handler(state);
 				for (hook of aEach) await hook(state);
-				write(PASS);
+				output += PASS;
 				num++;
 			} catch (err) {
 				for (hook of aEach) await hook(state);
 				if (errors.length) errors += '\n';
 				errors += format(test.name, err, name);
-				write(FAIL);
+				output += FAIL;
 			}
 		}
 	} finally {
@@ -85,8 +85,8 @@ async function runner(ctx, name) {
 		for (hook of after) await hook(state);
 		let msg = `  (${num} / ${total})\n`;
 		let skipped = (only.length ? tests.length : 0) + ctx.skips;
-		write(errors.length ? kleur.red(msg) : kleur.green(msg));
-		return [errors || true, num, skipped, total];
+		output += (errors.length ? kleur.red(msg) : kleur.green(msg));
+		return [output, errors || true, num, skipped, total];
 	}
 }
 
@@ -119,21 +119,24 @@ export async function exec(bail) {
 	let timer = hrtime();
 	let done=0, total=0, skips=0, code=0;
 
-	for (let group of QUEUE) {
-		if (total) write('\n');
+	await Promise.all(
+		QUEUE.map(async group => {
+			let txt = '', name = group.shift();
+			if (name != null) txt += (FILE(name) + '\n');
 
-		let name = group.shift();
-		if (name != null) write(FILE(name) + '\n');
-
-		for (let test of group) {
-			let [errs, ran, skip, max] = await test();
-			total += max; done += ran; skips += skip;
-			if (errs.length) {
-				write('\n' + errs + '\n'); code=1;
-				if (bail) return isNode && process.exit(1);
+			for (let test of group) {
+				let [text, errs, ran, skip, max] = await test();
+				total += max; done += ran; skips += skip;
+				txt += text;
+				if (errs.length) {
+					txt += ('\n' + errs + '\n'); code=1;
+					if (bail) return isNode && process.exit(1);
+				}
 			}
-		}
-	}
+
+			write(txt + '\n');
+		})
+	);
 
 	write('\n  Total:     ' + total);
 	write((code ? kleur.red : kleur.green)('\n  Passed:    ' + done));
