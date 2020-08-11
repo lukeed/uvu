@@ -24,6 +24,34 @@ arrays('should handle simple values', () => {
 	);
 });
 
+arrays('should handle nullish values', () => {
+	assert.is(
+		strip($.arrays(['foo', 'bar', undefined], ['foo', 'bar', 'baz'])),
+		'··[\n' +
+		'····"foo",\n' +
+		'····"bar",\n' +
+		'Actual:\n' +
+		'--··undefined,\n' +
+		'Expected:\n' +
+		'++··"baz",\n' +
+		'··]\n'
+	);
+
+	assert.is(
+		strip($.arrays([1, 2, NaN, undefined], [1, 2, null, null])),
+		'··[\n' +
+		'····1,\n' +
+		'····2,\n' +
+		'Actual:\n' +
+		'--··NaN,\n' +
+		'--··undefined,\n' +
+		'Expected:\n' +
+		'++··null,\n' +
+		'++··null,\n' +
+		'··]\n'
+	);
+});
+
 arrays('should allow dangling "Actual" block', () => {
 	assert.is(
 		strip($.arrays([1, 2, 3, 4], [1, 2, 4])),

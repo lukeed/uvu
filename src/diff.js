@@ -50,7 +50,7 @@ export function arrays(input, expect) {
 
 		for (j=0; j < tmp.value.length; j++) {
 			isObj = (tmp.value[j] && typeof tmp.value[j] === 'object');
-			val = JSON.stringify(tmp.value[j], null, 2).split(/\r?\n/g);
+			val = stringify(tmp.value[j]).split(/\r?\n/g);
 			for (k=0; k < val.length;) {
 				str = '  ' + val[k++] + (isObj ? '' : ',');
 				if (isObj && k === val.length && (j + 1) < tmp.value.length) str += ',';
