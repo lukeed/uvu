@@ -26,6 +26,10 @@
     "./parse": {
       "require": "./parse/index.js",
       "import": "./parse/index.mjs"
+    },
+    "./spy": {
+      "require": "./spy/index.js",
+      "import": "./spy/index.mjs"
     }
   },
   "files": [
@@ -34,12 +38,14 @@
     "assert",
     "parse",
     "diff",
-    "dist"
+    "dist",
+    "spy"
   ],
   "modes": {
     "diff": "src/diff.js",
     "parse": "src/parse.js",
     "assert": "src/assert.js",
+    "spy": "src/spy.js",
     "default": "src/index.js"
   },
   "scripts": {
@@ -71,6 +77,7 @@
   "_moduleAliases": {
     "uvu": "src/index.js",
     "uvu/diff": "src/diff.js",
-    "uvu/assert": "src/assert.js"
+    "uvu/assert": "src/assert.js",
+    "uvu/spy": "src/spy.js"
   }
 }
