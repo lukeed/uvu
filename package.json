@@ -61,7 +61,7 @@
     "diff": "^4.0.2",
     "kleur": "^4.0.3",
     "sade": "^1.7.3",
-    "totalist": "^1.1.0"
+    "totalist": "^2.0.0"
   },
   "devDependencies": {
     "bundt": "1.0.1",

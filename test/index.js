@@ -1,6 +1,6 @@
 const kleur = require('kleur');
 const assert = require('assert');
-const totalist = require('totalist/sync');
+const { totalist } = require('totalist/sync');
 const { spawnSync } = require('child_process');
 
 let code = 0;

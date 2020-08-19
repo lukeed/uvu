@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import tlist from 'totalist';
+import { totalist } from 'totalist';
 
 const toRegex = x => new RegExp(x, 'i');
 
@@ -27,7 +27,7 @@ export default async function (dir, pattern, opts = {}) {
 	let suites = [];
 	let ignores = ['node_modules'].concat(opts.ignore || []).map(toRegex);
 
-	await tlist(dir, (rel, abs) => {
+	await totalist(dir, (rel, abs) => {
 		if (pattern.test(rel) && !ignores.some(x => x.test(rel))) {
 			suites.push({ name: rel, file: abs });
 		}
