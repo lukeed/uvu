@@ -64,7 +64,7 @@
     "totalist": "^2.0.0"
   },
   "devDependencies": {
-    "bundt": "1.0.1",
+    "bundt": "1.1.1",
     "esm": "3.2.25",
     "module-alias": "2.2.2"
   },

@@ -4,6 +4,8 @@ node_modules
 *.lock
 *.log
 
+/*.d.ts
+
 /dist
 /assert
 /parse
