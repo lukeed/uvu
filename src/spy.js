@@ -1,4 +1,4 @@
-export function spy(cb) {
+export function spy(cb = () => void 0) {
 	const calls = [];
 	const wrapped = function(...args) {
 		const call = { args, return: undefined };
@@ -16,5 +16,6 @@ export function spy(cb) {
 		return res;
 	};
 	wrapped.calls = calls;
+	Object.defineProperty(wrapped, 'length', { value: cb.length });
 	return wrapped;
 }
