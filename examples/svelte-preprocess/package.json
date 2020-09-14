@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "uvu tests -r esm -r tests/setup/register -i setup"
+  },
+  "devDependencies": {
+    "cosmiconfig": "^7.0.0",
+    "esm": "3.2.25",
+    "jsdom": "16.3.0",
+    "svelte": "3.24.0",
+    "svelte-preprocess": "^4.2.1",
+    "typescript": "^3.9.7",
+    "uvu": "^0.2.0"
+  }
+}
