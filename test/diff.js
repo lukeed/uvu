@@ -547,6 +547,22 @@ chars('should print "→" character for tab', () => {
 	);
 });
 
+chars('should handle empty string', () => {
+	assert.is(
+		strip($.chars('foo bar', '')),
+		'++           (Expected)\n' +
+		'--foo·bar    (Actual)\n' +
+		'  ^^^^^^^'
+		);
+
+	assert.is(
+		strip($.chars('', 'foo bar')),
+		'++foo·bar    (Expected)\n' +
+		'--           (Actual)\n' +
+		'  ^^^^^^^'
+	);
+})
+
 chars.run();
 
 // ---
