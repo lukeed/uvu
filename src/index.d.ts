@@ -17,7 +17,10 @@ declare namespace uvu {
 }
 
 type Context = Record<string, any>;
-export const test: uvu.Test<Context>;
+
+export type Test<T=Context> = uvu.Test<T>;
 export type Callback<T=Context> = uvu.Callback<T>;
+
+export const test: uvu.Test<Context>;
 export function suite<T=Context>(title?: string, context?: T): uvu.Test<T>;
 export function exec(bail?: boolean): Promise<void>;
