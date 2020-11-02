@@ -63,24 +63,24 @@ async function runner(ctx, name) {
 
 	try {
 		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
-		for (hook of before) await hook(state);
+		for (hook of before) await hook(state, name);
 
 		for (test of arr) {
 			try {
-				for (hook of bEach) await hook(state);
+				for (hook of bEach) await hook(state, `${name} ${test.name}`);
 				await test.handler(state);
-				for (hook of aEach) await hook(state);
+				for (hook of aEach) await hook(state, `${name} ${test.name}`);
 				write(PASS);
 				num++;
 			} catch (err) {
-				for (hook of aEach) await hook(state);
+				for (hook of aEach) await hook(state, `${name} ${test.name}`);
 				if (errors.length) errors += '\n';
 				errors += format(test.name, err, name);
 				write(FAIL);
 			}
 		}
 	} finally {
-		for (hook of after) await hook(state);
+		for (hook of after) await hook(state, name);
 		let msg = `  (${num} / ${total})\n`;
 		let skipped = (only.length ? tests.length : 0) + ctx.skips;
 		write(errors.length ? kleur.red(msg) : kleur.green(msg));
