@@ -89,7 +89,7 @@ export function chars(input, expect) {
 
 	if (l1 === l2) {
 		// no length offsets
-	} else if (tmp.removed) {
+	} else if (tmp.removed && arr[i + 1]) {
 		let del = tmp.count - arr[i + 1].count;
 		if (del == 0) {
 			// wash~
