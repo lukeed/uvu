@@ -60,27 +60,30 @@ async function runner(ctx, name) {
 	let { only, tests, before, after, bEach, aEach, state } = ctx;
 	let hook, test, arr = only.length ? only : tests;
 	let num=0, errors='', total=arr.length;
+	let breadcrumbs = name ? [name] : [];
 
 	try {
 		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
-		for (hook of before) await hook(state, name);
+		for (hook of before) await hook(state, breadcrumbs);
 
 		for (test of arr) {
+			breadcrumbs.push(test.name);
 			try {
-				for (hook of bEach) await hook(state, `${name} ${test.name}`);
+				for (hook of bEach) await hook(state, breadcrumbs);
 				await test.handler(state);
-				for (hook of aEach) await hook(state, `${name} ${test.name}`);
+				for (hook of aEach) await hook(state, breadcrumbs);
 				write(PASS);
 				num++;
 			} catch (err) {
-				for (hook of aEach) await hook(state, `${name} ${test.name}`);
+				for (hook of aEach) await hook(state, breadcrumbs);
 				if (errors.length) errors += '\n';
 				errors += format(test.name, err, name);
 				write(FAIL);
 			}
+			breadcrumbs.pop();
 		}
 	} finally {
-		for (hook of after) await hook(state, name);
+		for (hook of after) await hook(state, [name]);
 		let msg = `  (${num} / ${total})\n`;
 		let skipped = (only.length ? tests.length : 0) + ctx.skips;
 		write(errors.length ? kleur.red(msg) : kleur.green(msg));
