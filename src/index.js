@@ -66,6 +66,7 @@ async function runner(ctx, name) {
 		for (hook of before) await hook(state);
 
 		for (test of arr) {
+			state.__test__ = test.name;
 			try {
 				for (hook of bEach) await hook(state);
 				await test.handler(state);
@@ -80,6 +81,7 @@ async function runner(ctx, name) {
 			}
 		}
 	} finally {
+		state.__test__ = '';
 		for (hook of after) await hook(state);
 		let msg = `  (${num} / ${total})\n`;
 		let skipped = (only.length ? tests.length : 0) + ctx.skips;
@@ -89,6 +91,8 @@ async function runner(ctx, name) {
 }
 
 function setup(ctx, name = '') {
+	ctx.state.__test__ = '';
+	ctx.state.__suite__ = name;
 	const test = into(ctx, 'tests');
 	test.before = hook(ctx, 'before');
 	test.before.each = hook(ctx, 'bEach');

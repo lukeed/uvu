@@ -282,3 +282,41 @@ context3('should allow self-referencing instance(s) within context', ctx => {
 });
 
 context3.run();
+
+// ---
+
+const breadcrumbs = suite('breadcrumbs', {
+	count: 1,
+});
+
+breadcrumbs.before(ctx => {
+	assert.is(ctx.__suite__, 'breadcrumbs');
+	assert.is(ctx.__test__, '');
+});
+
+breadcrumbs.after(ctx => {
+	assert.is(ctx.__suite__, 'breadcrumbs');
+	assert.is(ctx.__test__, '');
+});
+
+breadcrumbs.before.each(ctx => {
+	assert.is(ctx.__suite__, 'breadcrumbs');
+	assert.is(ctx.__test__, `test #${ctx.count}`);
+});
+
+breadcrumbs.after.each(ctx => {
+	assert.is(ctx.__suite__, 'breadcrumbs');
+	assert.is(ctx.__test__, `test #${ctx.count++}`);
+});
+
+breadcrumbs('test #1', (ctx) => {
+	assert.is(ctx.__suite__, 'breadcrumbs');
+	assert.is(ctx.__test__, 'test #1');
+});
+
+breadcrumbs('test #2', (ctx) => {
+	assert.is(ctx.__suite__, 'breadcrumbs');
+	assert.is(ctx.__test__, 'test #2');
+});
+
+breadcrumbs.run();
