@@ -121,15 +121,6 @@ only.run();
 
 // ---
 
-// changes should be ignored
-function test_mutation(ctx) {
-	ctx.hello = 'world';
-	assert.is(ctx.hello, undefined);
-
-	let old = ctx.before++;
-	assert.is(ctx.before, old);
-}
-
 const context1 = suite('context #1');
 
 context1.before(ctx => {
@@ -175,8 +166,6 @@ context1('test #2', ctx => {
 	assert.is(ctx.before, 1);
 	assert.is(ctx.after, 0);
 	assert.is(ctx.each, 1);
-
-	test_mutation(ctx);
 });
 
 context1.run();
@@ -185,8 +174,6 @@ context1('ensure after() ran', ctx => {
 	assert.is(ctx.before, 1);
 	assert.is(ctx.after, 1);
 	assert.is(ctx.each, 0);
-
-	test_mutation(ctx);
 });
 
 context1.run();
@@ -231,16 +218,12 @@ context2('test #1', ctx => {
 	assert.is(ctx.before, 1);
 	assert.is(ctx.after, 0);
 	assert.is(ctx.each, 1);
-
-	test_mutation(ctx);
 });
 
 context2('test #2', ctx => {
 	assert.is(ctx.before, 1);
 	assert.is(ctx.after, 0);
 	assert.is(ctx.each, 1);
-
-	test_mutation(ctx);
 });
 
 context2.run();
@@ -259,6 +242,9 @@ const input = {
 	a: 1,
 	b: [2, 3, 4],
 	c: { foo: 5 },
+	set: new Set([1, 2]),
+	date: new Date(),
+	map: new Map,
 };
 
 const context3 = suite('context #3', input);
@@ -269,22 +255,30 @@ context3('should access keys', ctx => {
 	assert.equal(ctx.c, input.c);
 });
 
-context3('should ignore modifications', ctx => {
+context3('should allow context modifications', ctx => {
 	ctx.a++;
-	assert.is(ctx.a, 1);
-	assert.is(input.a, 1);
+	assert.is(ctx.a, 2);
+	assert.is(input.a, 2);
 
 	ctx.b.push(999);
-	assert.equal(ctx.b, [2, 3, 4]);
-	assert.equal(input.b, [2, 3, 4]);
+	assert.equal(ctx.b, [2, 3, 4, 999]);
+	assert.equal(input.b, [2, 3, 4, 999]);
 
 	ctx.c.foo++;
-	assert.is(ctx.c.foo, 5);
-	assert.is(input.c.foo, 5);
+	assert.is(ctx.c.foo, 6);
+	assert.is(input.c.foo, 6);
 
 	ctx.c.bar = 6;
-	assert.equal(ctx.c, { foo: 5 });
-	assert.equal(input.c, { foo: 5 });
+	assert.equal(ctx.c, { foo: 6, bar: 6 });
+	assert.equal(input.c, { foo: 6, bar: 6 });
+});
+
+context3('should allow self-referencing instance(s) within context', ctx => {
+	const { date, set, map } = ctx;
+
+	assert.type(date.getTime(), 'number');
+	assert.equal([...set.values()], [1, 2]);
+	assert.equal([...map.entries()], []);
 });
 
 context3.run();

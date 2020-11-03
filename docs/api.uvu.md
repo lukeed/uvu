@@ -30,7 +30,9 @@ The name of your suite. <br>This groups all console output together and will pre
 Type: `any`<br>
 Default: `{}`
 
-The suite's initial [context](#context-1) value, if any. <br>This will be passed to every [hook](#hooks) for modification and to every test block within the suite for read-only access.
+The suite's initial [context](#context-1) value, if any. <br>This will be passed to every [hook](#hooks) and to every test block within the suite.
+
+> **Note:** Before v0.4.0, `uvu` attempted to provide read-only access within test handlers. Ever since, `context` is writable/mutable anywhere it's accessed.
 
 ### uvu.test(name: string, callback: function)
 Returns: `void`
@@ -48,8 +50,6 @@ The name of your test. <br>Choose a descriptive name as it identifies failing te
 Type: `Function<any>` or `Promise<any>`
 
 The callback that contains your test code. <br>Your callback may be asynchronous and may `return` any value, although returned values are discarded completely and have no effect.
-
-> **Note:** Tests' callbacks have **read-only access** to the [suite's context](#context-1).
 
 
 ## Suites
@@ -146,7 +146,7 @@ It may be appropriate to use `suite.before.each` and `suite.after.each` to reset
 
 > **Important:** Any `after` and `after.each` hooks will _always_ be invoked – including after failed assertions.
 
-Additionally, as of `uvu@0.3.0`, hooks will receive the suite's context value. Unlike the suite's tests, hooks are permitted to modify the `context` value directly, allowing you to organize and abstract hooks into reusable setup/teardown blocks. Please read [Context](#context-1) for examples and more information.
+Additionally, as of `uvu@0.3.0`, hooks receive the suite's `context` value. They are permitted to modify the `context` value directly, allowing you to organize and abstract hooks into reusable setup/teardown blocks. Please read [Context](#context-1) for examples and more information.
 
 ***Example: Lifecycle***
 
@@ -295,7 +295,7 @@ User.after.each(async context => {
 User.run()
 ```
 
-Individual tests will receive a **read-only** snapshot of the context. This is how tests can access the HTTP client or database fixture you've set up, for example. However tests **cannot modify context** so as to preserve the environment and prevent tests from affecting sequential tests.
+Individual tests will also receive the `context` value. This is how tests can access the HTTP client or database fixture you've set up, for example.
 
 Here's an example `User` test, now acessing its `user` and `client` values from context instead of globally-scoped variables:
 
@@ -309,17 +309,6 @@ User('should not have Teams initially', async context => {
   `);
 
   assert.is(teams.length, 0);
-});
-```
-
-Now, to enforce read-only access, `uvu` will emit a warning whenever a test attempts to set or mutate a context value:
-
-```js
-User('this will do nothing', context => {
-  context.hello = 'world';
-  // stdout => [WARN] Cannot modify context within tests!
-  assert.is(context.hello, 'world');   // FAIL!
-  assert.is(context.hello, undefined); // PASS!
 });
 ```
 

@@ -56,29 +56,8 @@ function format(name, err, suite = '') {
 	return str + '\n';
 }
 
-function toProxy(cache) {
-	return {
-		get(obj, key) {
-			let tmp = obj[key];
-			if (!tmp || typeof tmp !== 'object') return tmp;
-
-			let nxt = cache.get(tmp);
-			if (nxt) return nxt;
-
-			nxt = new Proxy(tmp, this);
-			cache.set(tmp, nxt);
-			return nxt;
-		},
-		set() {
-			write('\n' + kleur.yellow('[WARN]') + ' Cannot modify context within tests!\n');
-			return true;
-		}
-	}
-}
-
 async function runner(ctx, name) {
 	let { only, tests, before, after, bEach, aEach, state } = ctx;
-	let reader = Proxy.revocable(state, toProxy(new Map));
 	let hook, test, arr = only.length ? only : tests;
 	let num=0, errors='', total=arr.length;
 
@@ -89,7 +68,7 @@ async function runner(ctx, name) {
 		for (test of arr) {
 			try {
 				for (hook of bEach) await hook(state);
-				await test.handler(reader.proxy);
+				await test.handler(state);
 				for (hook of aEach) await hook(state);
 				write(PASS);
 				num++;
@@ -101,7 +80,6 @@ async function runner(ctx, name) {
 			}
 		}
 	} finally {
-		reader.revoke();
 		for (hook of after) await hook(state);
 		let msg = `  (${num} / ${total})\n`;
 		let skipped = (only.length ? tests.length : 0) + ctx.skips;
