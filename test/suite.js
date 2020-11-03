@@ -285,24 +285,38 @@ context3.run();
 
 // ---
 
-const breadcrumbs = suite('breadcrumbs');
-
-breadcrumbs('should receive "breadcrumbs" array', (ctx, crumbs) => {
-	console.log('I GOT', crumbs);
-	assert.instance(crumbs, Array);
+const breadcrumbs = suite('breadcrumbs', {
+	count: 1,
 });
 
-breadcrumbs('should see [suite, test] names', (ctx, crumbs) => {
-	assert.is(crumbs.length, 2);
-	assert.equal(crumbs, ['breadcrumbs', 'should see [suite, test] names']);
+breadcrumbs.before(ctx => {
+	assert.is(ctx.__suite__, 'breadcrumbs');
+	assert.is(ctx.__test__, '');
 });
 
-breadcrumbs('test #3', (ctx, crumbs) => {
-	assert.equal(crumbs, ['breadcrumbs', 'test #3']);
+breadcrumbs.after(ctx => {
+	assert.is(ctx.__suite__, 'breadcrumbs');
+	assert.is(ctx.__test__, '');
 });
 
-breadcrumbs('test #4', (ctx, crumbs) => {
-	assert.equal(crumbs, ['breadcrumbs', 'test #4']);
+breadcrumbs.before.each(ctx => {
+	assert.is(ctx.__suite__, 'breadcrumbs');
+	assert.is(ctx.__test__, `test #${ctx.count}`);
+});
+
+breadcrumbs.after.each(ctx => {
+	assert.is(ctx.__suite__, 'breadcrumbs');
+	assert.is(ctx.__test__, `test #${ctx.count++}`);
+});
+
+breadcrumbs('test #1', (ctx) => {
+	assert.is(ctx.__suite__, 'breadcrumbs');
+	assert.is(ctx.__test__, 'test #1');
+});
+
+breadcrumbs('test #2', (ctx) => {
+	assert.is(ctx.__suite__, 'breadcrumbs');
+	assert.is(ctx.__test__, 'test #2');
 });
 
 breadcrumbs.run();

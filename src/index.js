@@ -60,32 +60,29 @@ async function runner(ctx, name) {
 	let { only, tests, before, after, bEach, aEach, state } = ctx;
 	let hook, test, arr = only.length ? only : tests;
 	let num=0, errors='', total=arr.length;
-	let crumbs = name ? [name] : [];
-
-	console.log({ crumbs });
 
 	try {
 		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
-		for (hook of before) await hook(state, crumbs);
+		for (hook of before) await hook(state);
 
 		for (test of arr) {
-			crumbs.push(test.name);
+			state.__test__ = test.name;
 			try {
-				for (hook of bEach) await hook(state, crumbs);
+				for (hook of bEach) await hook(state);
 				await test.handler(state);
-				for (hook of aEach) await hook(state, crumbs);
+				for (hook of aEach) await hook(state);
 				write(PASS);
 				num++;
 			} catch (err) {
-				for (hook of aEach) await hook(state, crumbs);
+				for (hook of aEach) await hook(state);
 				if (errors.length) errors += '\n';
 				errors += format(test.name, err, name);
 				write(FAIL);
 			}
-			crumbs.pop();
 		}
 	} finally {
-		for (hook of after) await hook(state, crumbs);
+		state.__test__ = '';
+		for (hook of after) await hook(state);
 		let msg = `  (${num} / ${total})\n`;
 		let skipped = (only.length ? tests.length : 0) + ctx.skips;
 		write(errors.length ? kleur.red(msg) : kleur.green(msg));
@@ -94,6 +91,8 @@ async function runner(ctx, name) {
 }
 
 function setup(ctx, name = '') {
+	ctx.state.__test__ = '';
+	ctx.state.__suite__ = name;
 	const test = into(ctx, 'tests');
 	test.before = hook(ctx, 'before');
 	test.before.each = hook(ctx, 'bEach');
