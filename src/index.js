@@ -62,6 +62,8 @@ async function runner(ctx, name) {
 	let num=0, errors='', total=arr.length;
 	let crumbs = name ? [name] : [];
 
+	console.log({ crumbs });
+
 	try {
 		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
 		for (hook of before) await hook(state, crumbs);

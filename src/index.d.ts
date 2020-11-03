@@ -1,5 +1,6 @@
 declare namespace uvu {
-	type Callback<T> = (context: T, breadcrumbs?: string[]) => Promise<void> | void;
+	type Crumbs = { __suite__: string; __test__: string };
+	type Callback<T> = (context: T & Crumbs) => Promise<void> | void;
 
 	interface Hook<T> {
 		(hook: Callback<T>): void;

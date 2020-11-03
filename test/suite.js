@@ -282,3 +282,27 @@ context3('should allow self-referencing instance(s) within context', ctx => {
 });
 
 context3.run();
+
+// ---
+
+const breadcrumbs = suite('breadcrumbs');
+
+breadcrumbs('should receive "breadcrumbs" array', (ctx, crumbs) => {
+	console.log('I GOT', crumbs);
+	assert.instance(crumbs, Array);
+});
+
+breadcrumbs('should see [suite, test] names', (ctx, crumbs) => {
+	assert.is(crumbs.length, 2);
+	assert.equal(crumbs, ['breadcrumbs', 'should see [suite, test] names']);
+});
+
+breadcrumbs('test #3', (ctx, crumbs) => {
+	assert.equal(crumbs, ['breadcrumbs', 'test #3']);
+});
+
+breadcrumbs('test #4', (ctx, crumbs) => {
+	assert.equal(crumbs, ['breadcrumbs', 'test #4']);
+});
+
+breadcrumbs.run();
