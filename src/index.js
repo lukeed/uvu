@@ -10,7 +10,7 @@ const context = (state) => ({ tests:[], before:[], after:[], bEach:[], aEach:[],
 const milli = arr => (arr[0]*1e3 + arr[1]/1e6).toFixed(2) + 'ms';
 const hook = (ctx, key) => handler => ctx[key].push(handler);
 
-if (isNode = typeof process !== 'undefined') {
+if (isNode = typeof process !== 'undefined' && Array.isArray(process.argv)) {
 	// globalThis polyfill; Node < 12
 	if (typeof globalThis !== 'object') {
 		Object.defineProperty(global, 'globalThis', {
