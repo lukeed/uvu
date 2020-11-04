@@ -192,12 +192,27 @@ export function stringify(input) {
 }
 
 export function compare(input, expect) {
-	if (Array.isArray(expect)) return arrays(input, expect);
-	if (expect instanceof RegExp) return chars(''+input, ''+expect);
+	if (Array.isArray(expect) && Array.isArray(input)) return arrays(input, expect);
+	if (expect instanceof RegExp) {
+		try {
+			return chars(''+input, ''+expect);
+		} catch (e) {
+			if (e.message !== 'Cannot convert object to primitive value') {
+				throw e
+			}
+		}
+	}
 
-	if (expect && typeof expect == 'object') {
-		input = stringify(sort(input, expect));
+	let inputIsObject = input && typeof input === 'object'
+	let expectIsObject = expect && typeof expect == 'object'
+	if (expectIsObject && inputIsObject) {
+		input = sort(input, expect);
+	}
+	if (expectIsObject) {
 		expect = stringify(expect);
+	}
+	if (inputIsObject) {
+		input = stringify(input);
 	}
 
 	let isA = typeof input == 'string';
