@@ -21,7 +21,6 @@ sade('uvu [dir] [pattern]')
 		try {
 			if (opts.color) process.env.FORCE_COLOR = '1';
 			let { suites } = await parse(dir, pattern, opts);
-			let { exec, QUEUE } = require('.');
 
 			if (hasImport) {
 				await dimport('uvu/run').then(m => m.default(suites, opts));
