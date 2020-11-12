@@ -23,9 +23,9 @@ sade('uvu [dir] [pattern]')
 			let { suites } = await parse(dir, pattern, opts);
 
 			if (hasImport) {
-				await dimport('uvu/run').then(m => m.default(suites, opts));
+				await dimport('uvu/run').then(m => m.run(suites, opts));
 			} else {
-				await require('uvu/run')(suites, opts);
+				await require('uvu/run').run(suites, opts);
 			}
 		} catch (err) {
 			console.error(err.stack || err.message);

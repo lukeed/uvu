@@ -1,6 +1,6 @@
 import { exec, QUEUE } from 'uvu';
 
-export default async function (suites, opts={}) {
+export async function run(suites, opts={}) {
 	let suite, idx=0;
 	globalThis.UVU_DEFER = 1;
 
