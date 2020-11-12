@@ -3,6 +3,8 @@ const sade = require('sade');
 const parse = require('./parse');
 const pkg = require('./package');
 
+const dimport = x => new Function(`return import(${ JSON.stringify(x) })`).call(0);
+
 const hasImport = (() => {
 	try { new Function('import').call(0) }
 	catch (err) { return !/unexpected/i.test(err.message) }
@@ -22,7 +24,7 @@ sade('uvu [dir] [pattern]')
 			let { exec, QUEUE } = require('.');
 
 			if (hasImport) {
-				await import('uvu/run').then(m => m.default(suites, opts));
+				await dimport('uvu/run').then(m => m.default(suites, opts));
 			} else {
 				await require('uvu/run')(suites, opts);
 			}
