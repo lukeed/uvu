@@ -1,9 +1,5 @@
 import kleur from 'kleur';
-import * as differ from 'diff';
-
-// Native ESM workaround, until resolved at source
-// @see https://github.com/kpdecker/jsdiff/issues/292
-const diff = differ.default || differ;
+import * as diff from 'diff';
 
 const colors = {
 	'--': kleur.red,
