@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const sade = require('sade');
-const parse = require('./parse');
 const pkg = require('./package');
+const { parse } = require('./parse');
 
 const dimport = x => new Function(`return import(${ JSON.stringify(x) })`).call(0);
 

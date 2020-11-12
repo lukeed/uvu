@@ -19,5 +19,4 @@ export interface Argv {
 }
 
 // TODO: named `parse` export
-function parse(dir: string, pattern: string, opts?: Partial<Options>): Promise<Argv>;
-export = parse;
+export function parse(dir: string, pattern: string, opts?: Partial<Options>): Promise<Argv>;

@@ -4,14 +4,11 @@ import { totalist } from 'totalist';
 const toRegex = x => new RegExp(x, 'i');
 
 function exists(dep) {
-	try {
-		return require.resolve(dep);
-	} catch (err) {
-		return false;
-	}
+	try { return require.resolve(dep) }
+	catch (err) { return false }
 }
 
-export default async function (dir, pattern, opts = {}) {
+export async function parse(dir, pattern, opts = {}) {
 	if (pattern) pattern = toRegex(pattern);
 	else if (dir) pattern = /(((?:[^\/]*(?:\/|$))*)[\\\/])?\w+\.([mc]js|[jt]sx?)$/;
 	else pattern = /((\/|^)(tests?|__tests?__)\/.*|\.(tests?|spec)|^\/?tests?)\.([mc]js|[jt]sx?)$/i;
