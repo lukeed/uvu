@@ -140,7 +140,7 @@ export async function exec(bail) {
 	write('\n  Skipped:   ' + (skips ? kleur.yellow(skips) : skips));
 	write('\n  Duration:  ' + timer() + '\n\n');
 
-	if (isNode) process.exit(code);
+	if (isNode) process.exitCode = code;
 }
 
 isCLI || Promise.resolve().then(exec);
