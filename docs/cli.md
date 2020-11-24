@@ -113,6 +113,6 @@ $ uvu -r esm tests
 $ uvu -r ts-node/register tests
 
 # After
-$ uvu -r esm tests/math.js
-$ uvu -r ts-node/register tests/math.ts
+$ node -r esm tests/math.js
+$ node -r ts-node/register tests/math.ts
 ```
