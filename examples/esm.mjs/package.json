@@ -1,10 +1,9 @@
 {
   "private": true,
-  "type": "module",
   "scripts": {
     "test": "uvu tests"
   },
   "devDependencies": {
-    "uvu": "file:../../"
+    "uvu": "^0.5.0"
   }
 }
