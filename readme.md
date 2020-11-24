@@ -82,6 +82,8 @@ $ uvu -r esm tests
 $ node -r esm tests/demo.js
 ```
 
+> **Note:** The `-r esm` is for legacy Node.js versions. [Learn More](/docs/esm.md)
+
 > [View the `uvu` CLI documentation](/docs/cli.md)
 
 
