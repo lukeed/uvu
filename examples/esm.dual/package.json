@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:legacy": "uvu -r esm tests",
+    "test:native": "uvu tests"
+  },
+  "devDependencies": {
+    "esm": "3.2.25",
+    "uvu": "^0.5.0"
+  }
+}

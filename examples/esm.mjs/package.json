@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "uvu tests"
+  },
+  "devDependencies": {
+    "uvu": "^0.5.0"
+  }
+}
