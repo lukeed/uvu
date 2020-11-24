@@ -1,6 +1,6 @@
 # ES Modules
 
-EcmaScript Modules have landed in Node.js (> 12.x)! Check out the official language documentation<sup>[[1]((https://nodejs.org/api/esm.html#esm_modules_ecmascript_modules))][[2](https://nodejs.org/api/packages.html)]</sup> to learn more.
+EcmaScript Modules have landed in Node.js (> 12.x)! Check out the official language documentation<sup>[[1](https://nodejs.org/api/esm.html#esm_modules_ecmascript_modules)][[2](https://nodejs.org/api/packages.html)]</sup> to learn more.
 
 ...but, here's the **TL;DR:**
 
