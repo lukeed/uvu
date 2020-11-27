@@ -22,7 +22,12 @@ sade('uvu [dir] [pattern]')
 			if (opts.color) process.env.FORCE_COLOR = '1';
 			let { suites } = await parse(dir, pattern, opts);
 
-			if (hasImport) {
+			// esm loader does not work for *.ts files
+			const suitesContainTypescript = suites.filter(s => /tsx?$/.test(s.name)).length > 0;
+			const usesTsNodeRegister = [].concat(opts.require || []).includes('ts-node/register');
+			const canUseImport = !suitesContainTypescript && !usesTsNodeRegister;
+
+			if (hasImport && canUseImport) {
 				await dimport('uvu/run').then(m => m.run(suites, opts));
 			} else {
 				await require('uvu/run').run(suites, opts);
