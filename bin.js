@@ -17,17 +17,13 @@ sade('uvu [dir] [pattern]')
 	.option('-r, --require', 'Additional module(s) to preload')
 	.option('-C, --cwd', 'The current directory to resolve from', '.')
 	.option('-c, --color', 'Print colorized output', true)
+	.option('-e, --esm', 'Enable esm-loader', true)
 	.action(async (dir, pattern, opts) => {
 		try {
 			if (opts.color) process.env.FORCE_COLOR = '1';
 			let { suites } = await parse(dir, pattern, opts);
 
-			// esm loader does not work for *.ts files
-			const suitesContainTypescript = suites.filter(s => /tsx?$/.test(s.name)).length > 0;
-			const usesTsNodeRegister = [].concat(opts.require || []).includes('ts-node/register');
-			const canUseImport = !suitesContainTypescript && !usesTsNodeRegister;
-
-			if (hasImport && canUseImport) {
+			if (hasImport && opts.esm) {
 				await dimport('uvu/run').then(m => m.run(suites, opts));
 			} else {
 				await require('uvu/run').run(suites, opts);
