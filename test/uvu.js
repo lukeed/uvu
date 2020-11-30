@@ -2,16 +2,6 @@ import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import * as uvu from '../src/index';
 
-const QUEUE = suite('QUEUE');
-
-QUEUE('should be an Array', () => {
-	assert.instance(uvu.QUEUE, Array);
-});
-
-QUEUE.run();
-
-// ---
-
 const ste = suite('suite');
 
 ste('should be a function', () => {
