@@ -24,6 +24,8 @@ if (isNode = typeof process < 'u' && typeof process.stdout < 'u') {
 	// attach node-specific utils
 	write = x => process.stdout.write(x);
 	hrtime = (now = process.hrtime()) => () => milli(process.hrtime(now));
+} else if (typeof performance < 'u') {
+	hrtime = (now = performance.now()) => () => (performance.now() - now).toFixed(2) + 'ms';
 }
 
 const QUOTE = kleur.dim('"'), GUTTER = '\n        ';
