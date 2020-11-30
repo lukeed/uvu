@@ -1,40 +1,58 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
-import withPuppeteer from './setup/withPuppeteer.js'
+import * as ENV from './setup/puppeteer.js'
 
-const util = withPuppeteer(suite('util'));
+const capitalize = suite('capitalize');
+capitalize.before(ENV.setup);
+capitalize.before.each(ENV.homepage);
+capitalize.after(ENV.reset);
 
-util.before.each(async ({ page }) => {
-  await page.goto('http://localhost:3000')
-})
-
-util('capitalize', async ({ page }) => {
-  let value
-
-  value = await page.evaluate(() => typeof window.__UTILS__.capitalize);
-  assert.is(value, 'function');
-
-  value = await page.evaluate(() => window.__UTILS__.capitalize('hello'));
-  assert.is(value, 'Hello');
-
-  value = await page.evaluate(() => window.__UTILS__.capitalize('foo bar'));
-  assert.is(value, 'Foo bar');
+capitalize('should be a function', async context => {
+	assert.is(
+		await context.page.evaluate(() => typeof window.__UTILS__.capitalize),
+		'function'
+	);
 });
 
-util('dashify', async ({ page }) => {
-  let value
-
-  value = await page.evaluate(() => typeof window.__UTILS__.dashify)
-  assert.is(value, 'function');
-
-  value = await page.evaluate(() => window.__UTILS__.dashify('fooBar'))
-  assert.is(value, 'foo-bar');
-
-  value = await page.evaluate(() => window.__UTILS__.dashify('FooBar'))
-  assert.is(value, 'foo-bar');
-
-  value = await page.evaluate(() => window.__UTILS__.dashify('foobar'))
-  assert.is(value, 'foobar');
+capitalize('should capitalize a word', async context => {
+	assert.is(
+		await context.page.evaluate(() => window.__UTILS__.capitalize('hello')),
+		'Hello'
+	);
 });
 
-util.run()
+capitalize('should only capitalize the 1st word', async context => {
+	assert.is(
+		await context.page.evaluate(() => window.__UTILS__.capitalize('foo bar')),
+		'Foo bar'
+	);
+});
+
+capitalize.run();
+
+// ---
+
+const dashify = suite('dashify');
+dashify.before(ENV.setup);
+dashify.before.each(ENV.homepage);
+dashify.after(ENV.reset);
+
+dashify('should be a function', async context => {
+	assert.is(
+		await context.page.evaluate(() => typeof window.__UTILS__.dashify),
+		'function'
+	);
+});
+
+dashify('should replace camelCase with dash-case', async context => {
+	const { page } = context;
+	assert.is(await page.evaluate(() => window.__UTILS__.dashify('fooBar')), 'foo-bar');
+	assert.is(await page.evaluate(() => window.__UTILS__.dashify('FooBar')), 'foo-bar');
+});
+
+dashify('should ignore lowercase', async context => {
+	const { page } = context;
+	assert.is(await page.evaluate(() => window.__UTILS__.dashify('foobar')), 'foobar');
+});
+
+dashify.run();

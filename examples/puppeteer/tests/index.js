@@ -1,18 +1,20 @@
-import { suite } from 'uvu';
+import { test } from 'uvu';
 import * as assert from 'uvu/assert';
-import withPuppeteer from './setup/withPuppeteer.js'
+import * as ENV from './setup/puppeteer.js'
 
-const index = withPuppeteer(suite('index'));
+test.before(ENV.setup);
+test.after(ENV.reset);
 
-index('can fetch data!', async context => {
+test('can fetch data!', async context => {
   const data = await context.page.evaluate(() => {
     return fetch('https://httpbin.org/get').then(r => r.json());
 	});
+
 	assert.type(data, 'object');
 	assert.is(data.url, 'https://httpbin.org/get');
-})
+});
 
-index('can select elements!', async context => {
+test('can select elements!', async context => {
   await context.page.goto('http://example.com/');
 
   const text = await context.page.evaluate(() => {
@@ -23,4 +25,4 @@ index('can select elements!', async context => {
   assert.is(text, 'Example Domain');
 });
 
-index.run();
+test.run();
