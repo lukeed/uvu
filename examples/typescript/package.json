@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "test": "uvu --esm false -r ts-node/register tests"
+    "test": "uvu -r ts-node/register tests"
   },
   "devDependencies": {
     "ts-node": "9.0.0",

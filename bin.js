@@ -17,14 +17,21 @@ sade('uvu [dir] [pattern]')
 	.option('-r, --require', 'Additional module(s) to preload')
 	.option('-C, --cwd', 'The current directory to resolve from', '.')
 	.option('-c, --color', 'Print colorized output', true)
-	.option('-e, --esm', 'Enable esm-loader', true)
 	.action(async (dir, pattern, opts) => {
 		try {
 			if (opts.color) process.env.FORCE_COLOR = '1';
 			let { suites } = await parse(dir, pattern, opts);
 
-			if (hasImport && opts.esm) {
-				await dimport('uvu/run').then(m => m.run(suites, opts));
+			if (hasImport) {
+				try {
+					await dimport('uvu/run').then(m => m.run(suites, opts));
+				} catch (importError) {
+					if (importError.code === 'ERR_UNKNOWN_FILE_EXTENSION') {
+						await require('uvu/run').run(suites, opts);
+					} else {
+						throw( importError );
+					}
+				}
 			} else {
 				await require('uvu/run').run(suites, opts);
 			}
