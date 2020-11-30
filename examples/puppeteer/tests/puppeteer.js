@@ -2,11 +2,11 @@ import { suite } from 'uvu'
 import * as assert from 'uvu/assert'
 import puppeteer from 'puppeteer'
 
-const Fetch = suite('fetch')
+const Puppeteer = suite('puppeteer')
 
 // Launch the browser, then add the browser and page to your
 // suite's context for easy access in tests.
-Fetch.before(async context => {
+Puppeteer.before(async context => {
   const browser = await puppeteer.launch(),
         page = (await browser.pages())[0]
 
@@ -14,11 +14,11 @@ Fetch.before(async context => {
 })
 
 // Close the browser after all tests have run.
-Fetch.after(async ({ puppeteer: { browser }}) => {
+Puppeteer.after(async ({ puppeteer: { browser }}) => {
   await browser.close()
 })
 
-Fetch('can fetch data!', async ({ puppeteer: { page } }) => {
+Puppeteer('can fetch data!', async ({ puppeteer: { page } }) => {
   const fetchedData = await page.evaluate(async () => {
     const result = await fetch('https://httpbin.org/get')
     return await result.json()
@@ -27,4 +27,14 @@ Fetch('can fetch data!', async ({ puppeteer: { page } }) => {
   assert.ok(fetchedData)
 })
 
-Fetch.run()
+Puppeteer('can select elements!', async ({ puppeteer: { page } }) => {
+  await page.goto('http://example.com/')
+  
+  const textContent = await page.evaluate(() => {
+    return document.querySelector('h1').textContent
+  })
+
+  assert.ok(textContent)
+})
+
+Puppeteer.run()
