@@ -3,7 +3,6 @@ import { exec } from 'uvu';
 export async function run(suites, opts={}) {
 	let suite, idx=0;
 	globalThis.UVU_DEFER = 1;
-	globalThis.UVU_QUEUE = globalThis.UVU_QUEUE || [];
 
 	for (suite of suites) {
 		globalThis.UVU_INDEX = idx++;
