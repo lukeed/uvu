@@ -28,6 +28,9 @@ if (isNode = typeof process < 'u' && typeof process.stdout < 'u') {
 	hrtime = (now = performance.now()) => () => (performance.now() - now).toFixed(2) + 'ms';
 }
 
+globalThis.UVU_QUEUE = globalThis.UVU_QUEUE || [];
+isCLI || UVU_QUEUE.push([null]);
+
 const QUOTE = kleur.dim('"'), GUTTER = '\n        ';
 const FAIL = kleur.red('✘ '), PASS = kleur.gray('• ');
 const IGNORE = /^\s*at.*(?:\(|\s)(?:node|(internal\/[\w/]*))/;
@@ -106,13 +109,10 @@ function setup(ctx, name = '') {
 		let copy = { ...ctx };
 		let run = runner.bind(0, copy, name);
 		Object.assign(ctx, context(copy.state));
-		QUEUE[globalThis.UVU_INDEX || 0].push(run);
+		UVU_QUEUE[globalThis.UVU_INDEX || 0].push(run);
 	};
 	return test;
 }
-
-export const QUEUE = [];
-isCLI || QUEUE.push([null]);
 
 export const suite = (name = '', state = {}) => setup(context(state), name);
 export const test = suite();
@@ -121,7 +121,7 @@ export async function exec(bail) {
 	let timer = hrtime();
 	let done=0, total=0, skips=0, code=0;
 
-	for (let group of QUEUE) {
+	for (let group of UVU_QUEUE) {
 		if (total) write('\n');
 
 		let name = group.shift();
