@@ -18,6 +18,7 @@ parse('should rely on defaults', async () => {
 
 	assert.type(output, 'object');
 	assert.is(output.dir, __dirname);
+	assert.is(output.requires, false);
 
 	assert.instance(output.suites, Array);
 	assert.is(output.suites.length, FILES.length);
@@ -40,6 +41,7 @@ dir('should accept relative `dir` input', async () => {
 
 	assert.type(output, 'object');
 	assert.is(output.dir, __dirname);
+	assert.is(output.requires, false);
 
 	assert.instance(output.suites, Array);
 	assert.is(output.suites.length, FILES.length);
@@ -132,6 +134,11 @@ requires('should throw on invalid value(s)', async () => {
 		assert.instance(err, Error);
 		assert.match(err.message, `Cannot find module 'foobar'`);
 	}
+});
+
+requires('should `require` valid value(s)', async () => {
+	let foo = await $.parse(__dirname, '', { require: ['esm'] });
+	assert.is(foo.requires, true);
 });
 
 requires.run();

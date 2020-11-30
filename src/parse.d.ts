@@ -16,6 +16,7 @@ export interface Options {
 export interface Argv {
 	dir: string;
 	suites: Suite[];
+	requires: boolean;
 }
 
 export function parse(dir?: string, pattern?: string|RegExp, opts?: Partial<Options>): Promise<Argv>;
