@@ -1,6 +1,6 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
-import withPuppeteer from '../util/withPuppeteer.js'
+import withPuppeteer from './setup/withPuppeteer.js'
 
 const index = withPuppeteer(suite('index'));
 
