@@ -20,12 +20,12 @@ sade('uvu [dir] [pattern]')
 	.action(async (dir, pattern, opts) => {
 		try {
 			if (opts.color) process.env.FORCE_COLOR = '1';
-			let { suites } = await parse(dir, pattern, opts);
+			let ctx = await parse(dir, pattern, opts);
 
-			if (hasImport) {
-				await dimport('uvu/run').then(m => m.run(suites, opts));
+			if (!ctx.requires && hasImport) {
+				await dimport('uvu/run').then(m => m.run(ctx.suites, opts));
 			} else {
-				await require('uvu/run').run(suites, opts);
+				await require('uvu/run').run(ctx.suites, opts);
 			}
 		} catch (err) {
 			console.error(err.stack || err.message);
