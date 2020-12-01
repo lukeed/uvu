@@ -26,7 +26,7 @@
 
 ## Features
 
-* Super [lightweight](https://npm.anvaka.com/#!/view/2d/uvu)
+* Super [lightweight](https://npm.anvaka.com/#/view/2d/uvu)
 * Extremely [performant](#benchmarks)
 * Individually executable test files
 * Supports `async`/`await` tests
