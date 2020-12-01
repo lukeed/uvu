@@ -15,5 +15,5 @@ export async function reset(context) {
 
 // Navigate to homepage
 export async function homepage(context) {
-	await context.page.goto('http://localhost:3000');
+	await context.page.goto('http://localhost:5000');
 }
