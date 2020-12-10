@@ -40,8 +40,6 @@ This example only works in Node.js v12.0 and later. In other words, it requires 
 
 Thanks to [`esm`](http://npmjs.com/package/esm), this example works in **all** Node.js versions. However, for best/consistent results, you **should avoid** using `.mjs` files when using this approach. This is because `esm` has some [limitations](https://www.npmjs.com/package/esm#extensions) and chooses not to interact/tamper with files that, by definition, should only be running with the native loader anyway.
 
-In other words, it requires that _both_ your test files _and_ your source files possess the `.mjs` extension. This is – by default – the only way Node.js will load ES Modules and allow them to import/reference one another.
-
 ***PRO***
 
 * Makes ESM accessible to older Node.js versions
