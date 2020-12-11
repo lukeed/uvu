@@ -1,29 +1,25 @@
 const { parse } = require('path');
-const { compile } = require('svelte/compiler');
-const { execSync } = require('child_process');
+const { compile, preprocess_sync } = require('svelte/compiler');
 const { getSvelteConfig } = require('./svelteconfig.js');
+const { cosmiconfigSync } = require('cosmiconfig')
 
 const useTransformer = (options = {}) => (source, filename) => {
-  const { debug, preprocess, rootMode } = options;
-  let processed = source;
-  if (preprocess) {
-    const svelteConfig = getSvelteConfig(rootMode, filename);
-    const preprocessor = require.resolve('./preprocess.js');
-    processed = execSync(`node --unhandled-rejections=strict --abort-on-uncaught-exception "${preprocessor}"`, {
-      env: { PATH: process.env.PATH, source, filename, svelteConfig }
-    }).toString();
-    if (debug) console.log(processed);
-    return processed;
-  }
-  else {
-    return source;
-  }
+	const { preprocess, rootMode } = options;
+	if (preprocess) {
+		const svelteConfig = getSvelteConfig(rootMode, filename);
+		const config = cosmiconfigSync().load(svelteConfig).config
+		
+		return preprocess_sync(source, config.preprocess || {}, { filename }).code
+	}
+	else {
+		return source;
+	}
 };
 
 function transform(hook, source, filename) {
-    const { name } = parse(filename);
-    
-    const preprocessed = useTransformer({ preprocess: true })(source, filename);
+	const { name } = parse(filename);
+	
+	const preprocessed = useTransformer({ preprocess: true })(source, filename);
 
 	const {js, warnings} = compile(preprocessed, {
 		name: name[0].toUpperCase() + name.slice(1),
