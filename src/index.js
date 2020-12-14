@@ -117,6 +117,17 @@ function setup(ctx, name = '') {
 export const suite = (name = '', state = {}) => setup(context(state), name);
 export const test = suite();
 
+// TODO: ignore 0-test outputs?
+// describe('outer', () => {
+// 	describe('inner 1', it => {});
+// 	describe('inner 2', it => {});
+// })
+export function describe(name, func) {
+	let x = suite(name);
+	x.describe = true;
+	func(x); x.run();
+}
+
 export async function exec(bail) {
 	let timer = hrtime();
 	let done=0, total=0, skips=0, code=0;

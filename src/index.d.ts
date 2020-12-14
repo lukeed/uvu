@@ -24,4 +24,5 @@ export type Callback<T=Context> = uvu.Callback<T>;
 
 export const test: uvu.Test<Context>;
 export function suite<T=Context>(title?: string, context?: T): uvu.Test<T>;
+export function describe(name: string, builder?: uvu.Test<Context>): void;
 export function exec(bail?: boolean): Promise<void>;
