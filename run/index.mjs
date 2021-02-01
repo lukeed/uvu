@@ -1,6 +1,7 @@
-import { exec } from 'uvu';
-
 export async function run(suites, opts={}) {
+	globalThis.UVU_DEFER = 1;
+	const uvu = await import('uvu');
+
 	let suite, idx=0;
 	for (suite of suites) {
 		globalThis.UVU_INDEX = idx++;
@@ -8,5 +9,5 @@ export async function run(suites, opts={}) {
 		await import('file:///' + suite.file);
 	}
 
-	await exec(opts.bail);
+	await uvu.exec(opts.bail);
 }
