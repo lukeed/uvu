@@ -29,6 +29,7 @@ if (isNode = typeof process < 'u' && typeof process.stdout < 'u') {
 }
 
 globalThis.UVU_QUEUE = globalThis.UVU_QUEUE || [];
+isCLI = isCLI || !!globalThis.UVU_DEFER;
 isCLI || UVU_QUEUE.push([null]);
 
 const QUOTE = kleur.dim('"'), GUTTER = '\n        ';
