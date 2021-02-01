@@ -22,6 +22,7 @@ sade('uvu [dir] [pattern]')
 			if (opts.color) process.env.FORCE_COLOR = '1';
 			let ctx = await parse(dir, pattern, opts);
 
+			globalThis.UVU_DEFER = 1;
 			if (!ctx.requires && hasImport) {
 				await dimport('uvu/run').then(m => m.run(ctx.suites, opts));
 			} else {
