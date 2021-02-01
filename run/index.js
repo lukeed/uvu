@@ -1,7 +1,6 @@
-const { exec } = require('uvu');
-
 exports.run = async function (suites, opts={}) {
 	globalThis.UVU_DEFER = 1;
+	const uvu = require('uvu');
 
 	suites.forEach((suite, idx) => {
 		globalThis.UVU_QUEUE.push([suite.name]);
@@ -9,5 +8,5 @@ exports.run = async function (suites, opts={}) {
 		require(suite.file);
 	});
 
-	await exec(opts.bail);
+	await uvu.exec(opts.bail);
 }
