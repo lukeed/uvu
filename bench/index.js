@@ -10,10 +10,10 @@ const runners = {
 	baretest: [require.resolve('./suites/baretest')],
 	jest: [require.resolve('jest/bin/jest.js'), 'suites/jest', '--env=node'],
 	mocha: [require.resolve('mocha/bin/mocha'), 'suites/mocha'],
+	pta: [require.resolve('pta/src/cli.js'), 'suites/pta/index.js'],
 	tape: [require.resolve('tape/bin/tape'), 'suites/tape'],
 	uvu: [require.resolve('uvu/bin.js'), 'suites/uvu'],
-	zora: ['suites/zora/index.js'],
-	pta: [require.resolve('pta/src/cli.js'), 'suites/pta/index.js']
+	zora: ['suites/zora/index.js']
 };
 
 function format(arr) {
