@@ -114,7 +114,7 @@ A collection of assertion methods to use within your tests. Please note that:
 
 ## Benchmarks
 
-> via the [`/bench`](/bench) directory with Node v10.21.0
+> via the [`/bench`](/bench) directory with Node v10.24.0
 
 Below you'll find each test runner with two timing values:
 
@@ -124,11 +124,12 @@ Below you'll find each test runner with two timing values:
 Each test runner's `stdout` is printed to the console to verify all assertions pass.<br>Said output is excluded below for brevity.
 
 ```
-~> "ava"   took   594ms  (  ???  )
-~> "jest"  took   962ms  (356  ms)
-~> "mocha" took   209ms  (  4  ms)
-~> "tape"  took   122ms  (  ???  )
-~> "uvu"   took    72ms  (  1.3ms)
+~> "ava"      took   780ms  (  ???  )
+~> "baretest" took   77ms   (  ???  )
+~> "jest"     took   1.40s  (558  ms)
+~> "mocha"    took   259ms  (  5  ms)
+~> "tape"     took   181ms  (  ???  )
+~> "uvu"      took   101ms  (  2.1ms)
 ```
 
 
