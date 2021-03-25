@@ -116,24 +116,25 @@ A collection of assertion methods to use within your tests. Please note that:
 
 > via the [`/bench`](/bench) directory with Node v10.24.0
 
-Below you'll find each test runner with two timing values:
+Below you'll find each test runner with the following values:
 
 * the `took ___` value is the total process execution time – from startup to termination
-* the parenthesis value (`(___)`) is the self-reported execution time, if known
+* the first parenthesis value (`(___)`) is the self-reported execution time, if known
+* the second parenthesis value (`(___)`) is the download size of the NPM module
 
 Each test runner's `stdout` is printed to the console to verify all assertions pass.<br>Said output is excluded below for brevity.
 
 ```
-~> "ava"      took   908ms  (  ???  )
-~> "baretest" took   78ms   (  ???  )
-~> "jest"     took   1.54s  (609  ms)
-~> "mocha"    took   257ms  (  5  ms)
-~> "pta"      took   221ms  (  ???  )
-~> "tape"     took   169ms  (  ???  )
-~> "uvu"      took    99ms  (  2.5ms)
-~> "zora"     took    78ms  (  ???  )
+~> "ava"      took 704ms  (  ???  )  ( 2,480.00 KiB )
+~> "baretest" took 73ms   (  ???  )  (     6.42 KiB )
+~> "jest"     took 990ms  (420  ms)  ( 8,350.00 KiB )
+~> "mocha"    took 224ms  (  4  ms)  ( 1,590.00 KiB )
+~> "pta"      took 158ms  (  ???  )  (   350.77 KiB )
+~> "tape"     took 122ms  (  ???  )  (   568.69 KiB )
+~> "test"     took 69ms   (  ???  )  (   159.06 KiB )
+~> "uvu"      took 84ms   (  1.9ms)  (   145.04 KiB )
+~> "zora"     took 70ms   (  ???  )  (    20.72 KiB )
 ```
-
 
 ## License
 

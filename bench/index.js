@@ -12,6 +12,7 @@ const runners = {
 	mocha: [require.resolve('mocha/bin/mocha'), 'suites/mocha'],
 	pta: [require.resolve('pta/src/cli.js'), 'suites/pta/index.js'],
 	tape: [require.resolve('tape/bin/tape'), 'suites/tape'],
+	test: [require.resolve('./suites/test')],
 	uvu: [require.resolve('uvu/bin.js'), 'suites/uvu'],
 	zora: ['suites/zora/index.js']
 };
