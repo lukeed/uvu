@@ -11,6 +11,7 @@ const runners = {
 	jest: [require.resolve('jest/bin/jest.js'), 'suites/jest', '--env=node'],
 	mocha: [require.resolve('mocha/bin/mocha'), 'suites/mocha'],
 	pta: [require.resolve('pta/src/cli.js'), 'suites/pta/index.js'],
+	tap: [require.resolve('tap/bin/run'), '--no-coverage', 'suites/tap'],
 	tape: [require.resolve('tape/bin/tape'), 'suites/tape'],
 	test: [require.resolve('./suites/test')],
 	uvu: [require.resolve('uvu/bin.js'), 'suites/uvu'],
