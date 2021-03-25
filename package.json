@@ -62,14 +62,14 @@
     "test"
   ],
   "dependencies": {
-    "dequal": "^2.0.0",
+    "dequal": "^2.0.2",
     "diff": "^5.0.0",
-    "kleur": "^4.0.3",
-    "sade": "^1.7.3",
+    "kleur": "^4.1.4",
+    "sade": "^1.7.4",
     "totalist": "^2.0.0"
   },
   "devDependencies": {
-    "bundt": "1.1.1",
+    "bundt": "1.1.2",
     "esm": "3.2.25",
     "module-alias": "2.2.2"
   },

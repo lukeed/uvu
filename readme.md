@@ -125,15 +125,16 @@ Below you'll find each test runner with the following values:
 Each test runner's `stdout` is printed to the console to verify all assertions pass.<br>Said output is excluded below for brevity.
 
 ```
-~> "ava"      took 704ms  (  ???  )  ( 2,480.00 KiB )
-~> "baretest" took 73ms   (  ???  )  (     6.42 KiB )
-~> "jest"     took 990ms  (420  ms)  ( 8,350.00 KiB )
-~> "mocha"    took 224ms  (  4  ms)  ( 1,590.00 KiB )
-~> "pta"      took 158ms  (  ???  )  (   350.77 KiB )
-~> "tape"     took 122ms  (  ???  )  (   568.69 KiB )
-~> "test"     took 69ms   (  ???  )  (   159.06 KiB )
-~> "uvu"      took 84ms   (  1.9ms)  (   145.04 KiB )
-~> "zora"     took 70ms   (  ???  )  (    20.72 KiB )
+~> "ava"      took   653ms  (  ???  )  ( 2,480.00 KiB)
+~> "baretest" took    46ms  (  ???  )  (     6.42 KiB)
+~> "jest"     took 1,030ms  (422.0ms)  ( 8,350.00 KiB)
+~> "mocha"    took   197ms  (  3.0ms)  ( 1,590.00 KiB)
+~> "pta"      took   109ms  (  ???  )  (   350.77 KiB)
+~> "tap"      took   471ms  (  ???  )  (16,880.00 KiB)
+~> "tape"     took   115ms  (  ???  )  (   568.69 KiB)
+~> "test"     took    46ms  (  ???  )  (   159.06 KiB)
+~> "uvu"      took    58ms  (  0.8ms)  (   145.04 KiB)
+~> "zora"     took    50ms  (  ???  )  (    20.72 KiB)
 ```
 
 ## License

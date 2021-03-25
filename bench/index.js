@@ -1,6 +1,7 @@
 const { reset } = require('kleur');
 const { promisify } = require('util');
 const { execFile } = require('child_process');
+const { join, dirname } = require('path');
 
 const spawn = promisify(execFile);
 const PAD = reset().dim('    ||  ');
@@ -12,9 +13,9 @@ const runners = {
 	mocha: [require.resolve('mocha/bin/mocha'), 'suites/mocha'],
 	pta: [require.resolve('pta/src/cli.js'), 'suites/pta/index.js'],
 	tap: [require.resolve('tap/bin/run'), '--no-coverage', 'suites/tap'],
-	tape: [require.resolve('tape/bin/tape'), 'suites/tape'],
+	tape: [join(dirname(require.resolve('tape')), 'bin', 'tape'), 'suites/tape'],
 	test: [require.resolve('./suites/test')],
-	uvu: [require.resolve('uvu/bin.js'), 'suites/uvu'],
+	uvu: [require.resolve('uvu/run'), 'suites/uvu'],
 	zora: ['suites/zora/index.js']
 };
 
