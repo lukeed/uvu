@@ -2,9 +2,10 @@ import { dequal } from 'dequal';
 import { compare, lines } from 'uvu/diff';
 
 function dedent(str) {
-	let arr = str.match(/^[ \t]*(?=\S)/gm);
-	let min = !!arr && Math.min(...arr.map(x => x.length));
-	return (!arr || !min) ? str : str.replace(new RegExp(`^[ \\t]{${min}}`, 'gm'), '');
+  let arr = str.match(/^[ \t]*(?=\S)/gm);
+  let i = 0, min = 1/0, len = (arr||[]).length;
+  for (; i < len; i++) min = Math.min(min, arr[i].length);
+  return len && min ? str.replace(new RegExp(`^[ \\t]{${min}}`, 'gm'), '') : str;
 }
 
 export class Assertion extends Error {
