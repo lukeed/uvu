@@ -2,6 +2,7 @@ import { dequal } from 'dequal';
 import { compare, lines } from 'uvu/diff';
 
 function dedent(str) {
+	str = str.replace(/\r?\n/g, '\n');
   let arr = str.match(/^[ \t]*(?=\S)/gm);
   let i = 0, min = 1/0, len = (arr||[]).length;
   for (; i < len; i++) min = Math.min(min, arr[i].length);
