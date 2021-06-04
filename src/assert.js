@@ -63,8 +63,7 @@ export function match(val, exp, msg) {
 	if (typeof exp === 'string') {
 		assert(val.includes(exp), val, exp, 'match', false, `Expected value to include "${exp}" substring`, msg);
 	} else {
-		let tmp = '`' + String(exp) + '`';
-		assert(exp.test(val), val, exp, 'match', false, `Expected value to match ${tmp} pattern`, msg);
+		assert(exp.test(val), val, exp, 'match', false, `Expected value to match \`${String(exp)}\` pattern`, msg);
 	}
 }
 
@@ -93,8 +92,7 @@ export function throws(blk, exp, msg) {
 		if (typeof exp === 'function') {
 			assert(exp(err), false, true, 'throws', false, 'Expected function to throw matching exception', msg);
 		} else if (exp instanceof RegExp) {
-			let tmp = '`' + String(exp) + '`';
-			assert(exp.test(err.message), false, true, 'throws', false, `Expected function to throw exception matching ${tmp} pattern`, msg);
+			assert(exp.test(err.message), false, true, 'throws', false, `Expected function to throw exception matching \`${String(exp)}\` pattern`, msg);
 		}
 	}
 }
@@ -139,8 +137,7 @@ not.match = function (val, exp, msg) {
 	if (typeof exp === 'string') {
 		assert(!val.includes(exp), val, exp, 'not.match', false, `Expected value not to include "${exp}" substring`, msg);
 	} else {
-		let tmp = '`' + String(exp) + '`';
-		assert(!exp.test(val), val, exp, 'not.match', false, `Expected value not to match ${tmp} pattern`, msg);
+		assert(!exp.test(val), val, exp, 'not.match', false, `Expected value not to match \`${String(exp)}\` pattern`, msg);
 	}
 }
 
@@ -155,8 +152,7 @@ not.throws = function (blk, exp, msg) {
 		if (typeof exp === 'function') {
 			assert(!exp(err), true, false, 'not.throws', false, 'Expected function not to throw matching exception', msg);
 		} else if (exp instanceof RegExp) {
-			let tmp = '`' + String(exp) + '`';
-			assert(!exp.test(err.message), true, false, 'not.throws', false, `Expected function not to throw exception matching ${tmp} pattern`, msg);
+			assert(!exp.test(err.message), true, false, 'not.throws', false, `Expected function not to throw exception matching \`${String(exp)}\` pattern`, msg);
 		} else if (!exp) {
 			assert(false, true, false, 'not.throws', false, 'Expected function not to throw', msg);
 		}
