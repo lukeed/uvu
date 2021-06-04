@@ -923,6 +923,35 @@ compare('should handle multi-line string against non-type mismatch', () => {
 	);
 });
 
+compare('should not fail when comparing different types', () => {
+	const values = [
+		true,
+		false,
+		null,
+		undefined,
+		{foo: 'bar'},
+		[],
+		new Date(),
+		'str',
+		1,
+		NaN,
+		Infinity,
+		/abc/,
+		function () {},
+		new Promise(() => {}),
+		$,
+	];
+	for (const val1 of values) {
+		for (const val2 of values) {
+			let aType = Object.prototype.toString.call(val1)
+			aType = aType.substring(8, aType.length - 1)
+			let bType = Object.prototype.toString.call(val2)
+			bType = bType.substring(8, bType.length - 1)
+			assert.not.throws(() => $.compare(val1, val2), `${aType} is not comparable to ${bType}`)
+		}
+	}
+});
+
 compare.run();
 
 // ---
