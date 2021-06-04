@@ -923,6 +923,50 @@ compare('should handle multi-line string against non-type mismatch', () => {
 	);
 });
 
+compare('should handle `null` vs object', () => {
+	assert.snapshot(
+		strip($.compare(null, { foo: 123 })),
+		'Actual:\n' +
+		'--null\n' +
+		'Expected:\n' +
+		'++{\n' +
+		'++··"foo":·123\n' +
+		'++}\n'
+	);
+
+	assert.snapshot(
+		strip($.compare({ foo: 123 }, null)),
+		'Actual:\n' +
+		'--{\n' +
+		'--··"foo":·123\n' +
+		'--}\n' +
+		'Expected:\n' +
+		'++null\n'
+	);
+});
+
+compare('should handle `undefined` vs object', () => {
+	assert.snapshot(
+		strip($.compare(undefined, { foo: 123 })),
+		'Actual:\n' +
+		'--undefined\n' +
+		'Expected:\n' +
+		'++{\n' +
+		'++··"foo":·123\n' +
+		'++}\n'
+	);
+
+	assert.snapshot(
+		strip($.compare({ foo: 123 }, undefined)),
+		'Actual:\n' +
+		'--{\n' +
+		'--··"foo":·123\n' +
+		'--}\n' +
+		'Expected:\n' +
+		'++undefined\n'
+	);
+});
+
 compare.run();
 
 // ---

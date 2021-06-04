@@ -195,13 +195,20 @@ export function compare(input, expect) {
 	if (Array.isArray(expect)) return arrays(input, expect);
 	if (expect instanceof RegExp) return chars(''+input, ''+expect);
 
+	let isA = input && typeof input == 'object';
+	let isB = expect && typeof expect == 'object';
+
+	if (isA && isB) input = sort(input, expect);
+	if (isB) expect = stringify(expect);
+	if (isA) input = stringify(input);
+
 	if (expect && typeof expect == 'object') {
 		input = stringify(sort(input, expect));
 		expect = stringify(expect);
 	}
 
-	let isA = typeof input == 'string';
-	let isB = typeof expect == 'string';
+	isA = typeof input == 'string';
+	isB = typeof expect == 'string';
 
 	if (isA && /\r?\n/.test(input)) return lines(input, ''+expect);
 	if (isB && /\r?\n/.test(expect)) return lines(''+input, expect);
