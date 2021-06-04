@@ -202,6 +202,37 @@ equal.run();
 
 // ---
 
+const undef = suite('undefined');
+
+undef('should be a function', () => {
+	assert.type($.undefined, 'function');
+});
+
+undef('should not throw if input is undefined', () => {
+	$.undefined(undefined);
+	$.undefined(void 0);
+});
+
+undef('should throw if invalid', () => {
+	try {
+		$.undefined(123);
+	} catch (err) {
+		isError(err, '', 123, undefined, 'undefined', true);
+	}
+});
+
+undef('should throw with custom message', () => {
+	try {
+		$.undefined(null, 'hello there');
+	} catch (err) {
+		isError(err, 'hello there', null, undefined, 'undefined', true);
+	}
+});
+
+undef.run();
+
+// ---
+
 const unreachable = suite('unreachable');
 
 unreachable('should be a function', () => {
@@ -615,6 +646,38 @@ notEqual('should use deep equality checks', () => {
 });
 
 notEqual.run();
+
+// ---
+
+const notUndef = suite('not.undefined');
+
+notUndef('should be a function', () => {
+	assert.type($.not.undefined, 'function');
+});
+
+notUndef('should not throw if input not undefined', () => {
+	$.not.undefined(123);
+	$.not.undefined('hello');
+	$.not.undefined(null);
+});
+
+notUndef('should throw if input is undefined', () => {
+	try {
+		$.not.undefined(undefined);
+	} catch (err) {
+		isError(err, '', undefined, undefined, 'not.undefined', false);
+	}
+});
+
+notUndef('should throw with custom message', () => {
+	try {
+		$.not.undefined(undefined, 'hello there');
+	} catch (err) {
+		isError(err, 'hello there', undefined, undefined, 'not.undefined', false);
+	}
+});
+
+notUndef.run();
 
 // ---
 

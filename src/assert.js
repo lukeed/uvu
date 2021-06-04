@@ -45,6 +45,10 @@ export function equal(val, exp, msg) {
 	assert(dequal(val, exp), val, exp, 'equal', compare, 'Expected values to be deeply equal:', msg);
 }
 
+export function undefined(val, msg) {
+	assert(val === void 0, val, void 0, 'undefined', compare, 'Expected value to be undefined', msg);
+}
+
 export function unreachable(msg) {
 	assert(false, true, false, 'unreachable', false, 'Expected not to be reached!', msg);
 }
@@ -111,6 +115,10 @@ is.not = function (val, exp, msg) {
 
 not.equal = function (val, exp, msg) {
 	assert(!dequal(val, exp), val, exp, 'not.equal', false, 'Expected values not to be deeply equal', msg);
+}
+
+not.undefined = function (val, msg) {
+	assert(val !== void 0, val, void 0, 'not.undefined', false, 'Expected value not to be undefined', msg);
 }
 
 not.type = function (val, exp, msg) {
