@@ -83,6 +83,15 @@ assert.instance([1, 2, 3], Array);
 assert.instance(/foobar/gi, RegExp);
 ```
 
+### match(actual: string, expects: RegExp | String, msg?: Message)
+Assert that `actual` matches the `expects` regular expression.
+
+```js
+assert.match('hello world', 'wor');
+assert.match('hello world', /hello/g);
+assert.match('hello world', RegExp('hello'));
+```
+
 ### snapshot(actual: string, expects: string, msg?: Message)
 Assert that `actual` matches the `expects` multi-line string.
 
