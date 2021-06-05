@@ -185,6 +185,15 @@ assert.not.instance([1, 2, 3], String);
 assert.not.instance(/foobar/gi, Date);
 ```
 
+### not.match(actual: string, expects: RegExp | String, msg?: Message)
+Assert that `actual` does not match the `expects` regular expression.
+
+```js
+assert.not.match('hello world', 'other');
+assert.not.match('hello world', /other/g);
+assert.not.match('hello world', RegExp('other'));
+```
+
 ### not.snapshot(actual: string, expects: string, msg?: Message)
 Assert that `actual` does not match the `expects` snapshot.
 
