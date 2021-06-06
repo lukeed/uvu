@@ -84,12 +84,14 @@ assert.instance(/foobar/gi, RegExp);
 ```
 
 ### match(actual: string, expects: RegExp | String, msg?: Message)
-Assert that `actual` matches the `expects` regular expression.
+Assert that `actual` matches the `expects` pattern.
+
+When `expects` is a regular expression, it must match the `actual` value.
+When `expects` is a string, it must exist within the `actual` value as a substring.
 
 ```js
 assert.match('hello world', 'wor');
-assert.match('hello world', /hello/g);
-assert.match('hello world', RegExp('hello'));
+assert.match('hello world', /^hel/);
 ```
 
 ### snapshot(actual: string, expects: string, msg?: Message)
@@ -186,12 +188,14 @@ assert.not.instance(/foobar/gi, Date);
 ```
 
 ### not.match(actual: string, expects: RegExp | String, msg?: Message)
-Assert that `actual` does not match the `expects` regular expression.
+Assert that `actual` does not match the `expects` pattern.
+
+When `expects` is a regular expression, it must not match the `actual` value.
+When `expects` is a string, it must not exist within the `actual` value as a substring.
 
 ```js
 assert.not.match('hello world', 'other');
 assert.not.match('hello world', /other/g);
-assert.not.match('hello world', RegExp('other'));
 ```
 
 ### not.snapshot(actual: string, expects: string, msg?: Message)
