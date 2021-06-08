@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "uvu -r esbuild-register tests"
+  },
+  "devDependencies": {
+    "esbuild": "0.12.15",
+    "esbuild-register": "2.6.0",
+    "uvu": "^0.5.1"
+  }
+}
