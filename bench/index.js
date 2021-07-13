@@ -11,6 +11,8 @@ const runners = {
 	mocha: [require.resolve('mocha/bin/mocha'), 'suites/mocha'],
 	tape: [require.resolve('tape/bin/tape'), 'suites/tape'],
 	uvu: [require.resolve('uvu/bin.js'), 'suites/uvu'],
+	zora: ['suites/zora/index.js'],
+	pta: [require.resolve('pta/src/cli.js'), 'suites/pta/index.js']
 };
 
 function format(arr) {
