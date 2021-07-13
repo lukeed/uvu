@@ -4,12 +4,33 @@ Watching – aka "re-running" – tests is not implemented by the [CLI](/docs/c
 
 Instead, `uvu` is meant to interface with other tools nicely. Some of those include (but are not limited to):
 
+* [`uvu-watch`](https://github.com/aleclarson/uvu-watch)
 * [`watchlist`](https://github.com/lukeed/watchlist)
 * [`watchexec`](https://github.com/watchexec/watchexec)
 * [`chokidar-cli`](https://www.npmjs.com/package/chokidar-cli)
 * [`watch`](https://www.npmjs.com/package/watch)
 
-## Example
+&nbsp;
+
+## `uvu-watch` example
+
+Ensure your `test` script exists in `package.json`.
+
+```json
+"test": "uvu tests -r esm"
+```
+
+Install [`uvu-watch`](https://github.com/aleclarson/uvu-watch) as a dev dependency, and run your tests with the `--watch` flag (`-w` for short).
+
+```sh
+yarn add uvu-watch -D && yarn test -w
+```
+
+**How does it work?** When you install `uvu-watch`, it replaces the `uvu` command used by your `test` script with one that has a `--watch` flag. When `--watch` is used, your tests run immediately like normal, then your entire project is watched (except `node_modules` and dotfiles).
+
+&nbsp;
+
+## `watchlist` example
 
 > Visit the working [`/examples/watch`](/examples/watch) demonstration~!
 
