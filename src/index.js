@@ -68,6 +68,11 @@ async function runner(ctx, name) {
 	let padding = '';
 	const pad = '  ';
 	for (let i = 0; i < state.__depth__; ++i) padding += pad;
+	if (state.__skipped__) {
+		arr = [];
+		total = 0;
+		ctx.skips = tests.length;
+	}
 
 	try {
 		if (name) write(padding + SUITE(kleur.black(` ${name} `)) + ' ');
@@ -115,13 +120,18 @@ function setup(ctx, name = '') {
 		Object.assign(ctx, context(copy.state));
 		UVU_QUEUE[globalThis.UVU_INDEX || 0].push(run);
 		for (const group of copy.groups) {
-			const ns = setup(context({...group.context, __depth__: ctx.state.__depth__ + 1}), group.name);
-			group.handler(ns);
-			ns.run();
+			group.run();
 		}
 	};
-	test.group = (name, context, handler) => {
-		ctx.groups.push({name, context, handler});
+	test.group = (name, state, handler) => {
+		const ns = setup(context({...state, __depth__: ctx.state.__depth__ + 1, __skipped__: ctx.state.__skipped__}), name);
+		handler(ns);
+		ctx.groups.push(ns);
+	};
+	test.group.skip = (name, _, handler) => {
+		const ns = setup(context({__skipped__: true, __depth__: ctx.state.__depth__ + 1}), name);
+		handler(ns);
+		ctx.groups.push(ns);
 	};
 	return test;
 }
