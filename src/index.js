@@ -131,7 +131,9 @@ function setup(ctx, name = '') {
 		}
 	};
 	test.group = (name, state, handler) => {
-		const ns = setup(context({...state, __depth__: ctx.state.__depth__ + 1, __skipped__: ctx.state.__skipped__}), name);
+		state.__depth__ = ctx.state.__depth__ + 1;
+		state.__skipped__ = ctx.state.__skipped__;
+		const ns = setup(context(state), name);
 		handler(ns);
 		ctx.groups.push(ns);
 	};
@@ -141,7 +143,9 @@ function setup(ctx, name = '') {
 		ctx.groups.push(ns);
 	};
 	test.group.only = (name, state, handler) => {
-		const ns = setup(context({...state, __depth__: ctx.state.__depth__ + 1, __skipped__: ctx.state.__skipped__}), name);
+		state.__depth__ = ctx.state.__depth__ + 1;
+		state.__skipped__ = ctx.state.__skipped__;
+		const ns = setup(context(state), name);
 		handler(ns);
 		ctx.groupsOnly.push(ns);
 	};
