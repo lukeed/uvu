@@ -6,7 +6,7 @@ let hrtime = (now = Date.now()) => () => (Date.now() - now).toFixed(2) + 'ms';
 let write = console.log;
 
 const into = (ctx, key) => (name, handler) => ctx[key].push({ name, handler });
-const context = (state) => ({ tests:[], before:[], after:[], bEach:[], aEach:[], only:[], skips:0, groups:[], state });
+const context = (state) => ({ tests:[], before:[], after:[], bEach:[], aEach:[], only:[], skips:0, groups:[], groupsOnly:[], state });
 const milli = arr => (arr[0]*1e3 + arr[1]/1e6).toFixed(2) + 'ms';
 const hook = (ctx, key) => handler => ctx[key].push(handler);
 
@@ -119,7 +119,14 @@ function setup(ctx, name = '') {
 		let run = runner.bind(0, copy, name);
 		Object.assign(ctx, context(copy.state));
 		UVU_QUEUE[globalThis.UVU_INDEX || 0].push(run);
+		const groupsOnly = copy.groupsOnly.length;
+		if (groupsOnly) {
+			for (const group of copy.groupsOnly) {
+				group.run();
+			}
+		}
 		for (const group of copy.groups) {
+			if (groupsOnly) group.setSkipped();
 			group.run();
 		}
 	};
@@ -132,6 +139,15 @@ function setup(ctx, name = '') {
 		const ns = setup(context({__skipped__: true, __depth__: ctx.state.__depth__ + 1}), name);
 		handler(ns);
 		ctx.groups.push(ns);
+	};
+	test.group.only = (name, state, handler) => {
+		const ns = setup(context({...state, __depth__: ctx.state.__depth__ + 1, __skipped__: ctx.state.__skipped__}), name);
+		handler(ns);
+		ctx.groupsOnly.push(ns);
+	};
+	test.setSkipped = () => {
+		ctx.state.__skipped__ = true;
+		for (const group of ctx.groups) group.setSkipped();
 	};
 	return test;
 }
