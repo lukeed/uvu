@@ -380,4 +380,4 @@ Nested suites don't share their parent's context, instead you can pass in a diff
 
 `run()`, `skip()` and `only()` operations affect groups in a recursive way. This means that running a suite/group makes all the groups contained within it run as well, and skipping a suite/group skips all the groups contained within it as well.
 
-To understand the feature better you can checkout [`/examples`](/examples).
+To understand the feature better you can checkout [`/examples/groups`](/examples/groups).
