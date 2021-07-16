@@ -88,6 +88,15 @@ Start/Add the suite to the `uvu` test queue.
 
 > **Important:** You **must** call this method in order for your suite to be run!
 
+### suite.group(name, context, callback)
+Create a new suite belonging to the current suite. <br>Please see [Groups](#groups) for more information.
+
+### suite.group.only(name, context, callback)
+Inside this suite, only run this group. <br>This is a shortcut for isolating one (or more) groups. <br>Please see [Groups](#groups) for more information.
+
+### suite.group.skip(name, context, callback)
+Skip this group entirely. <br>Please see [Groups](#groups) for more information.
+
 ***Example***
 
 > Check out [`/examples`](/examples) for a list of working demos!
@@ -363,3 +372,12 @@ User('should not have Teams initially', async context => {
 
 User.run();
 ```
+
+## Groups
+Groups are just named suites nested under other named suites. This gives you the ability to group tests belonging to a specific suite.
+
+Nested suites don't share their parent's context, instead you can pass in a different (or the same if you would like) context when creating a group.
+
+`run()`, `skip()` and `only()` operations affect groups in a recursive way. This means that running a suite/group makes all the groups contained within it run as well, and skipping a suite/group skips all the groups contained within it as well.
+
+To understand the feature better you can checkout [`/examples/groups`](/examples/groups).
