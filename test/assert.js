@@ -366,6 +366,7 @@ throws('should be a function', () => {
 throws('should throw if function does not throw Error :: generic', () => {
 	try {
 		$.throws(() => 123);
+		assert.unreachable('Function threw when it shouldn’t have');
 	} catch (err) {
 		assert.is(err.message, 'Expected function to throw');
 		isError(err, '', false, true, 'throws', false); // no details (true vs false)
@@ -375,6 +376,7 @@ throws('should throw if function does not throw Error :: generic', () => {
 throws('should throw if function does not throw matching Error :: RegExp', () => {
 	try {
 		$.throws(() => { throw new Error('hello') }, /world/);
+		assert.unreachable('Function threw correct pattern when it should have thrown incorrect one');
 	} catch (err) {
 		assert.is(err.message, 'Expected function to throw exception matching `/world/` pattern');
 		isError(err, '', false, true, 'throws', false); // no details
@@ -415,6 +417,91 @@ throws('should not throw if function does throw matching Error :: Function', () 
 });
 
 throws.run();
+
+// ---
+
+const rejects = suite('rejects');
+
+rejects('should be a function', () => {
+	assert.type($.rejects, 'function');
+});
+
+rejects('should throw if function does not reject Error :: generic', async () => {
+	try {
+		await $.rejects(() => {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => resolve(), 1);
+			});
+		});
+		assert.unreachable('Promise rejected when it shouldn’t have');
+	} catch (err) {
+		assert.is(err.message, 'Expected promise to reject');
+		isError(err, '', false, true, 'rejects', false); // no details (true vs false)
+	}
+});
+
+rejects('should throw if function does not reject matching Error :: RegExp', async () => {
+	try {
+		await $.rejects(() => {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => reject('hello'), 1)
+			});
+		}, /world/);
+		assert.unreachable('Promise rejected with correct pattern when it should have with incorrect one');
+	} catch (err) {
+		assert.is(err.message, 'Expected promise to reject matching exception `/world/` pattern');
+		isError(err, '', false, true, 'rejects', false); // no details
+	}
+});
+
+rejects('should throw if function does not reject matching Error :: Function', async () => {
+	try {
+		await $.rejects(
+			() => {
+				return new Promise((resolve, reject) => {
+					reject(new Error())
+				})
+		 	},
+			(err) => err.message.includes('foobar')
+		);
+		assert.unreachable('Promise should have rejected without matching exception');
+	} catch (err) {
+		assert.is(err.message, 'Expected promise to reject matching exception');
+		isError(err, '', false, true, 'rejects', false); // no details
+	}
+});
+
+rejects('should not reject if promise does reject Error :: generic', async () => {
+	await assert.not.rejects(
+		async () => await $.rejects(() => {
+			return new Promise ((resolve, reject) => setTimeout(() => reject(), 1));
+		})
+	, 'should not reject if function does reject Error :: generic');
+});
+
+rejects('should not reject if promise does reject matching Error :: RegExp', async () => {
+	await assert.not.rejects(
+		async () => await $.rejects(
+			() => {
+				return new Promise((resolve, reject) => setTimeout(() => reject(new Error('hello')), 1));
+			},
+			/hello/
+		)
+	);
+});
+
+rejects('should not reject if function does reject matching Error :: Function', async () => {
+	await assert.not.rejects(
+		async () => await $.rejects(
+			() => {
+				return new Promise((resolve, reject) => setTimeout(() => reject(new Error('foobar')), 1))
+			},
+			(err) => err.message.includes('foobar')
+		)
+	);
+})
+
+rejects.run();
 
 // ---
 
@@ -793,7 +880,7 @@ notMatch.run();
 const notThrows = suite('not.throws');
 
 notThrows('should be a function', () => {
-	assert.type($.throws, 'function');
+	assert.type($.not.throws, 'function');
 });
 
 notThrows('should not throw if function does not throw Error :: generic', () => {
@@ -848,3 +935,85 @@ notThrows('should throw if function does throw matching Error :: Function', () =
 });
 
 notThrows.run();
+
+// ---
+
+const notRejects = suite('not.throws');
+
+notRejects('should be a function', () => {
+	assert.type($.not.rejects, 'function');
+});
+
+notRejects('should not reject if function does not reject Error :: generic', async () => {
+	await assert.not.rejects(
+		async () => await $.not.rejects(() => new Promise((resolve, reject) => setTimeout(() => resolve(123), 1)))
+	);
+});
+
+notRejects('should not reject if function does not reject matching Error :: RegExp', async () => {
+	await assert.not.rejects(
+		async () => {
+			await $.not.rejects(() => {
+				return new Promise((resolve, reject) => {
+					setTimeout(() => reject(new Error('hello')), 1);
+				})
+			}, /world/);
+		}
+	);
+});
+
+notRejects('should not reject if function does not reject matching Error :: Function', async () => {
+	await assert.not.rejects(async () => {
+		await $.not.rejects(() => {
+			return new Promise ((resolve, reject) => {
+				setTimeout(() => reject(new Error('hello')), 1);
+			})
+		}, (err) => err.message.includes('world'));
+	});
+});
+
+notRejects('should reject if function does reject Error :: generic', async () => {
+	try {
+		await $.not.rejects(() => {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => reject(new Error()), 1);
+			});
+		});
+		assert.unreachable('Function resolved when we were expecting it to reject');
+	} catch (err) {
+		assert.is(err.message, 'Expected function not to reject promise');
+		isError(err, '', true, false, 'not.rejects', false); // no details
+	}
+});
+
+notRejects('should reject if function does reject matching Error :: RegExp', async () => {
+	try {
+		await $.not.rejects(() => {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => reject(new Error('hello')), 1)
+			})
+		}, /hello/);
+	} catch (err) {
+		assert.is(err.message, 'Expected function not to reject promise exception matching `/hello/` pattern');
+		isError(err, '', true, false, 'not.rejects', false); // no details
+	}
+});
+
+notRejects('should reject if function does reject matching Error :: Function', async () => {
+	try {
+		await $.not.rejects(
+			() => {
+				return new Promise((resolve, reject) => {
+					setTimeout(() => reject(new Error()), 1)
+				})
+			},
+			(err) => err instanceof Error
+		);
+		assert.unreachable('Expected the function to reject with Error instance but it rejected with other value')
+	} catch (err) {
+		assert.is(err.message, 'Expected function not to reject promise matching exception');
+		isError(err, '', true, false, 'not.rejects', false); // no details
+	}
+});
+
+notRejects.run();
