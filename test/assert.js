@@ -981,7 +981,7 @@ notRejects('should reject if function does reject Error :: generic', async () =>
 		});
 		assert.unreachable('Function resolved when we were expecting it to reject');
 	} catch (err) {
-		assert.is(err.message, 'Expected function not to reject promise');
+		assert.is(err.message, 'Expected promise not to reject');
 		isError(err, '', true, false, 'not.rejects', false); // no details
 	}
 });
@@ -1011,7 +1011,7 @@ notRejects('should reject if function does reject matching Error :: Function', a
 		);
 		assert.unreachable('Expected the function to reject with Error instance but it rejected with other value')
 	} catch (err) {
-		assert.is(err.message, 'Expected function not to reject promise matching exception');
+		assert.is(err.message, 'Expected promise not to reject matching exception');
 		isError(err, '', true, false, 'not.rejects', false); // no details
 	}
 });
