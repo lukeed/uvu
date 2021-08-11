@@ -189,7 +189,7 @@ not.rejects = async function (blk, exp, msg) {
 		if (typeof exp === 'function') {
 			assert(!exp(err), true, false, 'not.rejects', false, 'Expected function not to reject promise matching exception', msg);
 		} else if (exp instanceof RegExp) {
-			assert(!exp.test(err instanceof Error ? err.message : err), true, false, 'not.rejects', false, `Expected function not to reject promise exception matching \`${String(exp)}\` pattern`, msg);
+			assert(!exp.test(err.message), true, false, 'not.rejects', false, `Expected function not to reject promise exception matching \`${String(exp)}\` pattern`, msg);
 		} else if (!exp) {
 			assert(false, true, false, 'not.rejects', false, 'Expected function not to reject promise', msg);
 		}
