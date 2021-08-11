@@ -111,8 +111,7 @@ export async function rejects(blk, exp, msg) {
 		if (typeof exp === 'function') {
 			assert(exp(err), false, true, 'rejects', false, 'Expected promise to reject matching exception', msg);
 		} else if (exp instanceof RegExp) {
-			const errorMessage = err instanceof Error ? err.message : err
-			assert(exp.test(errorMessage), false, true, 'rejects', false, `Expected promise to reject matching exception \`${String(exp)}\` pattern`, msg);
+			assert(exp.test(err.message), false, true, 'rejects', false, `Expected promise to reject matching exception \`${String(exp)}\` pattern`, msg);
 		}
 	}
 }
