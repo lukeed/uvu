@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "loadr -c tests/setup/loadr.js -- uvu tests -i setup"
+  },
+  "dependencies": {
+    "vue": "^3.2.6"
+  },
+  "devDependencies": {
+    "@vue/compiler-sfc": "^3.2.6",
+    "jsdom": "^17.0.0",
+    "loadr": "^0.1.1",
+    "uvu": "^0.5.1"
+  }
+}
