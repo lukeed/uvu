@@ -4,8 +4,8 @@
     "test": "uvu -r esbuild-register tests"
   },
   "devDependencies": {
-    "esbuild": "0.12.15",
-    "esbuild-register": "2.6.0",
+    "esbuild": "0.13.3",
+    "esbuild-register": "3.0.0",
     "uvu": "^0.5.1"
   }
 }
