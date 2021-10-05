@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "tsm node_modules/uvu/bin.js tests",
+    "test:alt": "loadr -- uvu tests"
+  },
+  "devDependencies": {
+    "loadr": "^0.1.1",
+    "tsm": "^2.0.0",
+    "uvu": "^0.5.1"
+  }
+}
