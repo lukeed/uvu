@@ -1,12 +1,10 @@
 {
   "private": true,
   "scripts": {
-    "build": "tsc",
-    "test": "uvu -r ts-node/register tests"
+    "test": "uvu -r tsm tests"
   },
   "devDependencies": {
-    "ts-node": "8.10.2",
-    "typescript": "3.9.6",
-    "uvu": "^0.5.0"
+    "tsm": "^2.0.0",
+    "uvu": "^0.5.1"
   }
 }
