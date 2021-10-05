@@ -1,24 +1,19 @@
 {
-  "ts-node": {
-    "transpileOnly": true,
-    "compilerOptions": {
-      "module": "commonjs"
-    },
-    "include": [
-      "tests/**/*"
-    ]
-  },
   "compilerOptions": {
-    "outDir": "build",
+    "strict": true,
+    "allowJs": true,
     "target": "esnext",
-    "module": "esnext",
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "alwaysStrict": true,
+    "module": "esnext",
+    "checkJs": true,
+    "noEmit": true
   },
   "include": [
-    "@types/**/*",
-    "src/**/*"
+    "src",
+    "tests"
   ],
   "exclude": [
     "node_modules"
