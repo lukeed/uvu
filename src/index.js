@@ -6,7 +6,7 @@ let hrtime = (now = Date.now()) => () => (Date.now() - now).toFixed(2) + 'ms';
 let write = console.log;
 
 const into = (ctx, key) => (name, handler) => ctx[key].push({ name, handler });
-const context = (state) => ({ tests:[], before:[], after:[], bEach:[], aEach:[], only:[], skips:0, state });
+const context = (state) => ({ tests:[], before:[], after:[], bEach:[], aEach:[], only:[], skips:0, groups:[], groupsOnly:[], state });
 const milli = arr => (arr[0]*1e3 + arr[1]/1e6).toFixed(2) + 'ms';
 const hook = (ctx, key) => handler => ctx[key].push(handler);
 
@@ -38,36 +38,44 @@ const FAILURE = kleur.bold().bgRed(' FAIL ');
 const FILE = kleur.bold().underline().white;
 const SUITE = kleur.bgWhite().bold;
 
-function stack(stack, idx) {
+function stack(stack, idx, padding) {
 	let i=0, line, out='';
 	let arr = stack.substring(idx).replace(/\\/g, '/').split('\n');
 	for (; i < arr.length; i++) {
 		line = arr[i].trim();
 		if (line.length && !IGNORE.test(line)) {
-			out += '\n    ' + line;
+			out += '\n    ' + padding + line;
 		}
 	}
 	return kleur.grey(out) + '\n';
 }
 
-function format(name, err, suite = '') {
+function format(name, err, padding, suite = '') {
 	let { details, operator='' } = err;
 	let idx = err.stack && err.stack.indexOf('\n');
 	if (err.name.startsWith('AssertionError') && !operator.includes('not')) details = compare(err.actual, err.expected); // TODO?
-	let str = '  ' + FAILURE + (suite ? kleur.red(SUITE(` ${suite} `)) : '') + ' ' + QUOTE + kleur.red().bold(name) + QUOTE;
-	str += '\n    ' + err.message + (operator ? kleur.italic().dim(`  (${operator})`) : '') + '\n';
-	if (details) str += GUTTER + details.split('\n').join(GUTTER);
-	if (!!~idx) str += stack(err.stack, idx);
+	let str = padding + '  ' + FAILURE + (suite ? kleur.red(SUITE(` ${suite} `)) : '') + ' ' + QUOTE + kleur.red().bold(name) + QUOTE;
+	str += '\n    ' + padding + err.message + (operator ? kleur.italic().dim(`  (${operator})`) : '') + '\n';
+	if (details) str += GUTTER + padding + details.split('\n').join(GUTTER + padding);
+	if (!!~idx) str += stack(err.stack, idx, padding);
 	return str + '\n';
 }
 
 async function runner(ctx, name) {
-	let { only, tests, before, after, bEach, aEach, state } = ctx;
+	let { only, tests, before, after, bEach, aEach, state, groups} = ctx;
 	let hook, test, arr = only.length ? only : tests;
 	let num=0, errors='', total=arr.length;
+	let padding = '';
+	const pad = '  ';
+	for (let i = 0; i < state.__depth__; ++i) padding += pad;
+	if (state.__skipped__) {
+		arr = [];
+		total = 0;
+		ctx.skips = tests.length;
+	}
 
 	try {
-		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
+		if (name) write(padding + SUITE(kleur.black(` ${name} `)) + ' ');
 		for (hook of before) await hook(state);
 
 		for (test of arr) {
@@ -81,7 +89,7 @@ async function runner(ctx, name) {
 			} catch (err) {
 				for (hook of aEach) await hook(state);
 				if (errors.length) errors += '\n';
-				errors += format(test.name, err, name);
+				errors += format(test.name, err, padding, name);
 				write(FAIL);
 			}
 		}
@@ -98,6 +106,7 @@ async function runner(ctx, name) {
 function setup(ctx, name = '') {
 	ctx.state.__test__ = '';
 	ctx.state.__suite__ = name;
+	if (!ctx.state.__depth__) ctx.state.__depth__ = 0;
 	const test = into(ctx, 'tests');
 	test.before = hook(ctx, 'before');
 	test.before.each = hook(ctx, 'bEach');
@@ -110,6 +119,39 @@ function setup(ctx, name = '') {
 		let run = runner.bind(0, copy, name);
 		Object.assign(ctx, context(copy.state));
 		UVU_QUEUE[globalThis.UVU_INDEX || 0].push(run);
+		const groupsOnly = copy.groupsOnly.length;
+		if (groupsOnly) {
+			for (const group of copy.groupsOnly) {
+				group.run();
+			}
+		}
+		for (const group of copy.groups) {
+			if (groupsOnly) group.setSkipped();
+			group.run();
+		}
+	};
+	test.group = (name, state, handler) => {
+		state.__depth__ = ctx.state.__depth__ + 1;
+		state.__skipped__ = ctx.state.__skipped__;
+		const ns = setup(context(state), name);
+		handler(ns);
+		ctx.groups.push(ns);
+	};
+	test.group.skip = (name, _, handler) => {
+		const ns = setup(context({__skipped__: true, __depth__: ctx.state.__depth__ + 1}), name);
+		handler(ns);
+		ctx.groups.push(ns);
+	};
+	test.group.only = (name, state, handler) => {
+		state.__depth__ = ctx.state.__depth__ + 1;
+		state.__skipped__ = ctx.state.__skipped__;
+		const ns = setup(context(state), name);
+		handler(ns);
+		ctx.groupsOnly.push(ns);
+	};
+	test.setSkipped = () => {
+		ctx.state.__skipped__ = true;
+		for (const group of ctx.groups) group.setSkipped();
 	};
 	return test;
 }
