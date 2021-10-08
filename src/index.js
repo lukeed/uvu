@@ -95,6 +95,12 @@ async function runner(ctx, name) {
 	}
 }
 
+let timer;
+function defer() {
+	clearTimeout(timer);
+	timer = setTimeout(exec);
+}
+
 function setup(ctx, name = '') {
 	ctx.state.__test__ = '';
 	ctx.state.__suite__ = name;
@@ -110,6 +116,7 @@ function setup(ctx, name = '') {
 		let run = runner.bind(0, copy, name);
 		Object.assign(ctx, context(copy.state));
 		UVU_QUEUE[globalThis.UVU_INDEX || 0].push(run);
+		isCLI || defer();
 	};
 	return test;
 }
@@ -144,5 +151,3 @@ export async function exec(bail) {
 
 	if (isNode) process.exitCode = code;
 }
-
-isCLI || Promise.resolve().then(exec);
