@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "uvu tests -r solid-register"
+  },
+  "dependencies": {
+    "solid-js": "^1.2.0"
+  },
+  "devDependencies": {
+    "solid-register": "0.0.5",
+    "solid-testing-library": "0.2.1",
+    "jsdom": "18.0.0",
+    "uvu": "0.5.2"
+  }
+}
