@@ -1,6 +1,9 @@
-import { resolve } from 'path';
-import { totalist } from 'totalist';
+import { readdir, stat } from 'fs';
+import { resolve, join } from 'path';
+import { promisify } from 'util';
 
+const ls = promisify(readdir);
+const toStat = promisify(stat);
 const toRegex = x => new RegExp(x, 'i');
 
 function exists(dep) {
@@ -25,11 +28,25 @@ export async function parse(dir, pattern, opts = {}) {
 		throw new Error(`Cannot find module '${name}'`);
 	});
 
-	await totalist(dir, (rel, abs) => {
-		if (pattern.test(rel) && !ignores.some(x => x.test(rel))) {
-			suites.push({ name: rel, file: abs });
-		}
-	});
+	// NOTE: Node 8.x support
+	// @modified lukeed/totalist
+	await (async function collect(d, p) {
+		await ls(d).then(files => {
+			return Promise.all(
+				files.map(async str => {
+					let name = join(p, str);
+					for (let i = ignores.length; i--;) {
+						if (ignores[i].test(name)) return;
+					}
+
+					let file = join(dir, str);
+					let stats = await toStat(file);
+					if (stats.isDirectory()) return collect(file, name);
+					else if (pattern.test(name)) suites.push({ name, file });
+				})
+			);
+		});
+	})(dir, '');
 
 	suites.sort((a, b) => a.name.localeCompare(b.name));
 
