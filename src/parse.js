@@ -39,7 +39,7 @@ export async function parse(dir, pattern, opts = {}) {
 						if (ignores[i].test(name)) return;
 					}
 
-					let file = join(dir, str);
+					let file = join(d, str);
 					let stats = await toStat(file);
 					if (stats.isDirectory()) return collect(file, name);
 					else if (pattern.test(name)) suites.push({ name, file });
