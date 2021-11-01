@@ -19,7 +19,7 @@ export async function parse(dir, pattern, opts = {}) {
 
 	let suites = [];
 	let requires = [].concat(opts.require || []).filter(Boolean);
-	let ignores = ['node_modules'].concat(opts.ignore || []).map(toRegex);
+	let ignores = ['^.git', 'node_modules'].concat(opts.ignore || []).map(toRegex);
 
 	requires.forEach(name => {
 		let tmp = exists(name);

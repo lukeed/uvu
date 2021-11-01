@@ -76,7 +76,7 @@ This will traverse the `packages` directory, looking at files and subdirectories
 
 ***Ignoring***
 
-Files inside _any_ `node_modules` directory are _always_ ignored.
+Any file or directory names matching `node_modules` or `^.git` are _always_ ignored.
 
 You can use the `-i/--ignore` flags to provide additional patterns to ignore. Much like `[pattern]`, these values are cast to a `RegExp`, allowing you to be as vague or specific as you need to be.
 
