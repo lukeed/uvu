@@ -3,6 +3,10 @@ const sade = require('sade');
 const pkg = require('./package');
 const { parse } = require('./parse');
 
+if (process.env.NODE_ENV == null) {
+  process.env.NODE_ENV = 'test';
+}
+
 const dimport = x => new Function(`return import(${ JSON.stringify(x) })`).call(0);
 
 const hasImport = (() => {
