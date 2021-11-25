@@ -6,11 +6,11 @@ const spawn = promisify(execFile);
 const PAD = reset().dim('    ||  ');
 
 const runners = {
-	ava: [require.resolve('ava/cli.js'), 'suites/ava/**'],
-	jest: [require.resolve('jest/bin/jest.js'), 'suites/jest', '--env=node'],
-	mocha: [require.resolve('mocha/bin/mocha'), 'suites/mocha'],
-	tape: [require.resolve('tape/bin/tape'), 'suites/tape'],
-	uvu: [require.resolve('uvu/bin.js'), 'suites/uvu'],
+	ava: ['./node_modules/ava/cli.js', 'suites/ava/**'],
+	jest: ['./node_modules/jest/bin/jest.js', 'suites/jest', '--env=node'],
+	mocha: ['./node_modules/mocha/bin/mocha', 'suites/mocha'],
+	tape: ['./node_modules/tape/bin/tape', 'suites/tape'],
+	uvu: ['./node_modules/uvu/bin.js', 'suites/uvu'],
 };
 
 function format(arr) {
