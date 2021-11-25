@@ -10,6 +10,7 @@ const runners = {
 	jest: ['./node_modules/jest/bin/jest.js', 'suites/jest', '--env=node'],
 	mocha: ['./node_modules/mocha/bin/mocha', 'suites/mocha'],
 	tape: ['./node_modules/tape/bin/tape', 'suites/tape'],
+	teenytest: ['./node_modules/teenytest/bin/teenytest', 'suites/teenytest'],
 	uvu: ['./node_modules/uvu/bin.js', 'suites/uvu'],
 };
 
