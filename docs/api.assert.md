@@ -131,6 +131,18 @@ assert.throws(() => OOPS(), /Cannot read property/);
 assert.throws(() => OOPS(), err => err instanceof TypeError);
 ```
 
+If you are trying to assert an an async function throws an Error, [the following idiom](https://github.com/lukeed/uvu/issues/35#issuecomment-896270152) should be used instead:
+```
+try {
+  await asyncFnThatThrows();
+  assert.unreachable('should have thrown');
+} catch (err) {
+  assert.instance(err, Error);
+  assert.match(err.message, 'something specific');
+  assert.is(err.code, 'ERROR123');
+}
+```
+
 ### unreachable(msg?: Message)
 Assert that a line should never be reached.
 
