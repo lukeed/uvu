@@ -1,6 +1,6 @@
 # `uvu`
 
-This is the main module. All `uvu` tests require that either [`suite`](#uvusuitename-string) or [`test`](#uvutestname-string-callback-function) (or both) be imported.
+This is the main module. All `uvu` tests require that either [`suite`](#uvusuitename-string-context-t) or [`test`](#uvutestname-string-callback-function) (or both) be imported.
 
 You may declare multiple [`Suites`](#suites) in the same file. This helps with organization as it group test output in a more readable fashion and allows related items to remain neighbors.
 
