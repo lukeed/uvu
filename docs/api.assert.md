@@ -131,8 +131,8 @@ assert.throws(() => OOPS(), /Cannot read property/);
 assert.throws(() => OOPS(), err => err instanceof TypeError);
 ```
 
-If you are trying to assert an an async function throws an Error, [the following idiom](https://github.com/lukeed/uvu/issues/35#issuecomment-896270152) should be used instead:
-```
+If you are trying to assert that an `async` function throws an Error, the following approach [is recommended](https://github.com/lukeed/uvu/issues/35#issuecomment-896270152):
+```js
 try {
   await asyncFnThatThrows();
   assert.unreachable('should have thrown');
