@@ -192,9 +192,7 @@ export function stringify(input) {
 }
 
 export function compare(input, expect) {
-	if (Array.isArray(expect) && Array.isArray(input)) {
-		return arrays(input, expect);
-	}
+	if (Array.isArray(expect) && Array.isArray(input)) return arrays(input, expect);
 	if (expect instanceof RegExp) return chars(''+input, ''+expect);
 
 	let isA = input && typeof input == 'object';
