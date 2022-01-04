@@ -198,6 +198,16 @@ equal('should use deep equality checks', () => {
 	}
 });
 
+// Issue #178
+equal('should throw assertion error on array type mismatch', () => {
+	try {
+		$.equal(null, [1]);
+		assert.unreachable();
+	} catch (err) {
+		assert.instance(err, $.Assertion);
+	}
+})
+
 equal.run();
 
 // ---
