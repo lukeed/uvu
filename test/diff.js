@@ -1167,4 +1167,11 @@ stringify('should retain `undefined` and `NaN` values :: Array', () => {
 	);
 });
 
+stringify('should handle `BigInt` values correctly', () => {
+	assert.is(
+		$.stringify([BigInt(1), 2n, Object(BigInt(3)), Object(4n)]),
+		'[\n  "1",\n  "2",\n  "3",\n  "4"\n]'
+	);
+})
+
 stringify.run();
