@@ -13,7 +13,7 @@ declare namespace uvu {
 		skip(name?: string, test?: Callback<T>): void;
 		before: Hook<T>;
 		after: Hook<T>
-		run(): () => void;
+		run(): void;
 	}
 }
 
