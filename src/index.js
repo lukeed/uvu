@@ -4,6 +4,37 @@ import { compare } from 'uvu/diff';
 let isCLI = false, isNode = false;
 let hrtime = (now = Date.now()) => () => (Date.now() - now).toFixed(2) + 'ms';
 let write = console.log;
+let defaultReporter = {
+	start() {},
+	suite(ctx, name) {
+		write(SUITE(kleur.black(` ${name} `)) + ' ');
+	},
+	pass(ctx, name) {
+		write(PASS);
+	},
+	fail(ctx, name, err) {
+		write(FAIL);
+	},
+	suiteEnd(ctx, name, passed, failed, errors) {
+		const msg = `  (${passed} / ${failed})\n`;
+		write(passed !== failed ? kleur.red(msg) : kleur.green(msg));
+
+		if (errors.length) {
+			write('\n' + errors + '\n');
+		}
+	},
+	file(name, passed, total) {
+		if (total > 0) write('\n');
+
+		write(FILE(name) + '\n');
+	},
+	end(total, passed, skipped, duration) {
+		write('\n  Total:     ' + total);
+		write((passed !== total ? kleur.red : kleur.green)('\n  Passed:    ' + passed));
+		write('\n  Skipped:   ' + (skipped ? kleur.yellow(skipped) : skipped));
+		write('\n  Duration:  ' + duration + '\n\n');
+	}
+};
 
 const into = (ctx, key) => (name, handler) => ctx[key].push({ name, handler });
 const context = (state) => ({ tests:[], before:[], after:[], bEach:[], aEach:[], only:[], skips:0, state });
@@ -61,13 +92,13 @@ function format(name, err, suite = '') {
 	return str + '\n';
 }
 
-async function runner(ctx, name) {
+async function runner(ctx, name, reporter = defaultReporter) {
 	let { only, tests, before, after, bEach, aEach, state } = ctx;
 	let hook, test, arr = only.length ? only : tests;
 	let num=0, errors='', total=arr.length;
 
 	try {
-		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
+		if (name) reporter.suite(ctx, name);
 		for (hook of before) await hook(state);
 
 		for (test of arr) {
@@ -76,21 +107,20 @@ async function runner(ctx, name) {
 				for (hook of bEach) await hook(state);
 				await test.handler(state);
 				for (hook of aEach) await hook(state);
-				write(PASS);
+				reporter.pass(ctx, test.name);
 				num++;
 			} catch (err) {
 				for (hook of aEach) await hook(state);
 				if (errors.length) errors += '\n';
 				errors += format(test.name, err, name);
-				write(FAIL);
+				reporter.fail(ctx, test.name, err);
 			}
 		}
 	} finally {
 		state.__test__ = '';
 		for (hook of after) await hook(state);
-		let msg = `  (${num} / ${total})\n`;
 		let skipped = (only.length ? tests.length : 0) + ctx.skips;
-		write(errors.length ? kleur.red(msg) : kleur.green(msg));
+		reporter.suiteEnd(ctx, name, num, total - num, errors);
 		return [errors || true, num, skipped, total];
 	}
 }
@@ -124,30 +154,27 @@ function setup(ctx, name = '') {
 export const suite = (name = '', state = {}) => setup(context(state), name);
 export const test = suite();
 
-export async function exec(bail) {
+export async function exec(bail, reporter = defaultReporter) {
 	let timer = hrtime();
 	let done=0, total=0, skips=0, code=0;
 
-	for (let group of UVU_QUEUE) {
-		if (total) write('\n');
+	reporter.start();
 
+	for (let group of UVU_QUEUE) {
 		let name = group.shift();
-		if (name != null) write(FILE(name) + '\n');
+		if (name != null) reporter.file(name, done, total);
 
 		for (let test of group) {
-			let [errs, ran, skip, max] = await test();
+			let [errs, ran, skip, max] = await test(reporter);
 			total += max; done += ran; skips += skip;
 			if (errs.length) {
-				write('\n' + errs + '\n'); code=1;
+				code = 1;
 				if (bail) return isNode && process.exit(1);
 			}
 		}
 	}
 
-	write('\n  Total:     ' + total);
-	write((code ? kleur.red : kleur.green)('\n  Passed:    ' + done));
-	write('\n  Skipped:   ' + (skips ? kleur.yellow(skips) : skips));
-	write('\n  Duration:  ' + timer() + '\n\n');
+	reporter.end(total, done, skips, timer());
 
 	if (isNode) process.exitCode = code;
 }
