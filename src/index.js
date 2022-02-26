@@ -68,7 +68,16 @@ async function runner(ctx, name) {
 
 	try {
 		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
-		for (hook of before) await hook(state);
+		for (hook of before) {
+			try {
+				await hook(state);
+			} catch (err) {
+				if (errors.length) errors += '\n';
+				errors += format('before', err, name)
+				write(FAIL)
+				throw err;
+			}
+		}
 
 		for (test of arr) {
 			state.__test__ = test.name;
