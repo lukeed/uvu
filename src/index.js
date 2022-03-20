@@ -61,6 +61,10 @@ function format(name, err, suite = '') {
 	return str + '\n';
 }
 
+function addNewlineToErrors(errors) {
+	if (errors.length) errors += '\n';
+}
+
 async function runner(ctx, name) {
 	let { only, tests, before, after, bEach, aEach, state } = ctx;
 	let hook, test, arr = only.length ? only : tests;
@@ -72,8 +76,8 @@ async function runner(ctx, name) {
 			try {
 				await hook(state);
 			} catch (err) {
-				if (errors.length) errors += '\n';
-				errors += format('before', err, name)
+				addNewlineToErrors(errors)
+				errors += format(`${name ? name + ' ' : '' }before`, err, name)
 				write(FAIL)
 				throw err;
 			}
@@ -88,15 +92,25 @@ async function runner(ctx, name) {
 				write(PASS);
 				num++;
 			} catch (err) {
-				for (hook of aEach) await hook(state);
-				if (errors.length) errors += '\n';
+				for (hook of aEach) try {
+					await hook(state);
+				} catch (aEachErr) {
+					addNewlineToErrors(errors)
+					errors += format(`${test.name} afterEach`, aEachErr, name);
+				}
+				addNewlineToErrors(errors)
 				errors += format(test.name, err, name);
 				write(FAIL);
 			}
 		}
 	} finally {
 		state.__test__ = '';
-		for (hook of after) await hook(state);
+		for (hook of after) try {
+			await hook(state);
+		} catch (afterErr) {
+			addNewlineToErrors(errors)
+			errors += format(`${ name ? name + ' ' : ''} after`, err, name);
+		}
 		let msg = `  (${num} / ${total})\n`;
 		let skipped = (only.length ? tests.length : 0) + ctx.skips;
 		write(errors.length ? kleur.red(msg) : kleur.green(msg));
