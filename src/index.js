@@ -124,10 +124,13 @@ function setup(ctx, name = '') {
 export const suite = (name = '', state = {}) => setup(context(state), name);
 export const test = suite();
 
+let testingInProgress = false;
+
 export async function exec(bail) {
 	let timer = hrtime();
 	let done=0, total=0, skips=0, code=0;
 
+	testingInProgress = true;
 	for (let group of UVU_QUEUE) {
 		if (total) write('\n');
 
@@ -143,6 +146,7 @@ export async function exec(bail) {
 			}
 		}
 	}
+	testingInProgress = false;
 
 	write('\n  Total:     ' + total);
 	write((code ? kleur.red : kleur.green)('\n  Passed:    ' + done));
@@ -151,3 +155,12 @@ export async function exec(bail) {
 
 	if (isNode) process.exitCode = code;
 }
+
+process.on('exit', () => {
+	if (testingInProgress) {
+		console.error(`Exiting early before testing is finished.`);
+		if (process.exitCode === 0 || process.exitCode == null) {
+			process.exitCode = 1;
+		}
+	}
+});
