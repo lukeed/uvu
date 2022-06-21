@@ -13,23 +13,28 @@
   "exports": {
     ".": {
       "require": "./dist/index.js",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.mjs",
+      "types": "./index.d.ts"
     },
     "./assert": {
       "require": "./assert/index.js",
-      "import": "./assert/index.mjs"
+      "import": "./assert/index.mjs",
+      "types": "./assert/index.d.ts"
     },
     "./diff": {
       "require": "./diff/index.js",
-      "import": "./diff/index.mjs"
+      "import": "./diff/index.mjs",
+      "types": "./diff/index.d.ts"
     },
     "./parse": {
       "require": "./parse/index.js",
-      "import": "./parse/index.mjs"
+      "import": "./parse/index.mjs",
+      "types": "./parse/index.d.ts"
     },
     "./run": {
       "require": "./run/index.js",
-      "import": "./run/index.mjs"
+      "import": "./run/index.mjs",
+      "types": "./run/index.d.ts"
     }
   },
   "files": [
