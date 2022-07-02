@@ -1,4 +1,4 @@
-import { readdir, stat } from 'fs';
+import { readdir, stat, existsSync } from 'fs';
 import { resolve, join } from 'path';
 import { promisify } from 'util';
 
@@ -7,6 +7,7 @@ const toStat = promisify(stat);
 const toRegex = x => new RegExp(x, 'i');
 
 function exists(dep) {
+	if (existsSync(dep)) return dep;
 	try { return require.resolve(dep) }
 	catch (err) { return false }
 }
