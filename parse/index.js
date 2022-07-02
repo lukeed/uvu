@@ -1,18 +1,13 @@
-import { readdir, stat, existsSync } from 'fs';
-import { resolve, join } from 'path';
-import { promisify } from 'util';
+// @ts-check
+const { readdir, stat } = require('fs');
+const { resolve, join } = require('path');
+const { promisify } = require('util');
 
 const ls = promisify(readdir);
 const toStat = promisify(stat);
 const toRegex = x => new RegExp(x, 'i');
 
-function exists(dep) {
-	if (existsSync(dep)) return dep;
-	try { return require.resolve(dep) }
-	catch (err) { return false }
-}
-
-export async function parse(dir, pattern, opts = {}) {
+async function parse(dir, pattern, opts = {}) {
 	if (pattern) pattern = toRegex(pattern);
 	else if (dir) pattern = /(((?:[^\/]*(?:\/|$))*)[\\\/])?\w+\.([mc]js|[jt]sx?)$/;
 	else pattern = /((\/|^)(tests?|__tests?__)\/.*|\.(tests?|spec)|^\/?tests?)\.([mc]js|[jt]sx?)$/i;
@@ -23,10 +18,8 @@ export async function parse(dir, pattern, opts = {}) {
 	let ignores = ['^.git', 'node_modules'].concat(opts.ignore || []).map(toRegex);
 
 	requires.forEach(name => {
-		let tmp = exists(name);
-		if (tmp) return require(tmp);
-		if (tmp = exists(resolve(name))) return require(tmp);
-		throw new Error(`Cannot find module '${name}'`);
+		try { return require(name) }
+		catch (e) { throw new Error(`Cannot find module "${name}"`) }
 	});
 
 	// NOTE: Node 8.x support
@@ -53,3 +46,5 @@ export async function parse(dir, pattern, opts = {}) {
 
 	return { dir, suites, requires: requires.length > 0 };
 }
+
+exports.parse = parse;

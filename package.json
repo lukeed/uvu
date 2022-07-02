@@ -48,7 +48,6 @@
   ],
   "modes": {
     "diff": "src/diff.js",
-    "parse": "src/parse.js",
     "assert": "src/assert.js",
     "default": "src/index.js"
   },

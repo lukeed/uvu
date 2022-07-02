@@ -2,7 +2,7 @@ import { suite } from 'uvu';
 import { readdirSync } from 'fs';
 import { isAbsolute } from 'path';
 import * as assert from 'uvu/assert';
-import * as $ from '../src/parse';
+import * as $ from '../parse';
 
 const FILES = readdirSync(__dirname);
 
@@ -132,7 +132,7 @@ requires('should throw on invalid value(s)', async () => {
 		assert.unreachable('should have thrown');
 	} catch (err) {
 		assert.instance(err, Error);
-		assert.match(err.message, `Cannot find module 'foobar'`);
+		assert.match(err.message, `Cannot find module "foobar"`);
 	}
 });
 
