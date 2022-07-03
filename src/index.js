@@ -125,10 +125,12 @@ function setup(ctx, name = '') {
 export const suite = (name = '', state = {}) => setup(context(state), name);
 export const test = suite();
 
+let isRunning = false;
 export async function exec(bail) {
 	let timer = hrtime();
 	let done=0, total=0, skips=0, code=0;
 
+	isRunning = true;
 	for (let group of UVU_QUEUE) {
 		if (total) write('\n');
 
@@ -145,6 +147,7 @@ export async function exec(bail) {
 		}
 	}
 
+	isRunning = false;
 	write('\n  Total:     ' + total);
 	write((code ? kleur.red : kleur.green)('\n  Passed:    ' + done));
 	write('\n  Skipped:   ' + (skips ? kleur.yellow(skips) : skips));
@@ -152,3 +155,9 @@ export async function exec(bail) {
 
 	if (isNode) process.exitCode = code;
 }
+
+if (isNode) process.on('exit', () => {
+	if (!isRunning) return; // okay to exit
+	process.exitCode = process.exitCode || 1;
+	console.error('Exiting early before testing is finished.');
+});

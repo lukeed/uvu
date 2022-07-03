@@ -14,6 +14,22 @@ totalist(__dirname, (rel, abs) => {
 	let pid = spawnSync('node', HOOK.concat(abs));
 	let file = kleur.bold().underline(rel);
 
+	if (rel.endsWith('.fails.js')) {
+		try {
+			assert.notEqual(pid.status, 0, 'expected to fail');
+			assert.equal(pid.stderr.length > 0, true, 'run w/ stderr');
+			assert.equal(pid.stdout.length, 0, 'run w/o stdout');
+			console.log(PASS + file);
+		} catch (err) {
+			console.error(FAIL + file + ' :: "%s"', err.message);
+			if (pid.stdout.length) {
+				console.error(LEFT + '\n' + LEFT + pid.stdout.toString().replace(/(\r?\n)/g, '$1' + LEFT));
+			}
+			code = 1;
+		}
+		return;
+	}
+
 	try {
 		assert.equal(pid.status, 0, 'run w/o error code');
 		assert.equal(pid.stderr.length, 0, 'run w/o stderr');
