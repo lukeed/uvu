@@ -18,7 +18,7 @@ totalist(__dirname, (rel, abs) => {
 		try {
 			assert.notEqual(pid.status, 0, 'expected to fail');
 			assert.equal(pid.stderr.length > 0, true, 'run w/ stderr');
-			assert.equal(pid.stdout.length === 0, true, 'run w/o stdout');
+			assert.equal(pid.stdout.length, 0, 'run w/o stdout');
 			console.log(PASS + file);
 		} catch (err) {
 			console.error(FAIL + file + ' :: "%s"', err.message);

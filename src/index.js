@@ -159,8 +159,6 @@ export async function exec(bail) {
 process.on('exit', () => {
 	if (testingInProgress) {
 		console.error(`Exiting early before testing is finished.`);
-		if (process.exitCode === 0 || process.exitCode == null) {
-			process.exitCode = 1;
-		}
+		process.exitCode = process.exitCode || 1;
 	}
 });
