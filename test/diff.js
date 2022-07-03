@@ -2,6 +2,7 @@ import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import * as $ from '../src/diff';
 
+const isNode8 = process.versions.node.startsWith('8.');
 const strip = str => str.replace(/[\u001B\u009B][[\]()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[-a-zA-Z\d\/#&.:=?%@~_]*)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-ntqry=><~]))/g, '');
 
 const arrays = suite('arrays');
@@ -1166,5 +1167,18 @@ stringify('should retain `undefined` and `NaN` values :: Array', () => {
 		'[\n  1,\n  undefined,\n  2,\n  undefined,\n  3,\n  NaN,\n  4,\n  5\n]'
 	);
 });
+
+if (!isNode8) {
+	// Not currently supporting :: Object(BigInt(3)) && Object(4n)
+	stringify('should handle `BigInt` values correctly', () => {
+		let bigint = eval('100n'); // avoid Node8 syntax error
+		assert.is($.stringify(BigInt(1)), '"1"');
+		assert.is($.stringify(bigint), '"100"');
+		assert.is(
+			$.stringify([BigInt(1), bigint]),
+			'[\n  "1",\n  "100"\n]'
+		);
+	});
+}
 
 stringify.run();
