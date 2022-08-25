@@ -34,7 +34,7 @@ function assert(bool, actual, expects, operator, detailer, backup, msg) {
 }
 
 export function ok(val, msg) {
-	assert(!!val, false, true, 'ok', false, 'Expected value to be truthy', msg);
+	assert(!!val, val, true, 'ok', false, 'Expected value to be truthy', msg);
 }
 
 export function is(val, exp, msg) {
