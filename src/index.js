@@ -53,10 +53,11 @@ function stack(stack, idx) {
 
 function format(name, err, suite = '') {
 	let { details, operator='' } = err;
-	let idx = err.stack && err.stack.indexOf('\n');
-	if (err.name.startsWith('AssertionError') && !operator.includes('not')) details = compare(err.actual, err.expected); // TODO?
+	let idx = err.stack && err.stack.indexOf('\n');	
 	let str = '  ' + FAILURE + (suite ? kleur.red(SUITE(` ${suite} `)) : '') + ' ' + QUOTE + kleur.red().bold(name) + QUOTE;
 	str += '\n    ' + err.message + (operator ? kleur.italic().dim(`  (${operator})`) : '') + '\n';
+	
+	if (err.code === 'ERR_ASSERTION' && !operator.includes('not')) details = compare(err.actual, err.expects);
 	if (details) str += GUTTER + details.split('\n').join(GUTTER);
 	if (!!~idx) str += stack(err.stack, idx);
 	return str + '\n';
