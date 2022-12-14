@@ -7,6 +7,8 @@ const colors = {
 	'++': kleur.green,
 };
 
+if(process.env.FORCE_COLOR === '0') kleur.enabled = false;
+
 const TITLE = kleur.dim().italic;
 const TAB=kleur.dim('→'), SPACE=kleur.dim('·'), NL=kleur.dim('↵');
 const LOG = (sym, str) => colors[sym](sym + PRETTY(str)) + '\n';
