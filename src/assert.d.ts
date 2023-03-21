@@ -9,7 +9,8 @@ export function instance(actual: any, expects: any, msg?: Message): void;
 export function snapshot(actual: string, expects: string, msg?: Message): void;
 export function fixture(actual: string, expects: string, msg?: Message): void;
 export function match(actual: string, expects: string | RegExp, msg?: Message): void;
-export function throws(fn: Function, expects?: Message | RegExp | Function, msg?: Message): void;
+export function throws(fn: Function, msg?: Message): void;
+export function throws(fn: Function, expects: RegExp | Function, msg?: Message): void;
 export function not(actual: any, msg?: Message): void;
 export function unreachable(msg?: Message): void;
 
