@@ -51,6 +51,15 @@ function stack(stack, idx) {
 	return kleur.grey(out) + '\n';
 }
 
+function cause(err) {
+	let out = '';
+	let idx = err.stack && err.stack.indexOf('\n');
+	out += kleur.grey('\n    Caused by: ' + err.message.split('\n').join('\n    '));
+	if (!!~idx) out += stack(err.stack, idx);
+	if (err.cause) out += cause(err.cause);
+	return out;
+}
+
 function format(name, err, suite = '') {
 	let { details, operator='' } = err;
 	let idx = err.stack && err.stack.indexOf('\n');
@@ -59,6 +68,7 @@ function format(name, err, suite = '') {
 	str += '\n    ' + err.message + (operator ? kleur.italic().dim(`  (${operator})`) : '') + '\n';
 	if (details) str += GUTTER + details.split('\n').join(GUTTER);
 	if (!!~idx) str += stack(err.stack, idx);
+	if (err.cause) str += cause(err);
 	return str + '\n';
 }
 
