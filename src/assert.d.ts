@@ -1,7 +1,6 @@
 type Types = 'string' | 'number' | 'boolean' | 'object' | 'undefined' | 'function';
 
 export type Message = string | Error;
-
 export function ok(actual: any, msg?: Message): asserts actual;
 export function is<Actual, Expects extends Actual>(actual: Actual, expected: Expects, msg?: Message): void;
 export function equal<Actual, Expects extends Actual>(actual: Actual, expected: Expects, msg?: Message): void;
