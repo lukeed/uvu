@@ -1,18 +1,18 @@
 type Types = 'string' | 'number' | 'boolean' | 'object' | 'undefined' | 'function';
 
+export type Message = string | Error;
+
 declare interface Is {
-  <Actual, Expects extends Actual>(actual: Actual, expected: Expects, message?: string): void;
+  <Actual, Expects extends Actual>(actual: Actual, expected: Expects, msg?: Message): void;
 	not(actual: any, expects: any, msg?: Message): void;
 }
 
 declare interface Equal {
-  <Actual, Expects extends Actual>(actual: Actual, expected: Expects, message?: string): void;
-	<Actual extends Expects, Expects>(actual: Actual, expected: Expects, message?: string): void;
-	<Actual, Expects>(actual: Actual, expected: Expects, message?: string): boolean;
-	skip(actual: any, expected: any, message?: string): void;
+  <Actual, Expects extends Actual>(actual: Actual, expected: Expects, msg?: Message): void;
+	<Actual extends Expects, Expects>(actual: Actual, expected: Expects, msg?: Message): void;
+	<Actual, Expects>(actual: Actual, expected: Expects, msg?: Message): boolean;
 }
 
-export type Message = string | Error;
 export const equal: Equal;
 export const is: Is;
 export function ok(actual: any, msg?: Message): asserts actual;
