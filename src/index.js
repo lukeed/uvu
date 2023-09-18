@@ -51,14 +51,31 @@ function stack(stack, idx) {
 	return kleur.grey(out) + '\n';
 }
 
-function format(name, err, suite = '') {
-	let { details, operator='' } = err;
-	let idx = err.stack && err.stack.indexOf('\n');
-	if (err.name.startsWith('AssertionError') && !operator.includes('not')) details = compare(err.actual, err.expected); // TODO?
-	let str = '  ' + FAILURE + (suite ? kleur.red(SUITE(` ${suite} `)) : '') + ' ' + QUOTE + kleur.red().bold(name) + QUOTE;
-	str += '\n    ' + err.message + (operator ? kleur.italic().dim(`  (${operator})`) : '') + '\n';
+/**
+ * Try to serialize thrown object to get more context about an error
+ */
+function serializeThrownObject(obj) {
+	try {
+		return `Catch the thrown value ${JSON.stringify(obj)} which is not extended from Error.`;
+	} catch (error) {
+		return `Catch the thrown value "${typeof obj}", which is not extended from Error.`;
+	}
+}
+
+function formatError(testName, error, suite = '') {
+	let analyzedError = error;
+
+	if (!(error instanceof Error)) {
+		analyzedError = new Error(serializeThrownObject(error));
+	}
+
+	let { details, operator= '', stack: errorStack = '', name = '', message = '' } = analyzedError;
+	const idx = errorStack.indexOf('\n');
+	if (name.startsWith('AssertionError') && !operator.includes('not')) details = compare(error.actual, error.expected); // TODO?
+	let str = '  ' + FAILURE + (suite ? kleur.red(SUITE(` ${suite} `)) : '') + ' ' + QUOTE + kleur.red().bold(testName) + QUOTE;
+	str += '\n    ' + message + (operator ? kleur.italic().dim(`  (${operator})`) : '') + '\n';
 	if (details) str += GUTTER + details.split('\n').join(GUTTER);
-	if (!!~idx) str += stack(err.stack, idx);
+	if (idx !== -1) str += stack(errorStack, idx);
 	return str + '\n';
 }
 
@@ -82,7 +99,7 @@ async function runner(ctx, name) {
 			} catch (err) {
 				for (hook of aEach) await hook(state);
 				if (errors.length) errors += '\n';
-				errors += format(test.name, err, name);
+				errors += formatError(test.name, err, name);
 				write(FAIL);
 			}
 		}

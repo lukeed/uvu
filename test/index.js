@@ -14,7 +14,7 @@ totalist(__dirname, (rel, abs) => {
 	let pid = spawnSync('node', HOOK.concat(abs));
 	let file = kleur.bold().underline(rel);
 
-	if (rel.endsWith('.fails.js')) {
+	if (rel.endsWith('exit.fails.js')) {
 		try {
 			assert.notEqual(pid.status, 0, 'expected to fail');
 			assert.equal(pid.stderr.length > 0, true, 'run w/ stderr');
@@ -27,6 +27,30 @@ totalist(__dirname, (rel, abs) => {
 			}
 			code = 1;
 		}
+		return;
+	}
+
+	if (rel.endsWith('throws.fails.js') === true) {
+		function countOccurrences(inputString, substring) {
+			return inputString.split(substring).length - 1;
+		}
+
+		try {
+			assert.notEqual(pid.status, 0, 'expected to fail');
+			assert.equal(pid.stderr.length, 0, 'run w/ stderr');
+			assert.equal(pid.stdout.length > 0, true, 'run w/ stdout');
+			// we have 6 tests in throws.fails.js file. 5 of them throw errors and 1 should pass
+			assert.equal(countOccurrences(pid.stdout.toString(), 'Catch the thrown value') === 5, true, 'run w/ stdout');
+			console.log(PASS + file);
+		} catch (error) {
+			console.error(FAIL + file + ' :: "%s"', error.message);
+			if (pid.stdout.length) {
+				console.error(LEFT + '\n' + LEFT + pid.stdout.toString().replace(/(\r?\n)/g, '$1' + LEFT));
+			}
+
+			code = 1;
+		}
+
 		return;
 	}
 
