@@ -9,11 +9,11 @@
   <a href="https://github.com/lukeed/uvu/actions">
     <img src="https://github.com/lukeed/uvu/workflows/CI/badge.svg" alt="CI" />
   </a>
+  <a href="https://licenses.dev/npm/uvu">
+    <img src="https://licenses.dev/b/npm/uvu" alt="licenses" />
+  </a>
   <a href="https://npmjs.org/package/uvu">
     <img src="https://badgen.now.sh/npm/dm/uvu" alt="downloads" />
-  </a>
-  <a href="https://packagephobia.now.sh/result?p=uvu">
-    <img src="https://packagephobia.now.sh/badge?p=uvu" alt="install size" />
   </a>
 </div>
 
