@@ -124,11 +124,12 @@ Below you'll find each test runner with two timing values:
 Each test runner's `stdout` is printed to the console to verify all assertions pass.<br>Said output is excluded below for brevity.
 
 ```
-~> "ava"   took   594ms  (  ???  )
-~> "jest"  took   962ms  (356  ms)
-~> "mocha" took   209ms  (  4  ms)
-~> "tape"  took   122ms  (  ???  )
-~> "uvu"   took    72ms  (  1.3ms)
+~> "ava"       took   1.04s  (764 ms)
+~> "jest"      took   1.63s  (333 ms)
+~> "mocha"     took   269ms  (7   ms)
+~> "tape"      took   138ms  ( n/a  )
+~> "teenytest" took   133ms  ( n/a  )
+~> "uvu"       took   96ms   (1.5 ms)
 ```
 
 
