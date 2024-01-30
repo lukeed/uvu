@@ -1182,3 +1182,36 @@ if (!isNode8) {
 }
 
 stringify.run();
+
+// ---
+
+const colorize = suite('colorize');
+colorize.before((ctx) => {
+	ctx.prior_colorize_env = process.env.FORCE_COLOR;
+});
+
+colorize.after((ctx) => {
+	process.env.FORCE_COLOR = ctx.prior_colorize_env;
+});
+
+colorize('shloud not colorize when `process.env.FORCE_COLOR === "0"`', () => {
+	process.env.FORCE_COLOR = '0';
+	assert.is(
+		$.chars('foo', 'fo'),
+		'++fo     (Expected)\n' +
+		'--foo    (Actual)\n'+
+		'    ^'
+	);
+});
+
+colorize('shloud colorize when `process.env.FORCE_COLOR !== "0"`', () => {
+	process.env.FORCE_COLOR = '1';
+	assert.is(
+		strip($.chars('foo', 'fo')),
+		'++fo     (Expected)\n' +
+		'--foo    (Actual)\n'+
+		'    ^'
+	);
+});
+
+colorize.run();

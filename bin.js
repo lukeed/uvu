@@ -20,6 +20,8 @@ sade('uvu [dir] [pattern]')
 	.action(async (dir, pattern, opts) => {
 		try {
 			if (opts.color) process.env.FORCE_COLOR = '1';
+			else process.env.FORCE_COLOR = '0';
+
 			let ctx = await parse(dir, pattern, opts);
 
 			if (!ctx.requires && hasImport) {
