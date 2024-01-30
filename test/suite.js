@@ -1,4 +1,4 @@
-import { suite } from 'uvu';
+import { suite, QUEUE } from 'uvu';
 import * as assert from 'uvu/assert';
 
 const hooks = suite('hooks');
@@ -320,3 +320,151 @@ breadcrumbs('test #2', (ctx) => {
 });
 
 breadcrumbs.run();
+
+
+const runner = suite('runner');
+
+runner.before.each((ctx) => {
+	const selfQueue = [];
+	ctx.origPush = QUEUE[globalThis.UVU_INDEX || 0].push = cb => selfQueue.push(cb);
+	ctx.run = () => {
+		assert.is(selfQueue.length, 1);
+		return selfQueue[0]();
+	}
+});
+
+runner.after.each((ctx) => {
+	QUEUE[globalThis.UVU_INDEX || 0].push = ctx.origPush;
+})
+
+runner('catch errors in a test', async ({run}) => {
+	const inner = suite('inner');
+	inner('foo', () => {
+		throw new Error('test error');
+	})
+	inner.run();
+
+	let [errs, ran, skip, max] = await run();
+	assert.is(ran, 0);
+	assert.is(skip, 0);
+	assert.is(max, 1);
+	assert.match(errs, /^\s*FAIL\s+inner\s*"foo"\s*\n\s*test error\s*\n.+/m);
+})
+
+
+runner('catch errors in "before" hook', async ({run}) => {
+	const inner = suite('inner');
+	inner.before(() => {
+		throw new Error('before hook error');
+	});
+	inner('foo', () => {
+	});
+	inner.run();
+
+	try {
+		await run();
+	} catch (err) {
+		assert.match(err.message, /before hook error/);
+	}
+})
+
+runner('catch errors in "before each" hook', async ({run}) => {
+	const inner = suite('inner');
+	inner.before.each(() => {
+		throw new Error('before each hook error');
+	});
+	inner('foo', () => {
+	});
+	inner.run();
+
+	let [errs, ran, skip, max] = await run();
+	assert.is(ran, 0);
+	assert.is(skip, 0);
+	assert.is(max, 1);
+	assert.match(errs, /^\s*FAIL\s+inner\s*"foo"\s*\n\s*before each hook error\s*\n.+/m);
+})
+
+runner('catch errors in "after" hook', async ({run}) => {
+	const inner = suite('inner');
+	inner.after(() => {
+		throw new Error('after hook error');
+	});
+	inner('foo', () => {
+	});
+	inner.run();
+
+	try {
+		await run()
+	} catch (err) {
+		assert.match(err.message, /after hook error/)
+	}
+});
+
+runner('catch errors in "after each" hook', async ({run}) => {
+	const inner = suite('inner');
+	let beforeAfterCalled = 0;
+	inner.after.each(() => {
+		assert.is(beforeAfterCalled, 0);
+		throw new Error(`after each hook error ${++beforeAfterCalled}`);
+	})
+	inner('foo', () => {
+	});
+	inner.run();
+
+	let [errs, ran, skip, max] = await run();
+	assert.is(beforeAfterCalled, 1);
+
+	assert.is(ran, 0);
+	assert.is(skip, 0);
+	assert.is(max, 1);
+	assert.match(errs, /^\s*FAIL\s+inner\s+"foo"\s*\n\s*after each hook error 1\s*\n.+/m);
+});
+
+runner('call "after each" hook after failed test', async ({run}) => {
+	const inner = suite('inner');
+	let afterEachCalled = 0;
+	inner.after.each(() => {
+		afterEachCalled++;
+		throw new Error('after each hook error');
+	})
+	inner('foo', () => {
+		throw new Error('test error');
+	})
+	inner.run();
+
+	let [errs, ran, skip, max] = await run();
+	assert.is(afterEachCalled, 1);
+	assert.is(ran, 0);
+	assert.is(skip, 0);
+	assert.is(max, 1);
+	assert.match(errs, /^\s*FAIL\s+inner\s+"foo"\s*\n\s*test error\s*\n.+/m);
+	assert.match(errs, /\s*FAIL\s+inner\s+"foo"\s*\n\s*after each hook error\s*\n.+/m);
+});
+
+runner('rethrow internal error', async ({run}) => {
+	const inner = suite('inner');
+	inner('foo', () => {
+		throw {name: undefined};
+	})
+	inner.run();
+
+	try {
+		await run()
+	} catch (err) {
+		assert.is(err.message, 'Cannot read property \'startsWith\' of undefined')
+	}
+})
+
+runner('handle non-error throw', async({run}) => {
+	const inner = suite('inner');
+	inner('foo', () => { throw 'hello'});
+	inner.run();
+	let [errs, ran, skip, max] = await run();
+	assert.is(ran, 0);
+	assert.is(skip, 0);
+	assert.is(max, 1);
+	assert.is(errs, '   FAIL  inner  "foo"\n    "hello"\n')
+})
+
+
+runner.run()

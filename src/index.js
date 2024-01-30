@@ -52,10 +52,16 @@ function stack(stack, idx) {
 }
 
 function format(name, err, suite = '') {
+	let str = '  ' + FAILURE + (suite ? kleur.red(SUITE(` ${suite} `)) : '');
+	if (name) {
+		str += ' ' + QUOTE + kleur.red().bold(name) + QUOTE;
+	}
+	if (!(err instanceof Error)) {
+		return str + '\n    ' + JSON.stringify(err, null, '  ').split('\n').join(GUTTER) + '\n';
+	}
 	let { details, operator='' } = err;
 	let idx = err.stack && err.stack.indexOf('\n');
 	if (err.name.startsWith('AssertionError') && !operator.includes('not')) details = compare(err.actual, err.expected); // TODO?
-	let str = '  ' + FAILURE + (suite ? kleur.red(SUITE(` ${suite} `)) : '') + ' ' + QUOTE + kleur.red().bold(name) + QUOTE;
 	str += '\n    ' + err.message + (operator ? kleur.italic().dim(`  (${operator})`) : '') + '\n';
 	if (details) str += GUTTER + details.split('\n').join(GUTTER);
 	if (!!~idx) str += stack(err.stack, idx);
@@ -65,7 +71,7 @@ function format(name, err, suite = '') {
 async function runner(ctx, name) {
 	let { only, tests, before, after, bEach, aEach, state } = ctx;
 	let hook, test, arr = only.length ? only : tests;
-	let num=0, errors='', total=arr.length;
+	let num=0, errors='', total=arr.length, callAfterEach, globalErr;
 
 	try {
 		if (name) write(SUITE(kleur.black(` ${name} `)) + ' ');
@@ -73,25 +79,38 @@ async function runner(ctx, name) {
 
 		for (test of arr) {
 			state.__test__ = test.name;
+			callAfterEach = true;
 			try {
 				for (hook of bEach) await hook(state);
 				await test.handler(state);
+				callAfterEach = false;
 				for (hook of aEach) await hook(state);
 				write(PASS);
 				num++;
 			} catch (err) {
-				for (hook of aEach) await hook(state);
 				if (errors.length) errors += '\n';
 				errors += format(test.name, err, name);
+				try {
+					if (callAfterEach) {
+						for (hook of aEach) await hook(state);
+					}
+				} catch (err) {
+					errors += format(test.name, err, name);
+				}
 				write(FAIL);
 			}
 		}
+	} catch (err) {
+		globalErr = err;
 	} finally {
 		state.__test__ = '';
 		for (hook of after) await hook(state);
 		let msg = `  (${num} / ${total})\n`;
 		let skipped = (only.length ? tests.length : 0) + ctx.skips;
 		write(errors.length ? kleur.red(msg) : kleur.green(msg));
+		if (globalErr) {
+			throw globalErr;
+		}
 		return [errors || true, num, skipped, total];
 	}
 }
