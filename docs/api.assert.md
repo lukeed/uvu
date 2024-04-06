@@ -118,7 +118,7 @@ assert.fixture(
 Assert that the `fn` function throws an Error.
 
 When `expects` is not defined, then _any_ Error thrown satisfies the assertion.<br>
-When `expects` is a string, then the `Error`'s message must contain the `expects` string.<br>
+When `expects` is a `RegExp`, then the `Error`'s message must match the `expects` regular expression.<br>
 When `expects` is a function, then `expects` will receive the thrown `Error` and must return a `boolean` determination.
 
 Since `expects` is optional, you may also invoke the `assert.throws(fn, msg)` signature.
