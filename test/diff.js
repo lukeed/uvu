@@ -968,6 +968,15 @@ compare('should handle `undefined` vs object', () => {
 	);
 });
 
+compare('should handle Date vs Date', () => {
+	assert.snapshot(
+		strip($.compare(new Date('2001-01-01'), new Date('2024-06-08'))),
+		'++2024-06-08T00:00:00.000Z    (Expected)\n' +
+		'--2001-01-01T00:00:00.000Z    (Actual)\n' +
+		'    ^^  ^  ^              '
+	);
+});
+
 compare.run();
 
 // ---
