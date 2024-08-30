@@ -6,7 +6,7 @@
   "devDependencies": {
     "esm": "3.2.25",
     "jsdom": "16.3.0",
-    "svelte": "3.24.0",
+    "svelte": "4.2.19",
     "uvu": "^0.2.0"
   }
 }
