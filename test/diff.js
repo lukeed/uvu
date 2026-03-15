@@ -341,6 +341,44 @@ lines('should retain new lines ("↵") differences', () => {
 	);
 });
 
+lines('should show trailing "↵" when only one side has a trailing newline', () => {
+	assert.is(
+		strip($.lines('foo\n', 'foo')),
+		'Actual:\n' +
+		'--foo\n' +
+		'--↵\n' +
+		'Expected:\n' +
+		'++foo\n'
+	);
+
+	assert.is(
+		strip($.lines('foo', 'foo\n')),
+		'Actual:\n' +
+		'--foo\n' +
+		'Expected:\n' +
+		'++foo\n' +
+		'++↵\n'
+	);
+
+	assert.is(
+		strip($.lines('foo\n', 'foo', 1)),
+		'Actual:\n' +
+		'L1 --foo\n' +
+		'L2 --↵\n' +
+		'Expected:\n' +
+		'L1 ++foo\n'
+	);
+
+	assert.is(
+		strip($.lines('foo', 'foo\n', 1)),
+		'Actual:\n' +
+		'L1 --foo\n' +
+		'Expected:\n' +
+		'L1 ++foo\n' +
+		'L2 ++↵\n'
+	);
+});
+
 lines.run();
 
 // ---
