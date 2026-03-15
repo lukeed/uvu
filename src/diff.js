@@ -13,7 +13,7 @@ const LOG = (sym, str) => colors[sym](sym + PRETTY(str)) + '\n';
 const LINE = (num, x) => kleur.dim('L' + String(num).padStart(x, '0') + ' ');
 const PRETTY = str => str.replace(/[ ]/g, SPACE).replace(/\t/g, TAB).replace(/(\r?\n)/g, NL);
 
-function line(obj, prev, pad) {
+function line(obj, prev, pad, showTrailingNL) {
 	let char = obj.removed ? '--' : obj.added ? '++' : '··';
 	let arr = obj.value.replace(/\r?\n$/, '').split('\n');
 	let i=0, tmp, out='';
@@ -27,6 +27,14 @@ function line(obj, prev, pad) {
 			if (prev) out += LINE(prev + i, pad);
 			out += LOG(char, tmp || '\n');
 		}
+	}
+
+	// Show a trailing '↵' marker when this chunk ends with a newline but its
+	// paired chunk does not – i.e. the trailing newline IS the meaningful
+	// difference between the two sides, not just a normal line terminator.
+	if (showTrailingNL && arr[arr.length - 1] !== '') {
+		if (prev) out += LINE(prev + arr.length, pad);
+		out += LOG(char, '\n');
 	}
 
 	return out;
@@ -63,12 +71,22 @@ export function arrays(input, expect) {
 }
 
 export function lines(input, expect, linenum = 0) {
-	let i=0, tmp, output='';
+	let i=0, tmp, sibling, selfNL, siblingNL, showTrailingNL, output='';
 	let arr = diff.diffLines(input, expect);
 	let pad = String(expect.split(/\r?\n/g).length - linenum).length;
 
 	for (; i < arr.length; i++) {
-		output += line(tmp = arr[i], linenum, pad);
+		tmp = arr[i];
+		// Detect when a removed/added chunk has a trailing newline that its
+		// counterpart lacks – which means the newline itself is the difference.
+		sibling = tmp.removed && i + 1 < arr.length && arr[i + 1].added ? arr[i + 1]
+		        : tmp.added   && i > 0              && arr[i - 1].removed ? arr[i - 1]
+		        : null;
+		selfNL    = sibling && /\r?\n$/.test(tmp.value);
+		siblingNL = sibling && /\r?\n$/.test(sibling.value);
+		showTrailingNL = selfNL && !siblingNL;
+
+		output += line(tmp, linenum, pad, showTrailingNL);
 		if (linenum && !tmp.removed) linenum += tmp.count;
 	}
 
