@@ -123,9 +123,14 @@ export function chars(input, expect) {
 }
 
 export function direct(input, expect, lenA = String(input).length, lenB = String(expect).length) {
+	// Capture original types before coercion so that type-mismatch display works.
+	let typeA=typeof input, typeB=typeof expect;
+	// Coerce to strings up-front so that Symbols (and other non-string primitives
+	// that throw on implicit `+` coercion) do not cause an uncaught TypeError.
+	input = String(input);
+	expect = String(expect);
 	let gutter = 4;
 	let lenC = Math.max(lenA, lenB);
-	let typeA=typeof input, typeB=typeof expect;
 
 	if (typeA !== typeB) {
 		gutter = 2;
