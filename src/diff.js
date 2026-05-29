@@ -15,7 +15,7 @@ const PRETTY = str => str.replace(/[ ]/g, SPACE).replace(/\t/g, TAB).replace(/(\
 
 function line(obj, prev, pad) {
 	let char = obj.removed ? '--' : obj.added ? '++' : '··';
-	let arr = obj.value.replace(/\r?\n$/, '').split('\n');
+	let arr = obj.value.replace(/\r?$/, '').split('\n');
 	let i=0, tmp, out='';
 
 	if (obj.added) out += colors[char]().underline(TITLE('Expected:')) + '\n';
@@ -129,6 +129,13 @@ export function direct(input, expect, lenA = String(input).length, lenB = String
 
 	if (typeA !== typeB) {
 		gutter = 2;
+
+		//~> coerce to string first to support Symbol etc
+		input = String(input);
+		expect = String(expect);
+		lenA = input.length;
+		lenB = expect.length;
+		lenC = Math.max(lenA, lenB);
 
 		let delA = gutter + lenC - lenA;
 		let delB = gutter + lenC - lenB;
