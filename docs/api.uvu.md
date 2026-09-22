@@ -252,7 +252,7 @@ User.before.each(async context => {
 });
 
 User.after.each(async context => {
-  await context.client.destroy(`delete from users where id = ${user.id}`);
+  await context.client.destroy(`delete from users where id = ${context.user.id}`);
   context.user = undefined;
 });
 
@@ -286,7 +286,7 @@ User.before.each(async context => {
 });
 
 User.after.each(async context => {
-  await context.client.destroy(`delete from users where id = ${user.id}`);
+  await context.client.destroy(`delete from users where id = ${context.user.id}`);
   context.user = undefined;
 });
 
@@ -345,7 +345,7 @@ User.before.each(async context => {
 });
 
 User.after.each(async context => {
-  await context.client.destroy(`delete from users where id = ${user.id}`);
+  await context.client.destroy(`delete from users where id = ${context.user.id}`);
   context.user = undefined;
 });
 

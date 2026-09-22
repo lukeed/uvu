@@ -242,9 +242,9 @@ const FAIL = () => {
 
 assert.not.throws(() => PASS()); //=> pass
 assert.not.throws(() => FAIL()); //=> fails
-assert.not.throws(() => FAIL(), /Oops/); //=> pass
-assert.not.throws(() => FAIL(), /foobar/); //=> fails
-assert.not.throws(() => FAIL(), err => err.message.length > 0); //=> pass
+assert.not.throws(() => FAIL(), /Oops/); //=> fails
+assert.not.throws(() => FAIL(), /foobar/); //=> pass
+assert.not.throws(() => FAIL(), err => err.message.length > 0); //=> fails
 ```
 
 ### Assertion(options)
