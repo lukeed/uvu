@@ -1,5 +1,5 @@
 import kleur from 'kleur';
-import * as diff from 'diff';
+import diff from 'diff';
 
 const colors = {
 	'--': kleur.red,
