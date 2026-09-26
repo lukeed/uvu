@@ -122,7 +122,16 @@ export function chars(input, expect) {
 	return output + kleur.red(tmp);
 }
 
-export function direct(input, expect, lenA = String(input).length, lenB = String(expect).length) {
+function stringifyValue(val) {
+	return typeof val === 'symbol' ? (val.description ?? '').slice(0, 100) : String(val);
+}
+
+export function direct(input, expect, lenA, lenB) {
+	let strA = stringifyValue(input);
+	let strB = stringifyValue(expect);
+	if (lenA === undefined) lenA = strA.length;
+	if (lenB === undefined) lenB = strB.length;
+
 	let gutter = 4;
 	let lenC = Math.max(lenA, lenB);
 	let typeA=typeof input, typeB=typeof expect;
@@ -133,16 +142,16 @@ export function direct(input, expect, lenA = String(input).length, lenB = String
 		let delA = gutter + lenC - lenA;
 		let delB = gutter + lenC - lenB;
 
-		input += ' '.repeat(delA) + kleur.dim(`[${typeA}]`);
-		expect += ' '.repeat(delB) + kleur.dim(`[${typeB}]`);
+		strA += ' '.repeat(delA) + kleur.dim(`[${typeA}]`);
+		strB += ' '.repeat(delB) + kleur.dim(`[${typeB}]`);
 
 		lenA += delA + typeA.length + 2;
 		lenB += delB + typeB.length + 2;
 		lenC = Math.max(lenA, lenB);
 	}
 
-	let output = colors['++']('++' + expect + ' '.repeat(gutter + lenC - lenB) + TITLE('(Expected)')) + '\n';
-	return output + colors['--']('--' + input + ' '.repeat(gutter + lenC - lenA) + TITLE('(Actual)')) + '\n';
+	let output = colors['++']('++' + strB + ' '.repeat(gutter + lenC - lenB) + TITLE('(Expected)')) + '\n';
+	return output + colors['--']('--' + strA + ' '.repeat(gutter + lenC - lenA) + TITLE('(Actual)')) + '\n';
 }
 
 export function sort(input, expect) {
