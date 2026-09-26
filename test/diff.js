@@ -681,6 +681,23 @@ direct('should handle `false` vs `"true"` diff', () => {
 	);
 });
 
+direct('should handle Symbol vs number diff without throwing', () => {
+	// Regression test for https://github.com/lukeed/uvu/issues/251
+	// Previously threw "Cannot convert a Symbol value to a string" because
+	// direct() was using `+=` on a raw Symbol value.
+	assert.snapshot(
+		strip($.direct(Symbol('foo'), 42)),
+		'++42           [number]  (Expected)\n' +
+		'--Symbol(foo)  [symbol]  (Actual)\n'
+	);
+
+	assert.snapshot(
+		strip($.direct(42, Symbol('foo'))),
+		'++Symbol(foo)  [symbol]  (Expected)\n' +
+		'--42           [number]  (Actual)\n'
+	);
+});
+
 direct.run();
 
 // ---
@@ -965,6 +982,15 @@ compare('should handle `undefined` vs object', () => {
 		'--}\n' +
 		'Expected:\n' +
 		'++undefined\n'
+	);
+});
+
+compare('should handle Symbol vs number diff without throwing', () => {
+	// Regression test for https://github.com/lukeed/uvu/issues/251
+	assert.snapshot(
+		strip($.compare(Symbol('foo'), 42)),
+		'++42           [number]  (Expected)\n' +
+		'--Symbol(foo)  [symbol]  (Actual)\n'
 	);
 });
 
