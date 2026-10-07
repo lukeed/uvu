@@ -167,7 +167,7 @@ export function sort(input, expect) {
 		}
 
 		for (k in input) {
-			if (!out.hasOwnProperty(k)) {
+			if (!Object.prototype.hasOwnProperty.call(out, k)) {
 				out[k] = input[k]; // expect didnt have
 			}
 		}

@@ -215,6 +215,23 @@ equal('should throw assertion error on array type mismatch', () => {
 
 });
 
+equal('should report differences for objects with a `hasOwnProperty` key', () => {
+	let input = { hasOwnProperty: 1, value: 'actual' };
+	let expect = { hasOwnProperty: 1, value: 'expected' };
+	let error;
+
+	try {
+		$.equal(input, expect);
+	} catch (err) {
+		error = err;
+	}
+
+	assert.instance(error, $.Assertion);
+	isError(error, '', input, expect, 'equal', true);
+	assert.ok(error.details.includes('actual'));
+	assert.ok(error.details.includes('expected'));
+});
+
 equal.run();
 
 // ---
