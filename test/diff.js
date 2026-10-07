@@ -1012,6 +1012,36 @@ sort('should append extra `input` keys', () => {
 	);
 });
 
+sort('should handle a shared `hasOwnProperty` key', () => {
+	let input = { extra: 2, hasOwnProperty: 1 };
+	let output = $.sort(input, { hasOwnProperty: 0 });
+
+	assert.equal(Object.keys(output), ['hasOwnProperty', 'extra']);
+	assert.equal(output, { hasOwnProperty: 1, extra: 2 });
+});
+
+sort('should append an extra `hasOwnProperty` key', () => {
+	let output = $.sort({ hasOwnProperty: null, extra: 2 }, {});
+
+	assert.equal(output, { hasOwnProperty: null, extra: 2 });
+});
+
+sort('should not call an input `hasOwnProperty` method', () => {
+	let called = false;
+	let input = {
+		hasOwnProperty() {
+			called = true;
+			return true;
+		},
+		extra: 2
+	};
+	let output = $.sort(input, { hasOwnProperty: false });
+
+	assert.is(called, false);
+	assert.is(output.hasOwnProperty, input.hasOwnProperty);
+	assert.is(output.extra, 2);
+});
+
 sort('should omit missing `expect` keys', () => {
 	assert.equal(
 		$.sort({ c: 3, a: 1 }, { a: 1, b: 2, c: 3 }),
