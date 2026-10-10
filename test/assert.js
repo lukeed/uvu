@@ -431,6 +431,17 @@ throws('should not throw if function does throw matching Error :: Function', () 
 	});
 });
 
+throws('should accept an Assertion thrown by the function', () => {
+	assert.not.throws(() => $.throws(() => $.ok(false)));
+	assert.not.throws(() => $.throws(() => $.ok(false), /truthy/));
+	assert.not.throws(() => $.throws(() => $.ok(false), err => err instanceof $.Assertion));
+});
+
+throws('should still reject a non-throwing function with a matcher', () => {
+	assert.throws(() => $.throws(() => {}, () => true), /Expected function to throw/);
+	assert.throws(() => $.throws(() => {}, /Expected function to throw/), /Expected function to throw/);
+});
+
 throws.run();
 
 // ---
