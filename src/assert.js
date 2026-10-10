@@ -85,16 +85,17 @@ export function throws(blk, exp, msg) {
 
 	try {
 		blk();
-		assert(false, false, true, 'throws', false, 'Expected function to throw', msg);
 	} catch (err) {
-		if (err instanceof Assertion) throw err;
 
 		if (typeof exp === 'function') {
 			assert(exp(err), false, true, 'throws', false, 'Expected function to throw matching exception', msg);
 		} else if (exp instanceof RegExp) {
 			assert(exp.test(err.message), false, true, 'throws', false, `Expected function to throw exception matching \`${String(exp)}\` pattern`, msg);
 		}
+		return;
 	}
+
+	assert(false, false, true, 'throws', false, 'Expected function to throw', msg);
 }
 
 // ---
