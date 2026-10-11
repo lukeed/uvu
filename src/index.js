@@ -149,7 +149,7 @@ export async function exec(bail) {
 
 	isRunning = false;
 	write('\n  Total:     ' + total);
-	write((code ? kleur.red : kleur.green)('\n  Passed:    ' + done));
+	write((code ? kleur.red : kleur.green).call(kleur, '\n  Passed:    ' + done));
 	write('\n  Skipped:   ' + (skips ? kleur.yellow(skips) : skips));
 	write('\n  Duration:  ' + timer() + '\n\n');
 
