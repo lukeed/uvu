@@ -1,6 +1,7 @@
 import { suite } from 'uvu';
-import { readdirSync } from 'fs';
-import { isAbsolute } from 'path';
+import { readdirSync, mkdtempSync, mkdirSync, writeFileSync, unlinkSync, rmdirSync } from 'fs';
+import { tmpdir } from 'os';
+import { isAbsolute, join } from 'path';
 import * as assert from 'uvu/assert';
 import * as $ from '../parse';
 
@@ -142,3 +143,45 @@ requires('should `require` valid value(s)', async () => {
 });
 
 requires.run();
+
+// ---
+
+const declarations = suite('declaration files');
+
+async function withDeclarationFixtures(run) {
+	let root = mkdtempSync(join(tmpdir(), 'uvu-parse-'));
+	let dir = join(root, 'tests');
+	let files = ['global.d.ts', 'nested.test.d.ts', 'test.d.ts', 'actual.test.ts', 'declaration.d.js', 'real.test.js'];
+	mkdirSync(dir);
+	files.forEach(name => writeFileSync(join(dir, name), ''));
+	try {
+		await run(root, files);
+	} finally {
+		files.forEach(name => unlinkSync(join(dir, name)));
+		rmdirSync(dir);
+		rmdirSync(root);
+	}
+}
+
+declarations('skips declarations during root discovery', async () => {
+	await withDeclarationFixtures(async root => {
+		let output = await $.parse(undefined, undefined, { cwd: root });
+		assert.equal(output.suites.map(suite => suite.name), ['actual.test.ts', 'declaration.d.js', 'real.test.js'].map(name => join('tests', name)));
+	});
+});
+
+declarations('skips declarations with an explicit directory', async () => {
+	await withDeclarationFixtures(async root => {
+		let output = await $.parse('tests', undefined, { cwd: root });
+		assert.equal(output.suites.map(suite => suite.name), ['actual.test.ts', 'declaration.d.js', 'real.test.js']);
+	});
+});
+
+declarations('preserves explicit declaration patterns', async () => {
+	await withDeclarationFixtures(async root => {
+		let output = await $.parse('tests', /\.d\.ts$/, { cwd: root });
+		assert.equal(output.suites.map(suite => suite.name), ['global.d.ts', 'nested.test.d.ts', 'test.d.ts']);
+	});
+});
+
+declarations.run();

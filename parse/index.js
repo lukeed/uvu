@@ -8,9 +8,10 @@ const toStat = promisify(stat);
 const toRegex = x => new RegExp(x, 'i');
 
 async function parse(dir, pattern, opts = {}) {
+	let defaultPattern = !pattern;
 	if (pattern) pattern = toRegex(pattern);
 	else if (dir) pattern = /(((?:[^\/]*(?:\/|$))*)[\\\/])?\w+\.([mc]js|[jt]sx?)$/;
-	else pattern = /((\/|^)(tests?|__tests?__)\/.*|\.(tests?|spec)|^\/?tests?)\.([mc]js|[jt]sx?)$/i;
+	else pattern = /(([\\\/]|^)(tests?|__tests__)[\\\/].*|\.(tests?|spec)|^[\\\/]?tests?)\.([mc]js|[jt]sx?)$/i;
 	dir = resolve(opts.cwd || '.', dir || '.');
 
 	let suites = [];
@@ -36,7 +37,7 @@ async function parse(dir, pattern, opts = {}) {
 					let file = join(d, str);
 					let stats = await toStat(file);
 					if (stats.isDirectory()) return collect(file, name);
-					else if (pattern.test(name)) suites.push({ name, file });
+					else if (pattern.test(name) && (!defaultPattern || !/\.d\.ts$/i.test(name))) suites.push({ name, file });
 				})
 			);
 		});

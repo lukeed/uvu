@@ -63,6 +63,8 @@ This will:
 
 Of course, you can help `uvu` out and narrow down its search party by providing a `dir` argument. Instead of searching from your project's root, `dir` tells `uvu` where to _start_ its traversal from. And by specifying a `dir`, the default `pattern` changes such that any file with a `mjs`, `cjs`, `js`, `jsx`, `tsx`, or `ts` extension will match.
 
+TypeScript declaration files (`*.d.ts`) are excluded by both default patterns. An explicit `pattern` can still include them.
+
 Finally, you may specify your own `pattern` too &mdash; assuming `dir` has been set. <br>The `pattern` value is passed through `new RegExp(<pattern>, 'i')`. If you are nostalgic for complex glob patterns, this is your chance to relive its glory days – with substitutions, of course.
 
 For example, if we assume a [monorepo environment](/examples/monorepo/package.json), your `uvu` usage may look like this:
