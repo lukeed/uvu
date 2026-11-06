@@ -11,7 +11,7 @@ async function parse(dir, pattern, opts = {}) {
 	let defaultPattern = !pattern;
 	if (pattern) pattern = toRegex(pattern);
 	else if (dir) pattern = /(((?:[^\/]*(?:\/|$))*)[\\\/])?\w+\.([mc]js|[jt]sx?)$/;
-	else pattern = /((\/|^)(tests?|__tests?__)\/.*|\.(tests?|spec)|^\/?tests?)\.([mc]js|[jt]sx?)$/i;
+	else pattern = /(([\\\/]|^)(tests?|__tests__)[\\\/].*|\.(tests?|spec)|^[\\\/]?tests?)\.([mc]js|[jt]sx?)$/i;
 	dir = resolve(opts.cwd || '.', dir || '.');
 
 	let suites = [];
