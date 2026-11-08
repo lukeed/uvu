@@ -19,9 +19,15 @@ export async function parse(dir, pattern, opts = {}) {
 
 	if (requires.length) {
 		let $require = createRequire(import.meta.url);
+		let paths = [resolve(opts.cwd || '.')];
+		let exists = (dep, p) => {
+			try { return $require.resolve(dep, p ? { paths: p } : undefined) }
+			catch (err) { return false }
+		};
 		requires.forEach(name => {
-			try { return $require(name) }
-			catch (e) { throw new Error(`Cannot find module "${name}"`) }
+			let tmp = exists(name) || exists(resolve(opts.cwd || '.', name)) || exists(name, paths);
+			if (tmp) return $require(tmp);
+			throw new Error(`Cannot find module "${name}"`);
 		});
 	}
 
