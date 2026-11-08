@@ -141,4 +141,14 @@ requires('should `require` valid value(s)', async () => {
 	assert.is(foo.requires, true);
 });
 
+requires('should `require` relative file path(s)', async () => {
+	let foo = await $.parse(__dirname, '', { require: ['./test/exit.fails.js'] });
+	assert.is(foo.requires, true);
+});
+
+requires('should `require` relative file path(s) with options.cwd', async () => {
+	let foo = await $.parse('.', '', { cwd: __dirname, require: ['./exit.fails.js'] });
+	assert.is(foo.requires, true);
+});
+
 requires.run();

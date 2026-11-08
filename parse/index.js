@@ -7,6 +7,11 @@ const ls = promisify(readdir);
 const toStat = promisify(stat);
 const toRegex = x => new RegExp(x, 'i');
 
+function exists(dep, paths) {
+	try { return require.resolve(dep, paths ? { paths } : undefined) }
+	catch (err) { return false }
+}
+
 async function parse(dir, pattern, opts = {}) {
 	if (pattern) pattern = toRegex(pattern);
 	else if (dir) pattern = /(((?:[^\/]*(?:\/|$))*)[\\\/])?\w+\.([mc]js|[jt]sx?)$/;
@@ -17,9 +22,11 @@ async function parse(dir, pattern, opts = {}) {
 	let requires = [].concat(opts.require || []).filter(Boolean);
 	let ignores = ['^.git', 'node_modules'].concat(opts.ignore || []).map(toRegex);
 
+	let paths = [resolve(opts.cwd || '.')];
 	requires.forEach(name => {
-		try { return require(name) }
-		catch (e) { throw new Error(`Cannot find module "${name}"`) }
+		let tmp = exists(name) || exists(resolve(opts.cwd || '.', name)) || exists(name, paths);
+		if (tmp) return require(tmp);
+		throw new Error(`Cannot find module "${name}"`);
 	});
 
 	// NOTE: Node 8.x support
