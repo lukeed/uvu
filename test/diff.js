@@ -379,6 +379,26 @@ lines('should show trailing "↵" when only one side has a trailing newline', ()
 	);
 });
 
+lines('should distinguish a trailing newline from an extra blank line', () => {
+	assert.is(
+		strip($.lines('foo\n\n', 'foo')),
+		'Actual:\n' +
+		'--foo\n' +
+		'--↵\n' +
+		'--↵\n' +
+		'Expected:\n' +
+		'++foo\n'
+	);
+
+	assert.is(
+		strip($.lines('\n', 'foo')),
+		'Actual:\n' +
+		'--↵\n' +
+		'Expected:\n' +
+		'++foo\n'
+	);
+});
+
 lines.run();
 
 // ---

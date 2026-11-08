@@ -32,7 +32,8 @@ function line(obj, prev, pad, showTrailingNL) {
 	// Show a trailing '↵' marker when this chunk ends with a newline but its
 	// paired chunk does not – i.e. the trailing newline IS the meaningful
 	// difference between the two sides, not just a normal line terminator.
-	if (showTrailingNL && arr[arr.length - 1] !== '') {
+	// Chunks made entirely of newlines already have one marker per line.
+	if (showTrailingNL && /[^\r\n]/.test(obj.value)) {
 		if (prev) out += LINE(prev + arr.length, pad);
 		out += LOG(char, '\n');
 	}
