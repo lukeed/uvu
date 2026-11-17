@@ -770,6 +770,19 @@ compare('should proxy `$.lines` for Object inputs', () => {
 	);
 });
 
+compare('should show function values in Object diffs', () => {
+	assert.is(
+		strip($.compare({ foo: 'bar', baz: () => {} }, { foo: 'bar' })),
+		'··{\n' +
+		'Actual:\n' +
+		'--··"foo":·"bar",\n' +
+		'--··"baz":·[Function]\n' +
+		'Expected:\n' +
+		'++··"foo":·"bar"\n' +
+		'··}\n'
+	);
+});
+
 compare('should proxy `$.lines` for multi-line String inputs', () => {
 	assert.is(
 		strip($.compare('foo\nbar', 'foo\nbat')),
@@ -1076,11 +1089,23 @@ sort.run();
 const circular = suite('circular');
 
 circular('should ignore non-object values', () => {
-	const input = { a:1, b:2, c:'c', d:null, e:()=>{} };
+	const input = { a:1, b:2, c:'c', d:null };
 
 	assert.is(
 		JSON.stringify(input, $.circular()),
 		'{"a":1,"b":2,"c":"c","d":null}'
+	);
+});
+
+circular('should retain function values', () => {
+	assert.is(
+		JSON.stringify({ a:1, b:()=>{} }, $.circular()),
+		'{"a":1,"b":"[__FUNCTION__]"}'
+	);
+
+	assert.is(
+		JSON.stringify([()=>{}], $.circular()),
+		'["[__FUNCTION__]"]'
 	);
 });
 
@@ -1145,11 +1170,23 @@ circular.run();
 const stringify = suite('stringify');
 
 stringify('should wrap `JSON.stringify` native', () => {
-	const input = { a:1, b:2, c:'c', d:null, e:()=>{} };
+	const input = { a:1, b:2, c:'c', d:null };
 
 	assert.is(
 		$.stringify(input),
 		JSON.stringify(input, null, 2)
+	);
+});
+
+stringify('should retain function values', () => {
+	assert.is(
+		$.stringify({ a: 1, b: () => {} }),
+		'{\n  "a": 1,\n  "b": [Function]\n}'
+	);
+
+	assert.is(
+		$.stringify([() => {}]),
+		'[\n  [Function]\n]'
 	);
 });
 
