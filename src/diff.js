@@ -181,6 +181,7 @@ export function circular() {
 	return function print(key, val) {
 		if (val === void 0) return '[__VOID__]';
 		if (typeof val === 'number' && val !== val) return '[__NAN__]';
+		if (typeof val === 'function') return '[__FUNCTION__]';
 		if (typeof val === 'bigint') return val.toString();
 		if (!val || typeof val !== 'object') return val;
 		if (cache.has(val)) return '[Circular]';
@@ -189,7 +190,7 @@ export function circular() {
 }
 
 export function stringify(input) {
-	return JSON.stringify(input, circular(), 2).replace(/"\[__NAN__\]"/g, 'NaN').replace(/"\[__VOID__\]"/g, 'undefined');
+	return JSON.stringify(input, circular(), 2).replace(/"\[__NAN__\]"/g, 'NaN').replace(/"\[__VOID__\]"/g, 'undefined').replace(/"\[__FUNCTION__\]"/g, '[Function]');
 }
 
 export function compare(input, expect) {
