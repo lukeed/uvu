@@ -33,17 +33,17 @@ export namespace not {
 export class Assertion extends Error {
 	name: 'Assertion';
 	code: 'ERR_ASSERTION';
-	details: false | string;
+	details: false | string | boolean;
 	generated: boolean;
 	operator: string;
 	expects: any;
 	actual: any;
 	constructor(options?: {
-		message: string;
-		details?: string;
+		message?: string;
+		details?: string | boolean;
 		generated?: boolean;
-		operator: string;
-		expects: any;
-		actual: any;
+		operator?: string;
+		expects?: any;
+		actual?: any;
 	});
 }
