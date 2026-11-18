@@ -83,6 +83,12 @@ export function throws(blk, exp, msg) {
 		msg = exp; exp = null;
 	}
 
+	// A string `expects` matches against the thrown error's message:
+	if (typeof exp === 'string') {
+		let str = exp;
+		exp = err => err != null && typeof err.message === 'string' && err.message.includes(str);
+	}
+
 	try {
 		blk();
 		assert(false, false, true, 'throws', false, 'Expected function to throw', msg);
@@ -144,6 +150,12 @@ not.match = function (val, exp, msg) {
 not.throws = function (blk, exp, msg) {
 	if (!msg && typeof exp === 'string') {
 		msg = exp; exp = null;
+	}
+
+	// A string `expects` matches against the thrown error's message:
+	if (typeof exp === 'string') {
+		let str = exp;
+		exp = err => err != null && typeof err.message === 'string' && err.message.includes(str);
 	}
 
 	try {

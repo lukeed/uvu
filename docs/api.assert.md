@@ -128,6 +128,7 @@ const OOPS = () => (null)[0];
 
 assert.throws(() => OOPS());
 assert.throws(() => OOPS(), /Cannot read property/);
+assert.throws(() => OOPS(), 'null');
 assert.throws(() => OOPS(), err => err instanceof TypeError);
 ```
 
@@ -244,6 +245,7 @@ assert.not.throws(() => PASS()); //=> pass
 assert.not.throws(() => FAIL()); //=> fails
 assert.not.throws(() => FAIL(), /Oops/); //=> fails
 assert.not.throws(() => FAIL(), /foobar/); //=> pass
+assert.not.throws(() => FAIL(), 'foobar'); //=> pass
 assert.not.throws(() => FAIL(), err => err.message.length > 0); //=> fails
 ```
 
