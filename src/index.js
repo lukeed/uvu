@@ -52,8 +52,13 @@ function stack(stack, idx) {
 }
 
 function format(name, err, suite = '') {
+	if (!(err instanceof Error)) err = {
+		...(err != null && typeof err === 'object' ? err : null),
+		name: 'Error',
+		message: err != null && typeof err.message === 'string' ? err.message : String(err),
+	};
 	let { details, operator='' } = err;
-	let idx = err.stack && err.stack.indexOf('\n');
+	let idx = err.stack ? err.stack.indexOf('\n') : -1;
 	if (err.name.startsWith('AssertionError') && !operator.includes('not')) details = compare(err.actual, err.expected); // TODO?
 	let str = '  ' + FAILURE + (suite ? kleur.red(SUITE(` ${suite} `)) : '') + ' ' + QUOTE + kleur.red().bold(name) + QUOTE;
 	str += '\n    ' + err.message + (operator ? kleur.italic().dim(`  (${operator})`) : '') + '\n';
