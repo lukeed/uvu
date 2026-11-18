@@ -431,6 +431,36 @@ throws('should not throw if function does throw matching Error :: Function', () 
 	});
 });
 
+throws('should throw if function does not throw matching Error :: String', () => {
+	try {
+		$.throws(() => { throw new Error('hello') }, 'world', 'custom message');
+		assert.unreachable('should have thrown');
+	} catch (err) {
+		isError(err, 'custom message', false, true, 'throws', false); // no details
+	}
+});
+
+throws('should not throw if function does throw matching Error :: String', () => {
+	assert.not.throws(
+		() => $.throws(() => { throw new Error('hello') }, 'hell', 'custom message')
+	);
+});
+
+throws('should throw if function does throw matching Error :: String (not.throws)', () => {
+	try {
+		$.not.throws(() => { throw new Error('hello') }, 'hell', 'custom message');
+		assert.unreachable('should have thrown');
+	} catch (err) {
+		isError(err, 'custom message', true, false, 'not.throws', false); // no details
+	}
+});
+
+throws('should not throw if function does throw non-matching Error :: String (not.throws)', () => {
+	assert.not.throws(
+		() => $.not.throws(() => { throw new Error('hello') }, 'world', 'custom message')
+	);
+});
+
 throws.run();
 
 // ---
